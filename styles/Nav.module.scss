@@ -45,10 +45,13 @@
     }
 }
 .mobileNav {
-    display: flex;
-    padding: 10px 20px;
-    align-items: center;
-    justify-content: space-between;
+    display: none;
+    @include laptop_L() {
+        display: flex;
+        padding: 10px 20px;
+        align-items: center;
+        justify-content: space-between;
+    }
     .logo {
         display: flex;
         gap: 15px;
