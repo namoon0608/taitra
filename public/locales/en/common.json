@@ -1,0 +1,11 @@
+{
+    "hello": "Welcome to TAITRA!",
+    "nav": {
+        "applyNote": "Notes",
+        "price": "Price",
+        "apply": "Apply",
+        "search": "Search",
+        "complete": "Sign",
+        "contact": "Contact"
+    }
+}

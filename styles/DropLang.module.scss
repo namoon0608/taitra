@@ -1,0 +1,28 @@
+.langDropDown {
+    position: relative;
+    .dropdown {
+        border: 1px solid #103978;
+        border-radius: 11px;
+        padding: 7px 18px;
+        color: #103978;
+        font-weight: 700;
+        font-size: 14px;
+        background: transparent;
+    }
+    .dropdownMenu {
+        position: absolute;
+        z-index: 1;
+        right: 0;
+        text-align: center;
+        padding: 10px 0;
+        gap: 10px;
+        width: 150px;
+        margin-top: 5px;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #103978;
+        border-radius: 11px;
+        font-weight: 700;
+        font-size: 14px;
+    }
+}
