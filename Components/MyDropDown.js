@@ -24,8 +24,8 @@ const MyDropdown = () => {
                         >
                             {/* Mark this component as `static` */}
                             <Menu.Items static className={styles.dropdownMenu}>
-                                <Menu.Item key={"zh"}>
-                                    <Link href={router.asPath} locale={"zh"}>
+                                <Menu.Item key={"tc"}>
+                                    <Link href={router.asPath} locale={"tc"}>
                                         <a>繁體中文</a>
                                     </Link>
                                 </Menu.Item>

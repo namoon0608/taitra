@@ -2,7 +2,7 @@ import styles from "../styles/Hero.module.scss";
 
 export default function Hero(props) {
     return (
-        <div>
+        <div className={styles.container}>
             <div className={styles.bgWrap}>
                 <img
                     src="/img/image13.png"

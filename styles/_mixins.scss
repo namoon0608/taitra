@@ -28,8 +28,18 @@
         @content;
     }
 }
-@mixin mobile() {
+@mixin mobile_L() {
+    @media (max-width: 425px) {
+        @content;
+    }
+}
+@mixin mobile_M() {
     @media (max-width: 375px) {
+        @content;
+    }
+}
+@mixin mobile_S() {
+    @media (max-width: 320px) {
         @content;
     }
 }

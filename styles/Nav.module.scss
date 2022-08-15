@@ -6,6 +6,7 @@
     max-width: 1200px;
     margin: auto;
     padding: 10px 0;
+
     @include laptop_L() {
         display: none;
     }
@@ -51,14 +52,23 @@
         padding: 10px 20px;
         align-items: center;
         justify-content: space-between;
+        position: fixed;
+        top: 0;
+        z-index: 99;
+        width: 100%;
+        background: #ffffff;
     }
     .logo {
         display: flex;
         gap: 15px;
         align-items: center;
+        img {
+            width: 38px;
+            height: 47px;
+        }
         p {
             font-style: normal;
-            font-size: 24px;
+            font-size: 15px;
             background: linear-gradient(
                 91.11deg,
                 #05345f 5.78%,
@@ -69,6 +79,44 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
             text-fill-color: transparent;
+        }
+    }
+    .mobileDropDown {
+        .dropdown {
+            border: none;
+            background: transparent;
+        }
+        .dropdownMenu {
+            position: absolute;
+            width: 100%;
+            top: 70px;
+            left: 0;
+            right: 0;
+            z-index: 1;
+            background: #ffffff;
+            .mobileLinks {
+                display: flex;
+                flex-direction: column;
+                padding: 0 20px;
+                a {
+                    font-family: "Roboto";
+                    font-weight: 500;
+                    color: #000000;
+                    padding: 15px 0 10px 0;
+                }
+            }
+            .mobileLangGroup {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                a {
+                    padding: 13px 0;
+                    text-align: center;
+                    background: #245384;
+                    font-family: "Roboto";
+                    font-weight: 500;
+                    color: #ffffff;
+                }
+            }
         }
     }
 }

@@ -28,57 +28,15 @@ export default function Contact(props) {
             </Head>
 
             <Nav />
-            <Hero />
-            <main className={styles.main}>
-                <h1 className={styles.title}>
-                    {t("hello")} <a href="https://nextjs.org">Contact</a>
-                </h1>
-
-                <p className={styles.description}>
-                    Get started by editing{" "}
-                    <code className={styles.code}>pages/index.js</code>
-                </p>
-
-                <div className={styles.grid}>
-                    <a href="https://nextjs.org/docs" className={styles.card}>
-                        <h2>Documentation &rarr;</h2>
-                        <p>
-                            Find in-depth information about Next.js features and
-                            API.
-                        </p>
-                    </a>
-
-                    <a href="https://nextjs.org/learn" className={styles.card}>
-                        <h2>Learn &rarr;</h2>
-                        <p>
-                            Learn about Next.js in an interactive course with
-                            quizzes!
-                        </p>
-                    </a>
-
-                    <a
-                        href="https://github.com/vercel/next.js/tree/canary/examples"
-                        className={styles.card}
-                    >
-                        <h2>Examples &rarr;</h2>
-                        <p>
-                            Discover and deploy boilerplate example Next.js
-                            projects.
-                        </p>
-                    </a>
-
-                    <a
-                        href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-                        className={styles.card}
-                    >
-                        <h2>Deploy &rarr;</h2>
-                        <p>
-                            Instantly deploy your Next.js site to a public URL
-                            with Vercel.
-                        </p>
-                    </a>
+            <Hero>
+                <h3>聯絡資訊</h3>
+                <div className={styles.contact}>
+                    <p>外貿協會南港展覽館2館 </p>
+                    <p>水電申請單位 </p>
+                    <p>電話：(02)2725-5200 分機5569 </p>
+                    <p>地址：台北市115南港區經貿二路1號6樓 </p>
                 </div>
-            </main>
+            </Hero>
             <Footer />
         </div>
     );
