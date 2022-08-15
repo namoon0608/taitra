@@ -1,3 +1,4 @@
+@import "mixins";
 .desktopNav {
     display: flex;
     align-items: center;
@@ -5,6 +6,9 @@
     max-width: 1200px;
     margin: auto;
     padding: 10px 0;
+    @include laptop_L() {
+        display: none;
+    }
     .logo {
         display: flex;
         gap: 15px;
@@ -30,12 +34,38 @@
         display: flex;
         margin: 0;
         gap: 20px;
+
         li {
             width: 80px;
             text-align: center;
             color: var(--third);
             font-weight: 700;
             font-size: 19px;
+        }
+    }
+}
+.mobileNav {
+    display: flex;
+    padding: 10px 20px;
+    align-items: center;
+    justify-content: space-between;
+    .logo {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        p {
+            font-style: normal;
+            font-size: 24px;
+            background: linear-gradient(
+                91.11deg,
+                #05345f 5.78%,
+                rgba(25, 77, 124, 0.9) 63.04%,
+                rgba(15, 54, 89, 0.9) 105.59%
+            );
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
         }
     }
 }

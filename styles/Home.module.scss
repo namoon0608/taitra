@@ -21,7 +21,7 @@
     background: var(--second);
     justify-content: center;
     align-items: center;
-    @include desktop() {
+    @include tablet_S() {
         padding: 2rem 3rem;
     }
     @include mobile() {
@@ -34,7 +34,7 @@
         list-style: none;
         align-items: center;
         padding: 0;
-        @include desktop() {
+        @include tablet_S() {
             flex-direction: column;
         }
         li {
@@ -92,7 +92,7 @@
     justify-content: center;
     flex-wrap: wrap;
     max-width: 800px;
-    @include desktop() {
+    @include tablet_S() {
         width: 100%;
         flex-direction: column;
     }

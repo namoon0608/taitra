@@ -1,6 +1,6 @@
+@import "mixins";
 .bgWrap {
     position: relative;
-    height: 600px;
     width: 100%;
     background-position: 25% 75%;
     overflow: hidden;
@@ -8,27 +8,89 @@
         width: 100%;
     }
 }
-.upperTab {
-    background: #073b74;
-    mix-blend-mode: normal;
-    opacity: 0.89;
-    border-radius: 20px 20px 0px 0px;
-    max-width: 1000px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin: -189px auto 0 auto;
-    padding: 28px 40px 40px 40px;
-    h1 {
-        color: #ffffff;
-        font-size: 33px;
+.main {
+    padding-bottom: 100px;
+    @include desktop() {
+        padding: 0 80px 100px 80px;
     }
-    ul {
-        color: #ffffff;
-        font-weight: 500;
-        font-size: 20px;
-        li {
-            list-style-image: url("../public/img/Rectangle131.svg");
+    @include laptop_L() {
+        padding: 0 60px 100px 60px;
+    }
+    .tabContent {
+        position: relative;
+        .upperTab {
+            position: absolute;
+            top: -149px;
+            right: 0;
+            left: 0;
+            background: #073b74;
+            mix-blend-mode: normal;
+            opacity: 0.89;
+            border-radius: 20px 20px 0px 0px;
+            max-width: 1000px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 0 auto;
+            padding: 28px 40px 40px 40px;
+            @include laptop_L() {
+                padding: 28px 30px 40px 30px;
+            }
+            @include laptop_S() {
+                padding: 28px 30px 60px 30px;
+            }
+            @include tablet_L() {
+                flex-direction: column;
+                gap: 0;
+                top: -180px;
+            }
+            h1 {
+                color: #ffffff;
+                font-size: 33px;
+                @include laptop_L() {
+                    font-size: 25px;
+                }
+                @include laptop_M() {
+                    font-size: 20px;
+                }
+            }
+            ul {
+                color: #ffffff;
+                font-weight: 500;
+                font-size: 20px;
+                margin-top: 0;
+                line-height: 162%;
+                @include laptop_M() {
+                    font-size: 18px;
+                }
+                @include laptop_S() {
+                    font-size: 16px;
+                }
+                @include tablet_L() {
+                    margin: 0;
+                }
+                li {
+                    list-style-image: url("../public/img/Rectangle131.svg");
+                }
+            }
+        }
+    }
+    .content {
+        position: relative;
+        background: #ffffff;
+        box-shadow: 0px -10px 40px rgba(155, 155, 155, 0.25);
+        border-radius: 25px;
+        height: auto;
+        max-width: 1000px;
+        margin: 0 auto;
+        margin-top: -45px;
+        padding: 30px 40px 70px 40px;
+        h3 {
+            font-size: 32px;
+            color: #225183;
+            margin: 0;
+            margin-bottom: 30px;
+            text-align: center;
         }
     }
 }
