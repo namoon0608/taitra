@@ -61,6 +61,7 @@
                 h1 {
                     color: #ffffff;
                     font-size: 33px;
+                    margin-top: 0;
                     @include laptop_L() {
                         font-size: 25px;
                     }
