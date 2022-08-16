@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Head from "next/head";
 import Nav from "../Components/Nav";
 import Footer from "../Components/Footer";
@@ -5,6 +6,11 @@ import Hero from "../Components/Hero";
 import styles from "../styles/Home.module.scss";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useTranslation } from "next-i18next";
+import FormCard from "../Components/Stepper/FormCard";
+import Basic from "../Components/Forms/Basic";
+import Choose from "../Components/Forms/Choose";
+import Write from "../Components/Forms/Write";
+import Preview from "../Components/Forms/Preview";
 
 export async function getServerSideProps({ locale }) {
     return {
@@ -16,6 +22,12 @@ export async function getServerSideProps({ locale }) {
 
 export default function Apply(props) {
     const { t } = useTranslation();
+    const [formStep, setFormStep] = useState(0);
+
+    const nextFormStep = () => setFormStep((currentStep) => currentStep + 1);
+
+    const prevFormStep = () => setFormStep((currentStep) => currentStep - 1);
+
     return (
         <div className={styles.container}>
             <Head>
@@ -28,57 +40,30 @@ export default function Apply(props) {
             </Head>
 
             <Nav />
-            <Hero />
-            <main className={styles.main}>
-                <h1 className={styles.title}>
-                    {t("hello")} <a href="https://nextjs.org">Apply</a>
-                </h1>
+            <Hero>
+                <FormCard currentStep={formStep} prevFormStep={prevFormStep}>
+                    {formStep >= 0 && (
+                        <Basic
+                            formStep={formStep}
+                            nextFormStep={nextFormStep}
+                        />
+                    )}
+                    {formStep >= 1 && (
+                        <Choose
+                            formStep={formStep}
+                            nextFormStep={nextFormStep}
+                        />
+                    )}
+                    {formStep >= 2 && (
+                        <Write
+                            formStep={formStep}
+                            nextFormStep={nextFormStep}
+                        />
+                    )}
 
-                <p className={styles.description}>
-                    Get started by editing{" "}
-                    <code className={styles.code}>pages/index.js</code>
-                </p>
-
-                <div className={styles.grid}>
-                    <a href="https://nextjs.org/docs" className={styles.card}>
-                        <h2>Documentation &rarr;</h2>
-                        <p>
-                            Find in-depth information about Next.js features and
-                            API.
-                        </p>
-                    </a>
-
-                    <a href="https://nextjs.org/learn" className={styles.card}>
-                        <h2>Learn &rarr;</h2>
-                        <p>
-                            Learn about Next.js in an interactive course with
-                            quizzes!
-                        </p>
-                    </a>
-
-                    <a
-                        href="https://github.com/vercel/next.js/tree/canary/examples"
-                        className={styles.card}
-                    >
-                        <h2>Examples &rarr;</h2>
-                        <p>
-                            Discover and deploy boilerplate example Next.js
-                            projects.
-                        </p>
-                    </a>
-
-                    <a
-                        href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-                        className={styles.card}
-                    >
-                        <h2>Deploy &rarr;</h2>
-                        <p>
-                            Instantly deploy your Next.js site to a public URL
-                            with Vercel.
-                        </p>
-                    </a>
-                </div>
-            </main>
+                    {formStep > 2 && <Preview />}
+                </FormCard>
+            </Hero>
             <Footer />
         </div>
     );

@@ -1,0 +1,335 @@
+@import "mixins";
+.form {
+    .applyItem {
+        overflow-x: auto;
+    }
+    img {
+        width: 100%;
+    }
+    table {
+        border: none;
+        width: 100%;
+        border: 1px solid #999999;
+        border-radius: 8px;
+        border-collapse: separate;
+        border-spacing: 0;
+        @include tablet_L() {
+            width: 750px;
+        }
+        th,
+        td {
+            padding: 16px 0;
+        }
+        .title {
+            background: #245384;
+            color: #ffffff;
+            th {
+                border-right: 1px solid #ffffff;
+                &:last-child {
+                    border: none;
+                }
+            }
+        }
+        .content {
+            text-align: center;
+            font-weight: 400;
+            color: #333333;
+        }
+        .sum {
+            color: #666666;
+            font-weight: 700;
+            .sumTitle {
+                text-align: right;
+                font-weight: 700;
+                color: #666666;
+            }
+            &:last-child {
+                text-align: center;
+                font-weight: 400;
+                color: #333333;
+            }
+        }
+        tr:nth-child(even) {
+            background: #e7f3ff;
+        }
+        /*第一欄第一列：左上*/
+        tr:first-child th:first-child {
+            border-top-left-radius: 8px;
+        }
+        /*第一欄最後列：左下*/
+        tr:last-child td:first-child {
+            border-bottom-left-radius: 8px;
+        }
+        /*最後欄第一列：右上*/
+        tr:first-child th:last-child {
+            border-top-right-radius: 8px;
+        }
+        /*最後欄第一列：右下*/
+        tr:last-child td:last-child {
+            border-bottom-right-radius: 8px;
+        }
+    }
+    h2 {
+        font-weight: 700;
+        font-size: 24px;
+        color: #333333;
+        @include tablet_L() {
+            font-size: 20px;
+        }
+    }
+    .companyGroupOne,
+    .companyGroupTwo {
+        .title {
+            font-weight: 400;
+            color: #666666;
+            margin: 5px 0 10px 0;
+        }
+        .content {
+            padding-left: 20px;
+            font-size: 24px;
+            font-weight: 400;
+            font-feature-settings: "pnum" on, "lnum" on;
+            color: #333333;
+            margin: 0 0 20px 0;
+            @include laptop_S() {
+                font-size: 20px;
+            }
+            @include tablet_S() {
+                font-size: 18px;
+            }
+            @include mobile_L() {
+                padding: 0;
+                font-size: 14px;
+            }
+        }
+    }
+    .companyGroupOne {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr;
+        @include tablet_L() {
+            grid-template-columns: 1fr 1fr;
+        }
+        @include mobile_L() {
+            gap: 0 15px;
+        }
+    }
+    .companyGroupTwo {
+        display: grid;
+        grid-template-columns: 2fr 2fr;
+        @include mobile_L() {
+            gap: 0 15px;
+        }
+    }
+    .form {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0 35px;
+        @include tablet_S() {
+            grid-template-columns: 1fr;
+        }
+        .formRow {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 1.5rem;
+            label {
+                font-weight: 400;
+                color: #666666;
+                margin-bottom: 10px;
+            }
+            input {
+                border: 1px solid #999999;
+                border-radius: 8px;
+                padding: 16px 0;
+                text-indent: 16px;
+                &:focus {
+                    outline: none;
+                }
+            }
+        }
+        .address {
+            margin-left: -250px;
+            @include laptop_L() {
+                margin-left: -200px;
+            }
+            @include laptop_M() {
+                margin-left: -150px;
+            }
+            @include tablet_L() {
+                margin-left: -130px;
+            }
+            @include tablet_S() {
+                margin: 30px 0;
+                grid-row: 2/3;
+                grid-column: 1/3;
+            }
+        }
+        .prepare {
+            grid-column: 1/3;
+            textarea {
+                resize: none;
+                border: 1px solid #999999;
+                border-radius: 8px;
+                padding: 16px;
+                height: 100px;
+                overflow-y: auto;
+                &:focus {
+                    outline: none;
+                }
+            }
+        }
+        .addressGroup {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            input {
+                position: absolute;
+                top: 0;
+                left: 0;
+                appearance: none;
+                height: 19px;
+                width: 19px;
+                background: #ffffff;
+                border: 1px solid #b7b1b1;
+                border-radius: 3px;
+                margin: 0;
+            }
+            input:checked {
+                background: url(../public/img/checked.svg) 100%/100% no-repeat;
+            }
+            label {
+                margin: 0;
+                position: relative;
+                cursor: pointer;
+                padding-left: 25px;
+                font-weight: 400;
+                color: #666666;
+            }
+        }
+    }
+    .firstNext {
+        cursor: pointer;
+        position: absolute;
+        bottom: -30px;
+        left: 0;
+        right: 0;
+        margin: 0 auto;
+        border: none;
+        width: fit-content;
+        padding: 16px 48px;
+        background: #ff815a;
+        box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.23);
+        border-radius: 8px;
+        font-size: 24px;
+        color: #ffffff;
+        font-weight: 600;
+        @include tablet_L() {
+            padding: 6px 26px;
+            font-size: 18px;
+            bottom: -15px;
+        }
+    }
+}
+.hideForm {
+    display: none;
+}
+
+.showForm {
+    display: block;
+}
+.back {
+    cursor: pointer;
+    position: absolute;
+    bottom: -30px;
+    left: 60px;
+    margin: 0 auto;
+    border: none;
+    width: fit-content;
+    padding: 16px 48px;
+    background: #999999;
+    box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.23);
+    border-radius: 8px;
+    font-size: 24px;
+    color: #ffffff;
+    font-weight: 600;
+    @include tablet_L() {
+        padding: 6px 26px;
+        font-size: 18px;
+        bottom: -15px;
+    }
+    @include mobile_M() {
+        left: 30px;
+    }
+}
+.next,
+.complete {
+    cursor: pointer;
+    position: absolute;
+    bottom: -30px;
+    right: 60px;
+    margin: 0 auto;
+    border: none;
+    width: fit-content;
+    padding: 16px 48px;
+    background: #ff815a;
+    box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.23);
+    border-radius: 8px;
+    font-size: 24px;
+    color: #ffffff;
+    font-weight: 600;
+    @include tablet_L() {
+        padding: 6px 26px;
+        font-size: 18px;
+        bottom: -15px;
+    }
+    @include mobile_M() {
+        right: 30px;
+    }
+}
+
+.write {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    @include tablet_S() {
+        grid-template-columns: 1fr;
+    }
+}
+.upload {
+    margin: 50px 0;
+    position: relative;
+    label {
+        border: 1px solid #b1b1b1;
+        border-radius: 15px;
+        padding: 15px 50px;
+        cursor: pointer;
+    }
+    input {
+        opacity: 0;
+        position: absolute;
+        z-index: -1;
+        top: 0;
+        left: 0;
+    }
+}
+.formComplete {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 30px 0;
+    .formRow {
+        &:last-child {
+            grid-column: 2/4;
+        }
+    }
+}
+.formCompleteInvoce {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px 0;
+    .formRow {
+        &:nth-last-child(2) {
+            grid-column: 1/4;
+        }
+        &:last-child {
+            grid-column: 1/4;
+        }
+    }
+}
