@@ -144,7 +144,7 @@ export default function Basic({ formStep, nextFormStep }) {
                 <div className={styles.form}>
                     <div className={styles.addressGroup}>
                         <div>
-                            <label for="company_address">
+                            <label htmlFor="company_address">
                                 同參展廠商
                                 <input
                                     type="radio"
@@ -155,7 +155,7 @@ export default function Basic({ formStep, nextFormStep }) {
                             </label>
                         </div>
                         <div>
-                            <label for="agent_address">
+                            <label htmlFor="agent_address">
                                 同代理或裝潢公司
                                 <input
                                     type="radio"
@@ -175,7 +175,7 @@ export default function Basic({ formStep, nextFormStep }) {
                         />
                     </div>
                     <div className={[styles.formRow, styles.prepare].join(" ")}>
-                        <label for="prepare">備註</label>
+                        <label htmlFor="prepare">備註</label>
                         <textarea></textarea>
                     </div>
                 </div>
