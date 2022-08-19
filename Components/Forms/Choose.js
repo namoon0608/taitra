@@ -93,7 +93,7 @@ export default function Choose({ formStep, nextFormStep }) {
                                                     <path
                                                         d="M1 9L8 2L15 9"
                                                         stroke="white"
-                                                        stroke-width="2"
+                                                        strokeWidth="2"
                                                     />
                                                 </svg>
                                             ) : (
@@ -107,7 +107,7 @@ export default function Choose({ formStep, nextFormStep }) {
                                                     <path
                                                         d="M15 1L8 8L1 1"
                                                         stroke="white"
-                                                        stroke-width="2"
+                                                        strokeWidth="2"
                                                     />
                                                 </svg>
                                             )}
@@ -230,7 +230,7 @@ export default function Choose({ formStep, nextFormStep }) {
                                                     <path
                                                         d="M1 9L8 2L15 9"
                                                         stroke="white"
-                                                        stroke-width="2"
+                                                        strokeWidth="2"
                                                     />
                                                 </svg>
                                             ) : (
@@ -244,7 +244,7 @@ export default function Choose({ formStep, nextFormStep }) {
                                                     <path
                                                         d="M15 1L8 8L1 1"
                                                         stroke="white"
-                                                        stroke-width="2"
+                                                        strokeWidth="2"
                                                     />
                                                 </svg>
                                             )}
@@ -348,7 +348,7 @@ export default function Choose({ formStep, nextFormStep }) {
                                                     <path
                                                         d="M1 9L8 2L15 9"
                                                         stroke="white"
-                                                        stroke-width="2"
+                                                        strokeWidth="2"
                                                     />
                                                 </svg>
                                             ) : (
@@ -362,7 +362,7 @@ export default function Choose({ formStep, nextFormStep }) {
                                                     <path
                                                         d="M15 1L8 8L1 1"
                                                         stroke="white"
-                                                        stroke-width="2"
+                                                        strokeWidth="2"
                                                     />
                                                 </svg>
                                             )}
@@ -432,7 +432,7 @@ export default function Choose({ formStep, nextFormStep }) {
                                                     <path
                                                         d="M1 9L8 2L15 9"
                                                         stroke="white"
-                                                        stroke-width="2"
+                                                        strokeWidth="2"
                                                     />
                                                 </svg>
                                             ) : (
@@ -446,7 +446,7 @@ export default function Choose({ formStep, nextFormStep }) {
                                                     <path
                                                         d="M15 1L8 8L1 1"
                                                         stroke="white"
-                                                        stroke-width="2"
+                                                        strokeWidth="2"
                                                     />
                                                 </svg>
                                             )}
@@ -516,7 +516,7 @@ export default function Choose({ formStep, nextFormStep }) {
                                                     <path
                                                         d="M1 9L8 2L15 9"
                                                         stroke="white"
-                                                        stroke-width="2"
+                                                        strokeWidth="2"
                                                     />
                                                 </svg>
                                             ) : (
@@ -530,7 +530,7 @@ export default function Choose({ formStep, nextFormStep }) {
                                                     <path
                                                         d="M15 1L8 8L1 1"
                                                         stroke="white"
-                                                        stroke-width="2"
+                                                        strokeWidth="2"
                                                     />
                                                 </svg>
                                             )}
@@ -600,7 +600,7 @@ export default function Choose({ formStep, nextFormStep }) {
                                                     <path
                                                         d="M1 9L8 2L15 9"
                                                         stroke="white"
-                                                        stroke-width="2"
+                                                        strokeWidth="2"
                                                     />
                                                 </svg>
                                             ) : (
@@ -614,7 +614,7 @@ export default function Choose({ formStep, nextFormStep }) {
                                                     <path
                                                         d="M15 1L8 8L1 1"
                                                         stroke="white"
-                                                        stroke-width="2"
+                                                        strokeWidth="2"
                                                     />
                                                 </svg>
                                             )}
