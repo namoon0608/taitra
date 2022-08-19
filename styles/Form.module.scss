@@ -333,3 +333,141 @@
         }
     }
 }
+.card {
+    .dropDown {
+        background: #245384;
+        // border: 1px solid #999999;
+        border-radius: 8px;
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        padding: 12px 20px;
+        font-weight: 400;
+        font-size: 18px;
+        color: #ffffff;
+    }
+    .active {
+        border-radius: 8px 8px 0px 0px;
+    }
+    .cardBody {
+        border: 1px solid #999999;
+        border-radius: 0px 0px 8px 8px;
+        border-top: none;
+        .dropDownContent {
+            p {
+                padding: 12px 20px;
+                font-weight: 400;
+                font-size: 15px;
+                color: #000000;
+                margin: 0;
+            }
+            .bGroup {
+                .num {
+                    display: flex;
+                    padding: 0;
+                    gap: 10px;
+                    border-top: 0;
+                    input {
+                        border: none;
+                        border-bottom: 1px solid #000000;
+                        border-radius: 0;
+                        min-width: 40px;
+                        text-align: center;
+                        background: transparent;
+                        &:focus {
+                            outline: none;
+                        }
+                    }
+                }
+            }
+            .aGroup,
+            .bGroup {
+                label {
+                    position: relative;
+                    display: grid;
+                    grid-template-columns: 30px 4fr 100px 3fr;
+                    width: 100%;
+                    align-items: center;
+                    padding: 12px;
+                    font-weight: 400;
+                    color: #333333;
+                    border-top: 1px solid #999999;
+                    @include tablet_L() {
+                        font-size: 14px;
+                    }
+                    @include mobile_L() {
+                        font-size: 12px;
+                    }
+                    input {
+                        cursor: pointer;
+                        appearance: none;
+                        background: #ffffff;
+                        border: 1px solid #b7b1b1;
+                        border-radius: 3px;
+                        height: 19px;
+                        width: 19px;
+                        margin: 0;
+                        &:checked {
+                            background: url(../public/img/checked.svg) 100%/100%
+                                no-repeat;
+                        }
+                    }
+                    span {
+                        grid-column: 4/5;
+                        text-align: right;
+                        font-weight: 400;
+                        color: #333333;
+                        @include tablet_L() {
+                            font-size: 14px;
+                        }
+                        @include mobile_L() {
+                            font-size: 12px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+.applyDefault {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin: -10px 0 10px 10px;
+    @include tablet_L() {
+        gap: 10px;
+        margin-left: 0;
+    }
+    input {
+        cursor: pointer;
+        appearance: none;
+        background: #ffffff;
+        border: 1px solid #b7b1b1;
+        border-radius: 3px;
+        min-height: 19px;
+        min-width: 19px;
+        margin: 0;
+        &:checked {
+            background: url(../public/img/checked.svg) 100%/100% no-repeat;
+        }
+    }
+    label {
+        cursor: pointer;
+        font-weight: 400;
+        color: #000000;
+        @include tablet_L() {
+            font-size: 14px;
+        }
+        @include mobile_L() {
+            font-size: 12px;
+        }
+    }
+}
+.applyCheckBox {
+    display: grid;
+    gap: 30px;
+}
+
+.checkedActive {
+    background: #e6f2ff;
+}

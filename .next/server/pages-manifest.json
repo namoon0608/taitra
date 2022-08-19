@@ -1,16 +1,6 @@
 {
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
-  "/api/hello": "pages/api/hello.js",
   "/_document": "pages/_document.js",
-  "/contact": "pages/contact.js",
-  "/search": "pages/search.js",
-  "/apply": "pages/apply.js",
-  "/": "pages/index.js",
-  "/price": "pages/price.js",
-  "/sign-for-completion": "pages/sign-for-completion.js",
-  "/tc/404": "pages/tc/404.html",
-  "/en/404": "pages/en/404.html",
-  "/tc/500": "pages/tc/500.html",
-  "/en/500": "pages/en/500.html"
+  "/contact": "pages/contact.js"
 }

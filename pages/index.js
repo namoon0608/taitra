@@ -8,9 +8,31 @@ import { useTranslation } from "next-i18next";
 import Link from "next/link";
 
 export async function getServerSideProps({ locale }) {
+    const options = {
+        method: "POST",
+        headers: {
+            cookie: "ci_session=tm7raoegfru3cidh8r88ljnovjura42a",
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({ lang: locale, show_id: "FD" }),
+    };
+    const res = await fetch(
+        `${process.env.API_BASE_URL}getDiscountInfo`,
+        options
+    );
+    const infoData = await res.json();
+
+    const applyRes = await fetch(
+        `${process.env.API_BASE_URL}getApplyInfo`,
+        options
+    );
+    const applyInfo = await applyRes.json();
+
     return {
         props: {
             ...(await serverSideTranslations(locale, ["common"])),
+            info: infoData,
+            applyInfo: applyInfo,
         },
     };
 }
@@ -33,33 +55,10 @@ export default function Home(props) {
             </Head>
 
             <Nav />
-            <Hero>
+            <Hero info={props.info}>
                 <h3>水電申請說明</h3>
                 <div className={styles.homeContent}>
-                    <p>
-                        大會提供每1攤位免費基本用電110V0.5KW(500W)電量（相當於5個100W投射燈電量），會依攤位數累計。110V用電量未超過上述基本用電免費累計電量，亦無使用220V（含）以上動力用電、用水、及24小時用電者，不另外收費，但仍需填寫「水電配置圖」寄回本會。於截止日前未提供者，大會逕行施工，電箱將代為規劃於攤位內靠角落位置，現場無法受理變更。
-                        <br></br>
-                        用電量超過基本用電110V免費累計電量或需24小時供電（例如：冰箱、冷凍或冷藏櫃）或使用220V、380V之動力用電；進排水管及壓縮空氣，均需按規定日期，另外提出申請，並依水電繳款單期限完成繳款。
-                        <br></br>
-                        一般用電（110V）免費基本用電加上追加申請，合計施作1個110V電源箱，每一回路最大用電量22KW，超過22KW部分由另一回路供應；22KW內僅一個110V電源箱。220V、380V、24小時用電，以各自獨立的電源箱供應電源，所有電源箱皆無附插座。給水（1\/2英吋）排水（3\/4英吋）僅供應球閥不供應水龍頭，廠商自行裝設管路、水龍頭、水容器、水槽，如漏、淹水造成本會或其它廠商之損失，廠商須負全部賠償責任。壓縮空氣（1\/2英吋）僅供應球閥及快速接頭母接頭。
-                        <br></br>
-                        展覽期間參展廠商若現場申請追加水電或水、電移位，本館將視現場配線溝槽位置和攤位隔間情況及附近攤位廠商配合意願等再決定是否同意申請；另展場攤位無法申請提前或延後供電，請參展廠商務必留意水電申請截止日期及水電相關等事宜。
-                        <br></br>
-                        各項電器設備耗電量請參閱「電器設備消耗功率參考表」。
-                        <br></br>
-                        如有（1）未經申請，私自接用水電；（2）已申請未依期限繳費者；（3）未依實際用電情形申請用電而超載者；（4）其他違規及不安全之用電行為；本會得逕行切斷水、電源，不另通知。若因而造成之相關損失概由參展廠商自行負責。
-                        <br></br>
-                        為維護管理用電安全，將依參展廠商申請資料提供電源箱於參展廠商攤位上。請參展廠商於搭建攤位規劃時，務必預留電源箱空間，並標註於附件「水電配置圖」上後寄回，以配合施工。
-                        <br></br>
-                        撤銷或變更申請，須於進場首日15天前以書面提出，將退還已繳費用之80%，逾期提出將不予接受變更或退費。
-                        <br></br>
-                        若遇台灣電力公司供電中斷，或本會電力設備臨時性故障時，本會均不予賠償。
-                        <br></br>展場內，禁止使用燃油式發電機組供電。<br></br>
-                        各參展廠商申請用電合計容量，若超出展覽館既有供電迴路容量時，本會將停止受理申請。展出期間，廠商使用之用電若超出申請用量時，經本會查覺，超出部份需補費。而該超出部份，如影響電力系統運作時，本會有權立即斷電不另行通知，如因而造成損失，概由參展廠商自行負責。
-                        <br></br>
-                        若攤位有進排水需求，且為加高地板設計，因涉及攤位給排水配置作業，需先請大會電工協助確認加高地板維修孔的開設位置，參展廠商請勿先行開設維修孔以免造成預留孔位錯誤。
-                        <br></br>水電查詢電話：(02)2725-5200<br></br>
-                    </p>
+                    <p>{props.applyInfo.content}</p>
                 </div>
                 <Link href={"/apply"}>
                     <a className={styles.homeApply}>我要申請</a>

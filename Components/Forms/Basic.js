@@ -3,52 +3,35 @@ import * as yup from "yup";
 import styles from "../../styles/Form.module.scss";
 import { Form } from "@unform/web";
 import Input from "../Input Fields/Input";
-import { useFormData } from "../../context";
-
-const phoneRegExp =
-    /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
-const schema = yup.object().shape({
-    email: yup.string().email().required("Email is required"),
-});
-// const schema = yup.object().shape({
-//     company: yup.string().required("required"),
-//     uniformNum: yup.string().required("required"),
-//     contactPerson: yup.string().required("required"),
-//     email: yup.string().email().required("required"),
-//     phone: yup
-//         .string()
-//         .matches(phoneRegExp, "Phone number is not valid")
-//         .required("required"),
-//     address: yup.string().min(2, "Too short").required("required"),
-// });
 
 export default function Basic({ formStep, nextFormStep }) {
-    const setFormValues = useFormData();
+    const phoneRegExp =
+        /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
+    const schema = yup.object().shape({
+        company: yup.string().required("required"),
+        uniformNum: yup.string().required("required"),
+        contactPerson: yup.string().required("required"),
+        email: yup.string().email().required("required"),
+        phone: yup
+            .string()
+            .matches(phoneRegExp, "Phone number is not valid")
+            .required("required"),
+        address: yup.string().min(2, "Too short").required("required"),
+    });
     const formRef = useRef();
 
     async function handleSubmit(data) {
-        console.log(data);
         nextFormStep();
-        // try {
-        //     formRef.current.setErrors({});
-
-        //     await schema.validate(data, {
-        //         abortEarly: false,
+        // const validationResult = await schema
+        //     .validate(data, { abortEarly: false })
+        //     .catch((err) => {
+        //         return err;
         //     });
-        //     // Validation passed - do something with data
-        //     setFormValues(data);
+        // console.log(validationResult.inner);
+        // if (validationResult.inner === undefined) {
         //     nextFormStep();
-        // } catch (err) {
-        //     const errors = {};
-        //     // Validation failed - do show error
-        //     if (err instanceof yup.ValidationError) {
-        //         console.log(err.inner);
-        //         // Validation failed - do show error
-        //         err.inner.forEach((error) => {
-        //             errors[error.path] = error.message;
-        //         });
-        //         formRef.current.setErrors(errors);
-        //     }
+        // } else if (validationResult.inner !== undefined) {
+        //     alert("請完整填寫");
         // }
     }
 
@@ -117,7 +100,7 @@ export default function Basic({ formStep, nextFormStep }) {
                     </div>
                     <div className={styles.formRow}>
                         <Input
-                            name="name"
+                            name="contactPerson"
                             label="聯絡人"
                             type="text"
                             placeholder="請輸入聯絡人姓名"

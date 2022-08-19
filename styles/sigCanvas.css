@@ -1,0 +1,10 @@
+.signatureCanvas {
+    width: 100%;
+    height: 400px;
+}
+@media screen and (max-width:425px) {
+    .signatureCanvas {
+        width: 100%;
+        height: 200px;
+    }
+}

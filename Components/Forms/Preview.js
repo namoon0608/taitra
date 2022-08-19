@@ -78,47 +78,51 @@ export default function Preview({ formStep, nextFormStep }) {
                 <h2>水電追加申請項目</h2>
                 <div className={styles.applyItem}>
                     <table>
-                        <tr className={styles.title}>
-                            <th>項次</th>
-                            <th>申請項目</th>
-                            <th>數量</th>
-                            <th>單價</th>
-                            <th>複價</th>
-                        </tr>
-                        <tr className={styles.content}>
-                            <td>1</td>
-                            <td>用電110V電源箱 - 單相 110V 15A (1,500W)</td>
-                            <td>1</td>
-                            <td>1,950</td>
-                            <td>1,950</td>
-                        </tr>
-                        <tr className={styles.content}>
-                            <td>2</td>
-                            <td>用電110V電源箱 - 單相 110V 15A (1,500W)</td>
-                            <td>1</td>
-                            <td>1,950</td>
-                            <td>1,950</td>
-                        </tr>
-                        <tr className={styles.content}>
-                            <td>3</td>
-                            <td>用電110V電源箱 - 單相 110V 15A (1,500W)</td>
-                            <td>1</td>
-                            <td>1,950</td>
-                            <td>1,950</td>
-                        </tr>
-                        <tr className={styles.content}>
-                            <td>4</td>
-                            <td>用電110V電源箱 - 單相 110V 15A (1,500W)</td>
-                            <td>1</td>
-                            <td>1,950</td>
-                            <td>1,950</td>
-                        </tr>
-                        <tr className={styles.sum}>
-                            <td className={styles.sumTitle} colSpan={4}>
-                                合計總金額
-                            </td>
-                            <td>20,439</td>
-                        </tr>
+                        <thead>
+                            <tr className={styles.title}>
+                                <th>項次</th>
+                                <th>申請項目</th>
+                                <th>數量</th>
+                                <th>單價</th>
+                                <th>複價</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr className={styles.content}>
+                                <td>1</td>
+                                <td>用電110V電源箱 - 單相 110V 15A (1,500W)</td>
+                                <td>1</td>
+                                <td>1,950</td>
+                                <td>1,950</td>
+                            </tr>
+                            <tr className={styles.content}>
+                                <td>2</td>
+                                <td>用電110V電源箱 - 單相 110V 15A (1,500W)</td>
+                                <td>1</td>
+                                <td>1,950</td>
+                                <td>1,950</td>
+                            </tr>
+                            <tr className={styles.content}>
+                                <td>3</td>
+                                <td>用電110V電源箱 - 單相 110V 15A (1,500W)</td>
+                                <td>1</td>
+                                <td>1,950</td>
+                                <td>1,950</td>
+                            </tr>
+                            <tr className={styles.content}>
+                                <td>4</td>
+                                <td>用電110V電源箱 - 單相 110V 15A (1,500W)</td>
+                                <td>1</td>
+                                <td>1,950</td>
+                                <td>1,950</td>
+                            </tr>
+                            <tr className={styles.sum}>
+                                <td className={styles.sumTitle} colSpan={4}>
+                                    合計總金額
+                                </td>
+                                <td>20,439</td>
+                            </tr>
+                        </tbody>
                     </table>
                 </div>
 
