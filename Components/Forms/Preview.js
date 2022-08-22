@@ -125,12 +125,13 @@ export default function Preview({ formStep, nextFormStep }) {
                         </tbody>
                     </table>
                 </div>
-
                 <h2>水電配置圖</h2>
-                <p>
-                    檔案 <span>JO318水電圖圖.jpg</span>
-                </p>
-                <img src="/img/image14.png" />
+                <div className={styles.image}>
+                    <p>
+                        檔案 <span>JO318水電圖圖.jpg</span>
+                    </p>
+                    <img src="/img/image14.png" />
+                </div>
                 <button type="submit" className={styles.complete}>
                     完成申請
                 </button>

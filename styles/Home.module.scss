@@ -200,6 +200,7 @@
         border-radius: 8px;
         border-collapse: separate;
         border-spacing: 0;
+        overflow: hidden;
         @include tablet_L() {
             width: 750px;
         }
@@ -223,9 +224,20 @@
             color: #333333;
             .download,
             .upload {
-                cursor: pointer;
+                position: relative;
                 text-decoration: underline;
                 color: #09719e;
+                label {
+                    cursor: pointer;
+                }
+                input {
+                    opacity: 0;
+                    position: absolute;
+                    z-index: -1;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                }
             }
             .delete {
                 cursor: pointer;
@@ -236,6 +248,9 @@
                 color: #09719e;
                 padding-left: 10px;
                 padding-right: 10px;
+                a {
+                    color: #09719e;
+                }
             }
             .state {
                 display: flex;
@@ -250,6 +265,9 @@
                     border-radius: 8px;
                     color: #ffffff;
                     padding: 6px;
+                    &:hover {
+                        text-decoration: none;
+                    }
                 }
             }
         }
@@ -298,6 +316,7 @@
         border-radius: 8px;
         border-collapse: separate;
         border-spacing: 0;
+        overflow: hidden;
         @include tablet_L() {
             width: 750px;
         }
@@ -399,6 +418,9 @@
         @include tablet_S() {
             width: 320px;
         }
+        img {
+            width: inherit;
+        }
     }
 }
 
@@ -434,6 +456,7 @@
         justify-content: space-between;
         align-items: center;
         .buttons {
+            cursor: pointer;
             color: #187ddb;
             font-weight: 600;
             font-size: 32px;
