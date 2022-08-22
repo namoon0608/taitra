@@ -313,6 +313,18 @@
         grid-template-columns: 1fr;
     }
 }
+.temporary {
+    border: 1px solid #b1b1b1;
+    border-radius: 15px;
+    background: transparent;
+    font-weight: 400;
+    color: #b1b1b1;
+    padding: 6px 35px;
+    float: right;
+    &:focus {
+        outline: none;
+    }
+}
 .upload {
     margin: 50px 0;
     position: relative;

@@ -39,6 +39,7 @@ export default function Write({ formStep, nextFormStep }) {
                 formStep === 2 ? styles.showForm : styles.hideForm,
             ].join(" ")}
         >
+            <button className={styles.temporary}>暫存</button>
             <Form onSubmit={handleSubmit}>
                 <h2>請上傳水電配置圖</h2>
                 <div>

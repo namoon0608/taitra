@@ -7,7 +7,7 @@ import SlideToggle from "react-slide-toggle";
 export default function Choose({ formStep, nextFormStep }) {
     async function handleSubmit(data) {
         console.log(data);
-        nextFormStep();
+        // nextFormStep();
         // const validationResult = await schema
         //     .validate(data, { abortEarly: false })
         //     .then()
@@ -46,6 +46,7 @@ export default function Choose({ formStep, nextFormStep }) {
                 formStep === 1 ? styles.showForm : styles.hideForm,
             ].join(" ")}
         >
+            <button className={styles.temporary}>暫存</button>
             <Form onSubmit={handleSubmit}>
                 <h2>水電追加申請項目</h2>
                 <div className={styles.applyDefault}>

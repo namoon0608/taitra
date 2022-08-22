@@ -7,7 +7,7 @@ const nextConfig = {
     swcMinify: true,
     i18n,
     env: {
-        customKey: "my-value",
+        customKey: "https://anbon.vip/twtc_hydropower/api/",
     },
 };
 

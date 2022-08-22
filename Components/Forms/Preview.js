@@ -32,6 +32,7 @@ export default function Preview({ formStep, nextFormStep }) {
 
     return (
         <div className={styles.form}>
+            <button className={styles.temporary}>暫存</button>
             <Form onSubmit={handleSubmit}>
                 <h2>代理或裝潢公司基本資料</h2>
                 <div className={styles.formComplete}>

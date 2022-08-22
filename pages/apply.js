@@ -27,10 +27,52 @@ export async function getServerSideProps({ locale }) {
     );
     const infoData = await res.json();
 
+    //get參展商基本資料
+    const company = {
+        method: "POST",
+        headers: {
+            cookie: "ci_session=pp0k1v3sfrngvhrs9ait3hnqrbtmvssi",
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+            lang: locale,
+            company_token:
+                "340fe08039b249bdc86ee42def83f48fa59787addc23e7b30fd47b97a2960cd7",
+            show_id: "FD",
+        }),
+    };
+    const companyRes = await fetch(
+        `${process.env.API_BASE_URL}getExhibitorCompany`,
+        company
+    ).then((response) => response.json());
+    console.log(companyRes);
+    //get申請流程
+    const steps = {
+        method: "POST",
+        headers: {
+            cookie: "ci_session=0sbjsvc6inuum4mm7h9tchklraa67mtt",
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+            lang: locale,
+            company_token:
+                "340fe08039b249bdc86ee42def83f48fa59787addc23e7b30fd47b97a2960cd7",
+            show_id: "FD",
+            application_form_id: "62fa00de13897001",
+        }),
+    };
+    const stepOneRes = await fetch(
+        `${process.env.API_BASE_URL}getDraftDataStep1`,
+        steps
+    ).then((response) => response.json());
+    // console.log(stepOneRes);
+
     return {
         props: {
             ...(await serverSideTranslations(locale, ["common"])),
             info: infoData,
+            company: companyRes,
+            stepOne: stepOneRes,
         },
     };
 }
@@ -61,6 +103,8 @@ export default function Apply(props) {
                         <Basic
                             formStep={formStep}
                             nextFormStep={nextFormStep}
+                            stepOne={props.stepOne}
+                            company={props.company}
                         />
                     )}
                     {formStep >= 1 && (

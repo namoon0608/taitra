@@ -1,38 +1,82 @@
-import { useRef } from "react";
-import * as yup from "yup";
 import styles from "../../styles/Form.module.scss";
 import { Form } from "@unform/web";
 import Input from "../Input Fields/Input";
 
-export default function Basic({ formStep, nextFormStep }) {
-    const phoneRegExp =
-        /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
-    const schema = yup.object().shape({
-        company: yup.string().required("required"),
-        uniformNum: yup.string().required("required"),
-        contactPerson: yup.string().required("required"),
-        email: yup.string().email().required("required"),
-        phone: yup
-            .string()
-            .matches(phoneRegExp, "Phone number is not valid")
-            .required("required"),
-        address: yup.string().min(2, "Too short").required("required"),
-    });
-    const formRef = useRef();
+export default function Basic({ formStep, nextFormStep, stepOne, company }) {
+    const temporary = async () => {
+        let company = document.getElementById("company").value;
+        let uniformNum = document.getElementById("uniformNum").value;
+        let contactPerson = document.getElementById("contactPerson").value;
+        let email = document.getElementById("email").value;
+        let phone = document.getElementById("phone").value;
+        let invoice = (invoice = document.querySelector(
+            'input[name="drone"]:checked'
+        ).value);
+        let address = document.getElementById("address").value;
+        let remark = document.getElementById("remark").value;
+
+        const options = {
+            method: "POST",
+            headers: {
+                cookie: "ci_session=2tuoeunna8cs9312goi03j36jam80pm2",
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: new URLSearchParams({
+                application_form_id: "",
+                company_token:
+                    "340fe08039b249bdc86ee42def83f48fa59787addc23e7b30fd47b97a2960cd7",
+                show_id: "FD",
+                proxy_company_name: company,
+                proxy_tax_id: uniformNum,
+                proxy_contact_person: contactPerson,
+                proxy_email: email,
+                proxy_phone: phone,
+                invoice: invoice,
+                invoice_address: address,
+                remark: remark,
+            }),
+        };
+        await fetch(`${process.env.customKey}setApplyForm`, options)
+            .then((response) => response.json())
+            .then((response) => {
+                console.log(response);
+                alert(response.msg);
+            })
+            .catch((err) => console.error(err));
+    };
 
     async function handleSubmit(data) {
-        nextFormStep();
-        // const validationResult = await schema
-        //     .validate(data, { abortEarly: false })
-        //     .catch((err) => {
-        //         return err;
-        //     });
-        // console.log(validationResult.inner);
-        // if (validationResult.inner === undefined) {
-        //     nextFormStep();
-        // } else if (validationResult.inner !== undefined) {
-        //     alert("請完整填寫");
-        // }
+        let remark = document.getElementById("remark").value;
+        let invoice = (invoice = document.querySelector(
+            'input[name="drone"]:checked'
+        ).value);
+
+        const options = {
+            method: "POST",
+            headers: {
+                cookie: "ci_session=2tuoeunna8cs9312goi03j36jam80pm2",
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: new URLSearchParams({
+                application_form_id: "",
+                company_token:
+                    "340fe08039b249bdc86ee42def83f48fa59787addc23e7b30fd47b97a2960cd7",
+                show_id: "FD",
+                proxy_company_name: data.compnay,
+                proxy_tax_id: data.uniformNum,
+                proxy_contact_person: data.contactPerson,
+                proxy_email: data.email,
+                proxy_phone: data.phone,
+                invoice: invoice,
+                invoice_address: data.address,
+                remark: remark,
+            }),
+        };
+        await fetch(`${process.env.customKey}setApplyForm`, options)
+            .then((response) => response.json())
+            .then((response) => console.log(response))
+            .then(nextFormStep())
+            .catch((err) => console.error(err));
     }
 
     return (
@@ -42,44 +86,312 @@ export default function Basic({ formStep, nextFormStep }) {
                 formStep === 0 ? styles.showForm : styles.hideForm,
             ].join(" ")}
         >
+            <button className={styles.temporary} onClick={temporary}>
+                暫存
+            </button>
             <h2>參展廠商基本資料</h2>
             <div className={styles.companyGroupOne}>
                 <div>
                     <p className={styles.title}>攤位名稱</p>
-                    <p className={styles.content}>尚立資訊有限公司</p>
+                    <p className={styles.content}>
+                        {company.company.company_name}
+                    </p>
                 </div>
                 <div>
                     <p className={styles.title}>攤位號碼</p>
-                    <p className={styles.content}>J0318</p>
+                    <p className={styles.content}>{company.company.booth_no}</p>
                 </div>
                 <div>
                     <p className={styles.title}>攤位數量</p>
-                    <p className={styles.content}>3 個</p>
+                    <p className={styles.content}>
+                        {company.company.booth_cnt} 個
+                    </p>
                 </div>
                 <div>
                     <p className={styles.title}>聯絡人</p>
-                    <p className={styles.content}>陳毅豪</p>
+                    <p className={styles.content}>
+                        {company.company.contact_person}
+                    </p>
                 </div>
                 <div>
                     <p className={styles.title}>聯絡電話</p>
-                    <p className={styles.content}>02-89798677</p>
+                    <p className={styles.content}>{company.company.com_tel}</p>
                 </div>
                 <div>
                     <p className={styles.title}>統一編號</p>
-                    <p className={styles.content}>83465356</p>
+                    <p className={styles.content}>{company.company.tax_id}</p>
                 </div>
             </div>
             <div className={styles.companyGroupTwo}>
                 <div>
                     <p className={styles.title}>E-mail</p>
-                    <p className={styles.content}>kc@suso.com.tw</p>
+                    <p className={styles.content}>{company.company.email}</p>
                 </div>
                 <div>
                     <p className={styles.title}>地址</p>
-                    <p className={styles.content}>台北市南京東路四段1號2樓</p>
+                    <p className={styles.content}>{company.company.address}</p>
                 </div>
             </div>
-            <Form onSubmit={handleSubmit}>
+            {stepOne.data === "{}" ? (
+                <Form onSubmit={handleSubmit}>
+                    <h2>代理或裝潢公司基本資料</h2>
+                    <div className={styles.form}>
+                        <div className={styles.formRow}>
+                            <Input
+                                name="company"
+                                label="公司名稱"
+                                type="text"
+                                placeholder="請輸入公司名稱"
+                                id="company"
+                                required
+                            />
+                        </div>
+                        <div className={styles.formRow}>
+                            <Input
+                                name="uniformNum"
+                                label="統一編號"
+                                type="text"
+                                placeholder="請輸入統一編號"
+                                id="uniformNum"
+                                required
+                            />
+                        </div>
+                        <div className={styles.formRow}>
+                            <Input
+                                name="contactPerson"
+                                label="聯絡人"
+                                type="text"
+                                placeholder="請輸入聯絡人姓名"
+                                id="contactPerson"
+                                required
+                            />
+                        </div>
+                        <div className={styles.formRow}>
+                            <Input
+                                name="email"
+                                label="E-mail"
+                                type="email"
+                                placeholder="請輸入電子郵件"
+                                id="email"
+                                required
+                            />
+                        </div>
+                        <div className={styles.formRow}>
+                            <Input
+                                name="phone"
+                                label="聯絡電話"
+                                type="tel"
+                                placeholder="請輸入聯絡電話"
+                                id="phone"
+                                required
+                            />
+                        </div>
+                    </div>
+                    <h2>開立發票資訊</h2>
+                    <div className={styles.form}>
+                        <div className={styles.addressGroup}>
+                            <div>
+                                <label htmlFor="company_address">
+                                    同參展廠商
+                                    <input
+                                        type="radio"
+                                        id="company_address"
+                                        name="drone"
+                                        value="1"
+                                        defaultChecked
+                                    />
+                                </label>
+                            </div>
+                            <div>
+                                <label htmlFor="agent_address">
+                                    同代理或裝潢公司
+                                    <input
+                                        type="radio"
+                                        id="agent_address"
+                                        name="drone"
+                                        value="2"
+                                    />
+                                </label>
+                            </div>
+                        </div>
+                        <div
+                            className={[styles.formRow, styles.address].join(
+                                " "
+                            )}
+                        >
+                            <Input
+                                name="address"
+                                label="發票寄送地址"
+                                type="text"
+                                placeholder="請輸入發票寄送地址"
+                                id="address"
+                                required
+                            />
+                        </div>
+                        <div
+                            className={[styles.formRow, styles.prepare].join(
+                                " "
+                            )}
+                        >
+                            <label htmlFor="prepare">備註</label>
+                            <textarea id="remark"></textarea>
+                        </div>
+                    </div>
+
+                    <button type="submit" className={styles.firstNext}>
+                        下一步
+                    </button>
+                </Form>
+            ) : (
+                <Form onSubmit={handleSubmit}>
+                    <h2>代理或裝潢公司基本資料</h2>
+                    <div className={styles.form}>
+                        <div className={styles.formRow}>
+                            <Input
+                                name="company"
+                                label="公司名稱"
+                                type="text"
+                                placeholder="請輸入公司名稱"
+                                id="company"
+                                defaultValue={stepOne.data.proxy_company_name}
+                                required
+                            />
+                        </div>
+                        <div className={styles.formRow}>
+                            <Input
+                                name="uniformNum"
+                                label="統一編號"
+                                type="text"
+                                placeholder="請輸入統一編號"
+                                id="uniformNum"
+                                defaultValue={stepOne.data.proxy_tax_id}
+                                required
+                            />
+                        </div>
+                        <div className={styles.formRow}>
+                            <Input
+                                name="contactPerson"
+                                label="聯絡人"
+                                type="text"
+                                placeholder="請輸入聯絡人姓名"
+                                id="contactPerson"
+                                defaultValue={stepOne.data.proxy_contact_person}
+                                required
+                            />
+                        </div>
+                        <div className={styles.formRow}>
+                            <Input
+                                name="email"
+                                label="E-mail"
+                                type="email"
+                                placeholder="請輸入電子郵件"
+                                id="email"
+                                defaultValue={stepOne.data.proxy_email}
+                                required
+                            />
+                        </div>
+                        <div className={styles.formRow}>
+                            <Input
+                                name="phone"
+                                label="聯絡電話"
+                                type="tel"
+                                placeholder="請輸入聯絡電話"
+                                id="phone"
+                                defaultValue={stepOne.data.proxy_phone}
+                                required
+                            />
+                        </div>
+                    </div>
+                    <h2>開立發票資訊</h2>
+                    <div className={styles.form}>
+                        {stepOne.data.invoice_title === "1" ? (
+                            <div className={styles.addressGroup}>
+                                <div>
+                                    <label htmlFor="company_address">
+                                        同參展廠商
+                                        <input
+                                            type="radio"
+                                            id="company_address"
+                                            name="drone"
+                                            value="1"
+                                            defaultChecked
+                                        />
+                                    </label>
+                                </div>
+                                <div>
+                                    <label htmlFor="agent_address">
+                                        同代理或裝潢公司
+                                        <input
+                                            type="radio"
+                                            id="agent_address"
+                                            name="drone"
+                                            value="2"
+                                        />
+                                    </label>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className={styles.addressGroup}>
+                                <div>
+                                    <label htmlFor="company_address">
+                                        同參展廠商
+                                        <input
+                                            type="radio"
+                                            id="company_address"
+                                            name="drone"
+                                            value="1"
+                                        />
+                                    </label>
+                                </div>
+                                <div>
+                                    <label htmlFor="agent_address">
+                                        同代理或裝潢公司
+                                        <input
+                                            type="radio"
+                                            id="agent_address"
+                                            name="drone"
+                                            value="2"
+                                            defaultChecked
+                                        />
+                                    </label>
+                                </div>
+                            </div>
+                        )}
+
+                        <div
+                            className={[styles.formRow, styles.address].join(
+                                " "
+                            )}
+                        >
+                            <Input
+                                name="address"
+                                label="發票寄送地址"
+                                type="text"
+                                placeholder="請輸入發票寄送地址"
+                                id="address"
+                                defaultValue={stepOne.data.invoice_address}
+                                required
+                            />
+                        </div>
+                        <div
+                            className={[styles.formRow, styles.prepare].join(
+                                " "
+                            )}
+                        >
+                            <label htmlFor="prepare">備註</label>
+                            <textarea
+                                id="remark"
+                                defaultValue={stepOne.data.remark}
+                            ></textarea>
+                        </div>
+                    </div>
+
+                    <button type="submit" className={styles.firstNext}>
+                        下一步
+                    </button>
+                </Form>
+            )}
+            {/* <Form onSubmit={handleSubmit}>
                 <h2>代理或裝潢公司基本資料</h2>
                 <div className={styles.form}>
                     <div className={styles.formRow}>
@@ -88,6 +400,8 @@ export default function Basic({ formStep, nextFormStep }) {
                             label="公司名稱"
                             type="text"
                             placeholder="請輸入公司名稱"
+                            id="company"
+                            required
                         />
                     </div>
                     <div className={styles.formRow}>
@@ -96,6 +410,8 @@ export default function Basic({ formStep, nextFormStep }) {
                             label="統一編號"
                             type="text"
                             placeholder="請輸入統一編號"
+                            id="uniformNum"
+                            required
                         />
                     </div>
                     <div className={styles.formRow}>
@@ -104,6 +420,8 @@ export default function Basic({ formStep, nextFormStep }) {
                             label="聯絡人"
                             type="text"
                             placeholder="請輸入聯絡人姓名"
+                            id="contactPerson"
+                            required
                         />
                     </div>
                     <div className={styles.formRow}>
@@ -112,6 +430,8 @@ export default function Basic({ formStep, nextFormStep }) {
                             label="E-mail"
                             type="email"
                             placeholder="請輸入電子郵件"
+                            id="email"
+                            required
                         />
                     </div>
                     <div className={styles.formRow}>
@@ -120,6 +440,8 @@ export default function Basic({ formStep, nextFormStep }) {
                             label="聯絡電話"
                             type="tel"
                             placeholder="請輸入聯絡電話"
+                            id="phone"
+                            required
                         />
                     </div>
                 </div>
@@ -133,7 +455,8 @@ export default function Basic({ formStep, nextFormStep }) {
                                     type="radio"
                                     id="company_address"
                                     name="drone"
-                                    value="company_address"
+                                    value="1"
+                                    defaultChecked
                                 />
                             </label>
                         </div>
@@ -144,7 +467,7 @@ export default function Basic({ formStep, nextFormStep }) {
                                     type="radio"
                                     id="agent_address"
                                     name="drone"
-                                    value="agent_address"
+                                    value="2"
                                 />
                             </label>
                         </div>
@@ -155,18 +478,20 @@ export default function Basic({ formStep, nextFormStep }) {
                             label="發票寄送地址"
                             type="text"
                             placeholder="請輸入發票寄送地址"
+                            id="address"
+                            required
                         />
                     </div>
                     <div className={[styles.formRow, styles.prepare].join(" ")}>
                         <label htmlFor="prepare">備註</label>
-                        <textarea></textarea>
+                        <textarea id="remark"></textarea>
                     </div>
                 </div>
 
                 <button type="submit" className={styles.firstNext}>
                     下一步
                 </button>
-            </Form>
+            </Form> */}
         </div>
     );
 }
