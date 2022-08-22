@@ -29,6 +29,11 @@
       "static/chunks/webpack.js",
       "static/chunks/main.js",
       "static/chunks/pages/price.js"
+    ],
+    "/sign-for-completion": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/sign-for-completion.js"
     ]
   },
   "ampFirstPages": []
