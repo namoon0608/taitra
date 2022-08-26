@@ -14,7 +14,7 @@ export default function Nav(props) {
                 <Link href={"/"}>
                     <a className={styles.logo}>
                         <img src="/img/logo.svg" alt="TAITRA" />
-                        <p>專業展水電線上申請</p>
+                        <p>{t("logo")}</p>
                     </a>
                 </Link>
 

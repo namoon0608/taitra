@@ -49,7 +49,7 @@ async function getServerSideProps({ locale  }) {
         },
         body: new URLSearchParams({
             lang: locale,
-            show_id: "FD"
+            sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
         })
     };
     const res = await fetch(`${process.env.API_BASE_URL}getDiscountInfo`, options);
@@ -68,6 +68,10 @@ async function getServerSideProps({ locale  }) {
 }
 function Home(props) {
     const { t  } = (0,next_i18next__WEBPACK_IMPORTED_MODULE_6__.useTranslation)();
+    let str = props.applyInfo.content;
+    const reg = /^["|'](.*)["|']$/g;
+    let newStr = str.replace(reg, "$1");
+    console.log(typeof newStr);
     return /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
         className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default().container),
         children: [
@@ -103,7 +107,7 @@ function Home(props) {
                         href: "/apply",
                         children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("a", {
                             className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default().homeApply),
-                            children: "我要申請"
+                            children: t("apply")
                         })
                     })
                 ]

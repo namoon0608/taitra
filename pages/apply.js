@@ -19,13 +19,23 @@ export async function getServerSideProps({ locale }) {
             cookie: "ci_session=tm7raoegfru3cidh8r88ljnovjura42a",
             "Content-Type": "application/x-www-form-urlencoded",
         },
-        body: new URLSearchParams({ lang: locale, show_id: "FD" }),
+        body: new URLSearchParams({
+            lang: locale,
+            sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
+        }),
     };
     const res = await fetch(
         `${process.env.API_BASE_URL}getDiscountInfo`,
         options
     );
     const infoData = await res.json();
+
+    //get step two價目表
+    const getPriceTable = await fetch(
+        `${process.env.API_BASE_URL}getPriceTableByGrop`,
+        options
+    );
+    const priceData = await getPriceTable.json();
 
     //get參展商基本資料
     const company = {
@@ -36,17 +46,14 @@ export async function getServerSideProps({ locale }) {
         },
         body: new URLSearchParams({
             lang: locale,
-            company_token:
-                "340fe08039b249bdc86ee42def83f48fa59787addc23e7b30fd47b97a2960cd7",
-            show_id: "FD",
+            sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
         }),
     };
     const companyRes = await fetch(
         `${process.env.API_BASE_URL}getExhibitorCompany`,
         company
     ).then((response) => response.json());
-    console.log(companyRes);
-    //get申請流程
+
     const steps = {
         method: "POST",
         headers: {
@@ -55,24 +62,34 @@ export async function getServerSideProps({ locale }) {
         },
         body: new URLSearchParams({
             lang: locale,
-            company_token:
-                "340fe08039b249bdc86ee42def83f48fa59787addc23e7b30fd47b97a2960cd7",
-            show_id: "FD",
-            application_form_id: "62fa00de13897001",
+            // application_form_id: companyRes.savadata,
+            application_form_id: "6305a2e49bdbf001",
+            sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
         }),
     };
+
+    //step one
     const stepOneRes = await fetch(
         `${process.env.API_BASE_URL}getDraftDataStep1`,
         steps
     ).then((response) => response.json());
-    // console.log(stepOneRes);
+    console.log(stepOneRes);
+
+    //step two
+    const stepTwoRes = await fetch(
+        `${process.env.API_BASE_URL}getApplyHydroItems`,
+        steps
+    ).then((response) => response.json());
+    console.log(stepTwoRes);
 
     return {
         props: {
             ...(await serverSideTranslations(locale, ["common"])),
             info: infoData,
+            priceData: priceData,
             company: companyRes,
             stepOne: stepOneRes,
+            stepTwo: stepTwoRes,
         },
     };
 }
@@ -111,6 +128,8 @@ export default function Apply(props) {
                         <Choose
                             formStep={formStep}
                             nextFormStep={nextFormStep}
+                            priceData={props.priceData}
+                            stepTwo={props.stepTwo}
                         />
                     )}
                     {formStep >= 2 && (

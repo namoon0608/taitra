@@ -8,7 +8,7 @@ export default function Hero({ children, info }) {
                     src={info.data.banner}
                     alt="MEGO SHOWS"
                     layout="fill"
-                    objectFit="cover"
+                    objectfit="cover"
                     quality={100}
                 />
             </div>

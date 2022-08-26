@@ -9,11 +9,15 @@ export default function Basic({ formStep, nextFormStep, stepOne, company }) {
         let contactPerson = document.getElementById("contactPerson").value;
         let email = document.getElementById("email").value;
         let phone = document.getElementById("phone").value;
-        let invoice = (invoice = document.querySelector(
-            'input[name="drone"]:checked'
-        ).value);
+        let invoice = "";
         let address = document.getElementById("address").value;
         let remark = document.getElementById("remark").value;
+        const radios = document.querySelectorAll('input[name="drone"]');
+        for (let radio of radios) {
+            if (radio.checked) {
+                invoice = radio.value;
+            }
+        }
 
         const options = {
             method: "POST",
@@ -23,9 +27,6 @@ export default function Basic({ formStep, nextFormStep, stepOne, company }) {
             },
             body: new URLSearchParams({
                 application_form_id: "",
-                company_token:
-                    "340fe08039b249bdc86ee42def83f48fa59787addc23e7b30fd47b97a2960cd7",
-                show_id: "FD",
                 proxy_company_name: company,
                 proxy_tax_id: uniformNum,
                 proxy_contact_person: contactPerson,
@@ -34,6 +35,7 @@ export default function Basic({ formStep, nextFormStep, stepOne, company }) {
                 invoice: invoice,
                 invoice_address: address,
                 remark: remark,
+                sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
             }),
         };
         await fetch(`${process.env.customKey}setApplyForm`, options)
@@ -47,9 +49,13 @@ export default function Basic({ formStep, nextFormStep, stepOne, company }) {
 
     async function handleSubmit(data) {
         let remark = document.getElementById("remark").value;
-        let invoice = (invoice = document.querySelector(
-            'input[name="drone"]:checked'
-        ).value);
+        let invoice = "";
+        const radios = document.querySelectorAll('input[name="drone"]');
+        for (let radio of radios) {
+            if (radio.checked) {
+                invoice = radio.value;
+            }
+        }
 
         const options = {
             method: "POST",
@@ -59,9 +65,6 @@ export default function Basic({ formStep, nextFormStep, stepOne, company }) {
             },
             body: new URLSearchParams({
                 application_form_id: "",
-                company_token:
-                    "340fe08039b249bdc86ee42def83f48fa59787addc23e7b30fd47b97a2960cd7",
-                show_id: "FD",
                 proxy_company_name: data.compnay,
                 proxy_tax_id: data.uniformNum,
                 proxy_contact_person: data.contactPerson,
@@ -70,6 +73,7 @@ export default function Basic({ formStep, nextFormStep, stepOne, company }) {
                 invoice: invoice,
                 invoice_address: data.address,
                 remark: remark,
+                sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
             }),
         };
         await fetch(`${process.env.customKey}setApplyForm`, options)
@@ -132,7 +136,7 @@ export default function Basic({ formStep, nextFormStep, stepOne, company }) {
                     <p className={styles.content}>{company.company.address}</p>
                 </div>
             </div>
-            {stepOne.data === "{}" ? (
+            {stepOne.status === false ? (
                 <Form onSubmit={handleSubmit}>
                     <h2>代理或裝潢公司基本資料</h2>
                     <div className={styles.form}>
@@ -143,7 +147,6 @@ export default function Basic({ formStep, nextFormStep, stepOne, company }) {
                                 type="text"
                                 placeholder="請輸入公司名稱"
                                 id="company"
-                                required
                             />
                         </div>
                         <div className={styles.formRow}>
@@ -153,7 +156,6 @@ export default function Basic({ formStep, nextFormStep, stepOne, company }) {
                                 type="text"
                                 placeholder="請輸入統一編號"
                                 id="uniformNum"
-                                required
                             />
                         </div>
                         <div className={styles.formRow}>
@@ -163,7 +165,6 @@ export default function Basic({ formStep, nextFormStep, stepOne, company }) {
                                 type="text"
                                 placeholder="請輸入聯絡人姓名"
                                 id="contactPerson"
-                                required
                             />
                         </div>
                         <div className={styles.formRow}>
@@ -173,7 +174,6 @@ export default function Basic({ formStep, nextFormStep, stepOne, company }) {
                                 type="email"
                                 placeholder="請輸入電子郵件"
                                 id="email"
-                                required
                             />
                         </div>
                         <div className={styles.formRow}>
@@ -183,7 +183,6 @@ export default function Basic({ formStep, nextFormStep, stepOne, company }) {
                                 type="tel"
                                 placeholder="請輸入聯絡電話"
                                 id="phone"
-                                required
                             />
                         </div>
                     </div>
@@ -225,7 +224,6 @@ export default function Basic({ formStep, nextFormStep, stepOne, company }) {
                                 type="text"
                                 placeholder="請輸入發票寄送地址"
                                 id="address"
-                                required
                             />
                         </div>
                         <div
@@ -254,7 +252,6 @@ export default function Basic({ formStep, nextFormStep, stepOne, company }) {
                                 placeholder="請輸入公司名稱"
                                 id="company"
                                 defaultValue={stepOne.data.proxy_company_name}
-                                required
                             />
                         </div>
                         <div className={styles.formRow}>
@@ -265,7 +262,6 @@ export default function Basic({ formStep, nextFormStep, stepOne, company }) {
                                 placeholder="請輸入統一編號"
                                 id="uniformNum"
                                 defaultValue={stepOne.data.proxy_tax_id}
-                                required
                             />
                         </div>
                         <div className={styles.formRow}>
@@ -276,7 +272,6 @@ export default function Basic({ formStep, nextFormStep, stepOne, company }) {
                                 placeholder="請輸入聯絡人姓名"
                                 id="contactPerson"
                                 defaultValue={stepOne.data.proxy_contact_person}
-                                required
                             />
                         </div>
                         <div className={styles.formRow}>
@@ -287,7 +282,6 @@ export default function Basic({ formStep, nextFormStep, stepOne, company }) {
                                 placeholder="請輸入電子郵件"
                                 id="email"
                                 defaultValue={stepOne.data.proxy_email}
-                                required
                             />
                         </div>
                         <div className={styles.formRow}>
@@ -298,7 +292,6 @@ export default function Basic({ formStep, nextFormStep, stepOne, company }) {
                                 placeholder="請輸入聯絡電話"
                                 id="phone"
                                 defaultValue={stepOne.data.proxy_phone}
-                                required
                             />
                         </div>
                     </div>
@@ -314,7 +307,6 @@ export default function Basic({ formStep, nextFormStep, stepOne, company }) {
                                             id="company_address"
                                             name="drone"
                                             value="1"
-                                            defaultChecked
                                         />
                                     </label>
                                 </div>
@@ -370,7 +362,6 @@ export default function Basic({ formStep, nextFormStep, stepOne, company }) {
                                 placeholder="請輸入發票寄送地址"
                                 id="address"
                                 defaultValue={stepOne.data.invoice_address}
-                                required
                             />
                         </div>
                         <div
@@ -401,7 +392,7 @@ export default function Basic({ formStep, nextFormStep, stepOne, company }) {
                             type="text"
                             placeholder="請輸入公司名稱"
                             id="company"
-                            required
+                            
                         />
                     </div>
                     <div className={styles.formRow}>
@@ -411,7 +402,7 @@ export default function Basic({ formStep, nextFormStep, stepOne, company }) {
                             type="text"
                             placeholder="請輸入統一編號"
                             id="uniformNum"
-                            required
+                            
                         />
                     </div>
                     <div className={styles.formRow}>
@@ -421,7 +412,7 @@ export default function Basic({ formStep, nextFormStep, stepOne, company }) {
                             type="text"
                             placeholder="請輸入聯絡人姓名"
                             id="contactPerson"
-                            required
+                            
                         />
                     </div>
                     <div className={styles.formRow}>
@@ -431,7 +422,7 @@ export default function Basic({ formStep, nextFormStep, stepOne, company }) {
                             type="email"
                             placeholder="請輸入電子郵件"
                             id="email"
-                            required
+                            
                         />
                     </div>
                     <div className={styles.formRow}>
@@ -441,7 +432,7 @@ export default function Basic({ formStep, nextFormStep, stepOne, company }) {
                             type="tel"
                             placeholder="請輸入聯絡電話"
                             id="phone"
-                            required
+                            
                         />
                     </div>
                 </div>
@@ -479,7 +470,7 @@ export default function Basic({ formStep, nextFormStep, stepOne, company }) {
                             type="text"
                             placeholder="請輸入發票寄送地址"
                             id="address"
-                            required
+                            
                         />
                     </div>
                     <div className={[styles.formRow, styles.prepare].join(" ")}>

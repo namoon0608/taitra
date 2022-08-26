@@ -175,7 +175,7 @@ function Hero({ children , info  }) {
                     src: info.data.banner,
                     alt: "MEGO SHOWS",
                     layout: "fill",
-                    objectFit: "cover",
+                    objectfit: "cover",
                     quality: 100
                 })
             }),
@@ -341,7 +341,7 @@ function Nav(props) {
                                     alt: "TAITRA"
                                 }),
                                 /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
-                                    children: "專業展水電線上申請"
+                                    children: t("logo")
                                 })
                             ]
                         })

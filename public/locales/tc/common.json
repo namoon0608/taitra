@@ -1,5 +1,5 @@
 {
-    "hello": "歡迎 TAITRA!",
+    "logo": "專業展水電線上申請",
     "nav": {
         "applyNote": "申請須知",
         "price": "價目表",
@@ -7,5 +7,15 @@
         "search": "查詢",
         "complete": "簽收完工",
         "contact": "聯絡"
+    },
+    "apply": "我要申請",
+    "applyForm": {
+        "stepOne": {
+
+        },
+        "stepTwo": {
+            "additionalItems": "水電追加申請項目",
+            "useDefault": "只使用大會提供每 1 攤位免費基本用電 110V 0.5KW"
+        }
     }
 }

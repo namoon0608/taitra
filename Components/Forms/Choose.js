@@ -4,19 +4,147 @@ import styles from "../../styles/Form.module.scss";
 import { Form } from "@unform/web";
 import SlideToggle from "react-slide-toggle";
 
-export default function Choose({ formStep, nextFormStep }) {
-    async function handleSubmit(data) {
-        console.log(data);
-        // nextFormStep();
-        // const validationResult = await schema
-        //     .validate(data, { abortEarly: false })
-        //     .then()
-        //     .catch((err) => {
-        //         return err;
-        //     });
-        // console.log(validationResult.inner);
+export default function Choose({ formStep, nextFormStep, priceData, stepTwo }) {
+    const temporary = async () => {
+        const useDefault = document.getElementById("chooseDefault");
+        let items = [];
+        if (useDefault.checked) {
+            const options = {
+                method: "POST",
+                headers: {
+                    cookie: "ci_session=9lejfn4cgisk4havru3sjg4s9e8aiqho",
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: new URLSearchParams({
+                    application_form_id: "6305a2e49bdbf001",
+                    base_option: "Y",
+                    items: [],
+                    sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
+                }),
+            };
+            await fetch(`${process.env.customKey}setApplyHydroItems`, options)
+                .then((response) => response.json())
+                .then((response) => console.log(response))
+                .then(nextFormStep())
+                .catch((err) => console.error(err));
+        } else {
+            const checkBoxsOne = document.querySelectorAll(
+                ".Form_aGroup__FN6oc input[type='checkbox']"
+            );
+            const checkBoxsTwo = document.querySelectorAll(
+                ".Form_bGroup__4aN8N input[type='checkbox']"
+            );
+            for (let check of checkBoxsOne) {
+                if (check.checked) {
+                    items.push({ item_id: check.value, quantity: "1" });
+                }
+            }
+            for (let check of checkBoxsTwo) {
+                if (check.checked) {
+                    let num = check.nextSibling.nextSibling.childNodes[1];
+                    items.push({
+                        item_id: check.value,
+                        quantity: num.value,
+                    });
+                }
+            }
+            const options = {
+                method: "POST",
+                headers: {
+                    cookie: "ci_session=9lejfn4cgisk4havru3sjg4s9e8aiqho",
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: new URLSearchParams({
+                    application_form_id: "6305a2e49bdbf001",
+                    base_option: "N",
+                    items: JSON.stringify(items),
+                    sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
+                }),
+            };
+            await fetch(`${process.env.customKey}setApplyHydroItems`, options)
+                .then((response) => response.json())
+                .then((response) => {
+                    console.log(response);
+                    alert(response.msg);
+                })
+                .catch((err) => console.error(err));
+        }
+    };
+    async function handleSubmit() {
+        const useDefault = document.getElementById("chooseDefault");
+        let items = [];
+        if (useDefault.checked) {
+            const options = {
+                method: "POST",
+                headers: {
+                    cookie: "ci_session=9lejfn4cgisk4havru3sjg4s9e8aiqho",
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: new URLSearchParams({
+                    application_form_id: "6305a2e49bdbf001",
+                    base_option: "Y",
+                    items: [],
+                    sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
+                }),
+            };
+            await fetch(`${process.env.customKey}setApplyHydroItems`, options)
+                .then((response) => response.json())
+                .then((response) => console.log(response))
+                .then(nextFormStep())
+                .catch((err) => console.error(err));
+        } else {
+            const checkBoxsOne = document.querySelectorAll(
+                ".Form_aGroup__FN6oc input[type='checkbox']"
+            );
+            const checkBoxsTwo = document.querySelectorAll(
+                ".Form_bGroup__4aN8N input[type='checkbox']"
+            );
+            for (let check of checkBoxsOne) {
+                if (check.checked) {
+                    items.push({ item_id: check.value, quantity: "1" });
+                }
+            }
+            for (let check of checkBoxsTwo) {
+                if (check.checked) {
+                    let num = check.nextSibling.nextSibling.childNodes[1];
+                    if (num.value === "0" || num.value === "") {
+                        alert("請填入數量");
+                    } else {
+                        items.push({
+                            item_id: check.value,
+                            quantity: num.value,
+                        });
+                    }
+                }
+            }
+            if (items.length !== 0) {
+                const options = {
+                    method: "POST",
+                    headers: {
+                        cookie: "ci_session=9lejfn4cgisk4havru3sjg4s9e8aiqho",
+                        "Content-Type": "application/x-www-form-urlencoded",
+                    },
+                    body: new URLSearchParams({
+                        application_form_id: "6305a2e49bdbf001",
+                        base_option: "N",
+                        items: JSON.stringify(items),
+                        sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
+                    }),
+                };
+                await fetch(
+                    `${process.env.customKey}setApplyHydroItems`,
+                    options
+                )
+                    .then((response) => response.json())
+                    .then((response) => console.log(response))
+                    .then(nextFormStep())
+                    .catch((err) => console.error(err));
+            }
+        }
     }
     const active = (e) => {
+        const useDefault = document.getElementById("chooseDefault");
+        useDefault.checked = false;
         if (e.target.checked) {
             e.target.parentNode.className = styles.checkedActive;
         } else {
@@ -24,6 +152,8 @@ export default function Choose({ formStep, nextFormStep }) {
         }
     };
     const enableNextTextBox = (e) => {
+        const useDefault = document.getElementById("chooseDefault");
+        useDefault.checked = false;
         if (e.target.checked) {
             e.target.nextSibling.nextSibling.childNodes[1].removeAttribute(
                 "disabled"
@@ -34,8 +164,34 @@ export default function Choose({ formStep, nextFormStep }) {
                 "disabled",
                 ""
             );
-            e.target.nextSibling.nextSibling.childNodes[1].value = null;
+            e.target.nextSibling.nextSibling.childNodes[1].value = 0;
             e.target.parentNode.className = "";
+        }
+    };
+    const handleDefault = (e) => {
+        const checkBoxsOne = document.querySelectorAll(
+            ".Form_aGroup__FN6oc input[type='checkbox']"
+        );
+        const checkBoxsTwo = document.querySelectorAll(
+            ".Form_bGroup__4aN8N input"
+        );
+        if (e.target.checked) {
+            for (let check of checkBoxsOne) {
+                if (check.checked) {
+                    check.checked = false;
+                    check.parentNode.className = "";
+                }
+            }
+            for (let check of checkBoxsTwo) {
+                if (check.checked) {
+                    check.checked = false;
+                    check.parentNode.className = "";
+                }
+                if (check.type === "number") {
+                    check.value = 0;
+                    check.setAttribute("disabled", "");
+                }
+            }
         }
     };
 
@@ -46,7 +202,9 @@ export default function Choose({ formStep, nextFormStep }) {
                 formStep === 1 ? styles.showForm : styles.hideForm,
             ].join(" ")}
         >
-            <button className={styles.temporary}>暫存</button>
+            <button className={styles.temporary} onClick={temporary}>
+                暫存
+            </button>
             <Form onSubmit={handleSubmit}>
                 <h2>水電追加申請項目</h2>
                 <div className={styles.applyDefault}>
@@ -54,6 +212,7 @@ export default function Choose({ formStep, nextFormStep }) {
                         type="checkbox"
                         id="chooseDefault"
                         value="useDefault"
+                        onChange={handleDefault}
                     />
                     <label htmlFor="chooseDefault">
                         只使用大會提供每 1 攤位免費基本用電 110V 0.5KW
@@ -131,66 +290,34 @@ export default function Choose({ formStep, nextFormStep }) {
                                             - (b) = (c) 。 請點選計算出的 (c) 值
                                         </p>
                                         <div className={styles.aGroup}>
-                                            <label htmlFor="500W">
-                                                <input
-                                                    type="checkbox"
-                                                    id="500W"
-                                                    value="110V_5A"
-                                                    onChange={active}
-                                                />
-                                                單 相 110V 5A （500W）
-                                                <span>$ 650</span>
-                                            </label>
-                                            <label htmlFor="1000W">
-                                                <input
-                                                    type="checkbox"
-                                                    id="1000W"
-                                                    value="110V_10A"
-                                                    onChange={active}
-                                                />
-                                                單 相 110V 10A（1,000W）
-                                                <span>$ 1,300</span>
-                                            </label>
-                                            <label htmlFor="1500W">
-                                                <input
-                                                    type="checkbox"
-                                                    id="1500W"
-                                                    value="110V_15A"
-                                                    onChange={active}
-                                                />
-                                                單 相 110V 15A（1,500W）
-                                                <span>$ 1,950</span>
-                                            </label>
-                                            <label htmlFor="2KW">
-                                                <input
-                                                    type="checkbox"
-                                                    id="2KW"
-                                                    value="110V/190V_2"
-                                                    onChange={active}
-                                                />
-                                                三 相 110V/190V 2KW
-                                                <span>$ 2,600</span>
-                                            </label>
-                                            <label htmlFor="4KW">
-                                                <input
-                                                    type="checkbox"
-                                                    id="4KW"
-                                                    value="110V/190V_4"
-                                                    onChange={active}
-                                                />
-                                                三 相 110V/190V 4KW
-                                                <span>$ 5,200</span>
-                                            </label>
-                                            <label htmlFor="6KW">
-                                                <input
-                                                    type="checkbox"
-                                                    id="6KW"
-                                                    value="110V/190V_6"
-                                                    onChange={active}
-                                                />
-                                                三 相 110V/190V 6KW
-                                                <span>$ 7,800</span>
-                                            </label>
+                                            {priceData.items[0].data.map(
+                                                (item) => (
+                                                    <>
+                                                        <label
+                                                            htmlFor={
+                                                                item.item_id
+                                                            }
+                                                        >
+                                                            <input
+                                                                type="checkbox"
+                                                                id={
+                                                                    item.item_id
+                                                                }
+                                                                value={
+                                                                    item.item_id
+                                                                }
+                                                                onChange={
+                                                                    active
+                                                                }
+                                                            />
+                                                            {item.name}
+                                                            <span>
+                                                                $ {item.prcie}
+                                                            </span>
+                                                        </label>
+                                                    </>
+                                                )
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -258,57 +385,47 @@ export default function Choose({ formStep, nextFormStep }) {
                                 >
                                     <div className={styles.dropDownContent}>
                                         <div className={styles.bGroup}>
-                                            <label htmlFor="220V_15A">
-                                                <input
-                                                    type="checkbox"
-                                                    id="220V_15A"
-                                                    value="220V_15A"
-                                                    onChange={enableNextTextBox}
-                                                />
-                                                三相 220V 動力用電 15A
-                                                <label className={styles.num}>
-                                                    數量
-                                                    <input
-                                                        type="number"
-                                                        disabled
-                                                    />
-                                                </label>
-                                                <span>$ 2,994/組</span>
-                                            </label>
-                                            <label htmlFor="220V_20A">
-                                                <input
-                                                    type="checkbox"
-                                                    id="220V_20A"
-                                                    value="220V_20A"
-                                                    onChange={enableNextTextBox}
-                                                />
-                                                三相 220V 動力用電 20A
-                                                <label className={styles.num}>
-                                                    數量
-                                                    <input
-                                                        type="number"
-                                                        disabled
-                                                    />
-                                                </label>
-                                                <span>$ 5,889/組</span>
-                                            </label>
-                                            <label htmlFor="220V_30A">
-                                                <input
-                                                    type="checkbox"
-                                                    id="220V_30A"
-                                                    value="220V_30A"
-                                                    onChange={enableNextTextBox}
-                                                />
-                                                三相 220V 動力用電 30A
-                                                <label className={styles.num}>
-                                                    數量
-                                                    <input
-                                                        type="number"
-                                                        disabled
-                                                    />
-                                                </label>
-                                                <span>$ 7,834/組</span>
-                                            </label>
+                                            {priceData.items[1].data.map(
+                                                (item) => (
+                                                    <>
+                                                        <label
+                                                            htmlFor={
+                                                                item.item_id
+                                                            }
+                                                        >
+                                                            <input
+                                                                type="checkbox"
+                                                                id={
+                                                                    item.item_id
+                                                                }
+                                                                value={
+                                                                    item.item_id
+                                                                }
+                                                                onChange={
+                                                                    enableNextTextBox
+                                                                }
+                                                            />
+                                                            {item.name}
+                                                            <label
+                                                                className={
+                                                                    styles.num
+                                                                }
+                                                            >
+                                                                數量
+                                                                <input
+                                                                    type="number"
+                                                                    min="0"
+                                                                    disabled
+                                                                />
+                                                            </label>
+                                                            <span>
+                                                                $ {item.prcie}
+                                                                /組
+                                                            </span>
+                                                        </label>
+                                                    </>
+                                                )
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -376,7 +493,48 @@ export default function Choose({ formStep, nextFormStep }) {
                                 >
                                     <div className={styles.dropDownContent}>
                                         <div className={styles.bGroup}>
-                                            <label htmlFor="380V">
+                                            {priceData.items[2].data.map(
+                                                (item) => (
+                                                    <>
+                                                        <label
+                                                            htmlFor={
+                                                                item.item_id
+                                                            }
+                                                        >
+                                                            <input
+                                                                type="checkbox"
+                                                                id={
+                                                                    item.item_id
+                                                                }
+                                                                value={
+                                                                    item.item_id
+                                                                }
+                                                                onChange={
+                                                                    enableNextTextBox
+                                                                }
+                                                            />
+                                                            {item.name}
+                                                            <label
+                                                                className={
+                                                                    styles.num
+                                                                }
+                                                            >
+                                                                數量
+                                                                <input
+                                                                    type="number"
+                                                                    min="0"
+                                                                    disabled
+                                                                />
+                                                            </label>
+                                                            <span>
+                                                                $ {item.prcie}
+                                                                /組
+                                                            </span>
+                                                        </label>
+                                                    </>
+                                                )
+                                            )}
+                                            {/* <label htmlFor="380V">
                                                 <input
                                                     type="checkbox"
                                                     id="380V"
@@ -388,11 +546,12 @@ export default function Choose({ formStep, nextFormStep }) {
                                                     數量
                                                     <input
                                                         type="number"
+                                                        min="0"
                                                         disabled
                                                     />
                                                 </label>
                                                 <span>$ 2,994/組</span>
-                                            </label>
+                                            </label> */}
                                         </div>
                                     </div>
                                 </div>
@@ -460,7 +619,48 @@ export default function Choose({ formStep, nextFormStep }) {
                                 >
                                     <div className={styles.dropDownContent}>
                                         <div className={styles.bGroup}>
-                                            <label htmlFor="electricity">
+                                            {priceData.items[3].data.map(
+                                                (item) => (
+                                                    <>
+                                                        <label
+                                                            htmlFor={
+                                                                item.item_id
+                                                            }
+                                                        >
+                                                            <input
+                                                                type="checkbox"
+                                                                id={
+                                                                    item.item_id
+                                                                }
+                                                                value={
+                                                                    item.item_id
+                                                                }
+                                                                onChange={
+                                                                    enableNextTextBox
+                                                                }
+                                                            />
+                                                            {item.name}
+                                                            <label
+                                                                className={
+                                                                    styles.num
+                                                                }
+                                                            >
+                                                                數量
+                                                                <input
+                                                                    type="number"
+                                                                    min="0"
+                                                                    disabled
+                                                                />
+                                                            </label>
+                                                            <span>
+                                                                $ {item.prcie}
+                                                                /組
+                                                            </span>
+                                                        </label>
+                                                    </>
+                                                )
+                                            )}
+                                            {/* <label htmlFor="electricity">
                                                 <input
                                                     type="checkbox"
                                                     id="electricity"
@@ -472,11 +672,12 @@ export default function Choose({ formStep, nextFormStep }) {
                                                     數量
                                                     <input
                                                         type="number"
+                                                        min="0"
                                                         disabled
                                                     />
                                                 </label>
                                                 <span>$ 2,994/組</span>
-                                            </label>
+                                            </label> */}
                                         </div>
                                     </div>
                                 </div>
@@ -544,23 +745,47 @@ export default function Choose({ formStep, nextFormStep }) {
                                 >
                                     <div className={styles.dropDownContent}>
                                         <div className={styles.bGroup}>
-                                            <label htmlFor="drain_pipe">
-                                                <input
-                                                    type="checkbox"
-                                                    id="drain_pipe"
-                                                    value="drain_pipe"
-                                                    onChange={enableNextTextBox}
-                                                />
-                                                給排水管
-                                                <label className={styles.num}>
-                                                    數量
-                                                    <input
-                                                        type="number"
-                                                        disabled
-                                                    />
-                                                </label>
-                                                <span>$ 5,000 /組</span>
-                                            </label>
+                                            {priceData.items[4].data.map(
+                                                (item) => (
+                                                    <>
+                                                        <label
+                                                            htmlFor={
+                                                                item.item_id
+                                                            }
+                                                        >
+                                                            <input
+                                                                type="checkbox"
+                                                                id={
+                                                                    item.item_id
+                                                                }
+                                                                value={
+                                                                    item.item_id
+                                                                }
+                                                                onChange={
+                                                                    enableNextTextBox
+                                                                }
+                                                            />
+                                                            {item.name}
+                                                            <label
+                                                                className={
+                                                                    styles.num
+                                                                }
+                                                            >
+                                                                數量
+                                                                <input
+                                                                    type="number"
+                                                                    min="0"
+                                                                    disabled
+                                                                />
+                                                            </label>
+                                                            <span>
+                                                                $ {item.prcie}
+                                                                /組
+                                                            </span>
+                                                        </label>
+                                                    </>
+                                                )
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -628,23 +853,47 @@ export default function Choose({ formStep, nextFormStep }) {
                                 >
                                     <div className={styles.dropDownContent}>
                                         <div className={styles.bGroup}>
-                                            <label htmlFor="press_air">
-                                                <input
-                                                    type="checkbox"
-                                                    id="press_air"
-                                                    value="press_air"
-                                                    onChange={enableNextTextBox}
-                                                />
-                                                壓縮空氣
-                                                <label className={styles.num}>
-                                                    數量
-                                                    <input
-                                                        type="number"
-                                                        disabled
-                                                    />
-                                                </label>
-                                                <span>$ 2,994/組</span>
-                                            </label>
+                                            {priceData.items[5].data.map(
+                                                (item) => (
+                                                    <>
+                                                        <label
+                                                            htmlFor={
+                                                                item.item_id
+                                                            }
+                                                        >
+                                                            <input
+                                                                type="checkbox"
+                                                                id={
+                                                                    item.item_id
+                                                                }
+                                                                value={
+                                                                    item.item_id
+                                                                }
+                                                                onChange={
+                                                                    enableNextTextBox
+                                                                }
+                                                            />
+                                                            {item.name}
+                                                            <label
+                                                                className={
+                                                                    styles.num
+                                                                }
+                                                            >
+                                                                數量
+                                                                <input
+                                                                    type="number"
+                                                                    min="0"
+                                                                    disabled
+                                                                />
+                                                            </label>
+                                                            <span>
+                                                                $ {item.prcie}
+                                                                /組
+                                                            </span>
+                                                        </label>
+                                                    </>
+                                                )
+                                            )}
                                         </div>
                                     </div>
                                 </div>

@@ -14,7 +14,10 @@ export async function getServerSideProps({ locale }) {
             cookie: "ci_session=tm7raoegfru3cidh8r88ljnovjura42a",
             "Content-Type": "application/x-www-form-urlencoded",
         },
-        body: new URLSearchParams({ lang: locale, show_id: "FD" }),
+        body: new URLSearchParams({
+            lang: locale,
+            sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
+        }),
     };
     const res = await fetch(
         `${process.env.API_BASE_URL}getDiscountInfo`,
@@ -39,6 +42,10 @@ export async function getServerSideProps({ locale }) {
 
 export default function Home(props) {
     const { t } = useTranslation();
+    let str = props.applyInfo.content;
+    const reg = /^["|'](.*)["|']$/g;
+    let newStr = str.replace(reg, "$1");
+    console.log(typeof newStr);
     return (
         <div className={styles.container}>
             <Head>
@@ -54,10 +61,11 @@ export default function Home(props) {
             <Hero info={props.info}>
                 <h3>水電申請說明</h3>
                 <div className={styles.homeContent}>
+                    {/* {props.applyInfo.content} */}
                     <p>{props.applyInfo.content}</p>
                 </div>
                 <Link href={"/apply"}>
-                    <a className={styles.homeApply}>我要申請</a>
+                    <a className={styles.homeApply}>{t("apply")}</a>
                 </Link>
             </Hero>
             <Footer />

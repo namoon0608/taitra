@@ -95,7 +95,7 @@ async function getServerSideProps({ locale  }) {
         },
         body: new URLSearchParams({
             lang: locale,
-            show_id: "FD"
+            sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
         })
     };
     const infoRes = await fetch(`${process.env.API_BASE_URL}getDiscountInfo`, options);

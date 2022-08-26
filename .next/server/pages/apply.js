@@ -77,9 +77,15 @@ function Basic({ formStep , nextFormStep , stepOne , company  }) {
         let contactPerson = document.getElementById("contactPerson").value;
         let email = document.getElementById("email").value;
         let phone = document.getElementById("phone").value;
-        let invoice = invoice = document.querySelector('input[name="drone"]:checked').value;
+        let invoice = "";
         let address = document.getElementById("address").value;
         let remark = document.getElementById("remark").value;
+        const radios = document.querySelectorAll('input[name="drone"]');
+        for (let radio of radios){
+            if (radio.checked) {
+                invoice = radio.value;
+            }
+        }
         const options = {
             method: "POST",
             headers: {
@@ -88,8 +94,6 @@ function Basic({ formStep , nextFormStep , stepOne , company  }) {
             },
             body: new URLSearchParams({
                 application_form_id: "",
-                company_token: "340fe08039b249bdc86ee42def83f48fa59787addc23e7b30fd47b97a2960cd7",
-                show_id: "FD",
                 proxy_company_name: company,
                 proxy_tax_id: uniformNum,
                 proxy_contact_person: contactPerson,
@@ -97,17 +101,24 @@ function Basic({ formStep , nextFormStep , stepOne , company  }) {
                 proxy_phone: phone,
                 invoice: invoice,
                 invoice_address: address,
-                remark: remark
+                remark: remark,
+                sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
             })
         };
-        await fetch(`${"https://anbon.vip/twtc_hydropower/api/"}setApplyForm`, options).then((response)=>response.json()).then((response)=>{
+        await fetch(`${"http://ewsadm.taiwantradeshows.com.tw/api/"}setApplyForm`, options).then((response)=>response.json()).then((response)=>{
             console.log(response);
             alert(response.msg);
         }).catch((err)=>console.error(err));
     };
     async function handleSubmit(data) {
         let remark = document.getElementById("remark").value;
-        let invoice = invoice = document.querySelector('input[name="drone"]:checked').value;
+        let invoice = "";
+        const radios = document.querySelectorAll('input[name="drone"]');
+        for (let radio of radios){
+            if (radio.checked) {
+                invoice = radio.value;
+            }
+        }
         const options = {
             method: "POST",
             headers: {
@@ -116,8 +127,6 @@ function Basic({ formStep , nextFormStep , stepOne , company  }) {
             },
             body: new URLSearchParams({
                 application_form_id: "",
-                company_token: "340fe08039b249bdc86ee42def83f48fa59787addc23e7b30fd47b97a2960cd7",
-                show_id: "FD",
                 proxy_company_name: data.compnay,
                 proxy_tax_id: data.uniformNum,
                 proxy_contact_person: data.contactPerson,
@@ -125,10 +134,11 @@ function Basic({ formStep , nextFormStep , stepOne , company  }) {
                 proxy_phone: data.phone,
                 invoice: invoice,
                 invoice_address: data.address,
-                remark: remark
+                remark: remark,
+                sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
             })
         };
-        await fetch(`${"https://anbon.vip/twtc_hydropower/api/"}setApplyForm`, options).then((response)=>response.json()).then((response)=>console.log(response)).then(nextFormStep()).catch((err)=>console.error(err));
+        await fetch(`${"http://ewsadm.taiwantradeshows.com.tw/api/"}setApplyForm`, options).then((response)=>response.json()).then((response)=>console.log(response)).then(nextFormStep()).catch((err)=>console.error(err));
     }
     return /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
         className: [
@@ -253,7 +263,7 @@ function Basic({ formStep , nextFormStep , stepOne , company  }) {
                     })
                 ]
             }),
-            stepOne.data === "{}" ? /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_unform_web__WEBPACK_IMPORTED_MODULE_1__.Form, {
+            stepOne.status === false ? /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_unform_web__WEBPACK_IMPORTED_MODULE_1__.Form, {
                 onSubmit: handleSubmit,
                 children: [
                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("h2", {
@@ -269,8 +279,7 @@ function Basic({ formStep , nextFormStep , stepOne , company  }) {
                                     label: "公司名稱",
                                     type: "text",
                                     placeholder: "請輸入公司名稱",
-                                    id: "company",
-                                    required: true
+                                    id: "company"
                                 })
                             }),
                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
@@ -280,8 +289,7 @@ function Basic({ formStep , nextFormStep , stepOne , company  }) {
                                     label: "統一編號",
                                     type: "text",
                                     placeholder: "請輸入統一編號",
-                                    id: "uniformNum",
-                                    required: true
+                                    id: "uniformNum"
                                 })
                             }),
                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
@@ -291,8 +299,7 @@ function Basic({ formStep , nextFormStep , stepOne , company  }) {
                                     label: "聯絡人",
                                     type: "text",
                                     placeholder: "請輸入聯絡人姓名",
-                                    id: "contactPerson",
-                                    required: true
+                                    id: "contactPerson"
                                 })
                             }),
                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
@@ -302,8 +309,7 @@ function Basic({ formStep , nextFormStep , stepOne , company  }) {
                                     label: "E-mail",
                                     type: "email",
                                     placeholder: "請輸入電子郵件",
-                                    id: "email",
-                                    required: true
+                                    id: "email"
                                 })
                             }),
                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
@@ -313,8 +319,7 @@ function Basic({ formStep , nextFormStep , stepOne , company  }) {
                                     label: "聯絡電話",
                                     type: "tel",
                                     placeholder: "請輸入聯絡電話",
-                                    id: "phone",
-                                    required: true
+                                    id: "phone"
                                 })
                             })
                         ]
@@ -369,8 +374,7 @@ function Basic({ formStep , nextFormStep , stepOne , company  }) {
                                     label: "發票寄送地址",
                                     type: "text",
                                     placeholder: "請輸入發票寄送地址",
-                                    id: "address",
-                                    required: true
+                                    id: "address"
                                 })
                             }),
                             /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
@@ -413,8 +417,7 @@ function Basic({ formStep , nextFormStep , stepOne , company  }) {
                                     type: "text",
                                     placeholder: "請輸入公司名稱",
                                     id: "company",
-                                    defaultValue: stepOne.data.proxy_company_name,
-                                    required: true
+                                    defaultValue: stepOne.data.proxy_company_name
                                 })
                             }),
                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
@@ -425,8 +428,7 @@ function Basic({ formStep , nextFormStep , stepOne , company  }) {
                                     type: "text",
                                     placeholder: "請輸入統一編號",
                                     id: "uniformNum",
-                                    defaultValue: stepOne.data.proxy_tax_id,
-                                    required: true
+                                    defaultValue: stepOne.data.proxy_tax_id
                                 })
                             }),
                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
@@ -437,8 +439,7 @@ function Basic({ formStep , nextFormStep , stepOne , company  }) {
                                     type: "text",
                                     placeholder: "請輸入聯絡人姓名",
                                     id: "contactPerson",
-                                    defaultValue: stepOne.data.proxy_contact_person,
-                                    required: true
+                                    defaultValue: stepOne.data.proxy_contact_person
                                 })
                             }),
                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
@@ -449,8 +450,7 @@ function Basic({ formStep , nextFormStep , stepOne , company  }) {
                                     type: "email",
                                     placeholder: "請輸入電子郵件",
                                     id: "email",
-                                    defaultValue: stepOne.data.proxy_email,
-                                    required: true
+                                    defaultValue: stepOne.data.proxy_email
                                 })
                             }),
                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
@@ -461,8 +461,7 @@ function Basic({ formStep , nextFormStep , stepOne , company  }) {
                                     type: "tel",
                                     placeholder: "請輸入聯絡電話",
                                     id: "phone",
-                                    defaultValue: stepOne.data.proxy_phone,
-                                    required: true
+                                    defaultValue: stepOne.data.proxy_phone
                                 })
                             })
                         ]
@@ -485,8 +484,7 @@ function Basic({ formStep , nextFormStep , stepOne , company  }) {
                                                     type: "radio",
                                                     id: "company_address",
                                                     name: "drone",
-                                                    value: "1",
-                                                    defaultChecked: true
+                                                    value: "1"
                                                 })
                                             ]
                                         })
@@ -551,8 +549,7 @@ function Basic({ formStep , nextFormStep , stepOne , company  }) {
                                     type: "text",
                                     placeholder: "請輸入發票寄送地址",
                                     id: "address",
-                                    defaultValue: stepOne.data.invoice_address,
-                                    required: true
+                                    defaultValue: stepOne.data.invoice_address
                                 })
                             }),
                             /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
@@ -612,19 +609,127 @@ function Basic({ formStep , nextFormStep , stepOne , company  }) {
 
 
 
-function Choose({ formStep , nextFormStep  }) {
-    async function handleSubmit(data) {
-        console.log(data);
-    // nextFormStep();
-    // const validationResult = await schema
-    //     .validate(data, { abortEarly: false })
-    //     .then()
-    //     .catch((err) => {
-    //         return err;
-    //     });
-    // console.log(validationResult.inner);
+function Choose({ formStep , nextFormStep , priceData , stepTwo  }) {
+    const temporary = async ()=>{
+        const useDefault = document.getElementById("chooseDefault");
+        let items = [];
+        if (useDefault.checked) {
+            const options = {
+                method: "POST",
+                headers: {
+                    cookie: "ci_session=9lejfn4cgisk4havru3sjg4s9e8aiqho",
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: new URLSearchParams({
+                    application_form_id: "6305a2e49bdbf001",
+                    base_option: "Y",
+                    items: [],
+                    sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
+                })
+            };
+            await fetch(`${"http://ewsadm.taiwantradeshows.com.tw/api/"}setApplyHydroItems`, options).then((response)=>response.json()).then((response)=>console.log(response)).then(nextFormStep()).catch((err)=>console.error(err));
+        } else {
+            const checkBoxsOne = document.querySelectorAll(".Form_aGroup__FN6oc input[type='checkbox']");
+            const checkBoxsTwo = document.querySelectorAll(".Form_bGroup__4aN8N input[type='checkbox']");
+            for (let check of checkBoxsOne){
+                if (check.checked) {
+                    items.push({
+                        item_id: check.value,
+                        quantity: "1"
+                    });
+                }
+            }
+            for (let check1 of checkBoxsTwo){
+                if (check1.checked) {
+                    let num = check1.nextSibling.nextSibling.childNodes[1];
+                    items.push({
+                        item_id: check1.value,
+                        quantity: num.value
+                    });
+                }
+            }
+            const options1 = {
+                method: "POST",
+                headers: {
+                    cookie: "ci_session=9lejfn4cgisk4havru3sjg4s9e8aiqho",
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: new URLSearchParams({
+                    application_form_id: "6305a2e49bdbf001",
+                    base_option: "N",
+                    items: JSON.stringify(items),
+                    sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
+                })
+            };
+            await fetch(`${"http://ewsadm.taiwantradeshows.com.tw/api/"}setApplyHydroItems`, options1).then((response)=>response.json()).then((response)=>{
+                console.log(response);
+                alert(response.msg);
+            }).catch((err)=>console.error(err));
+        }
+    };
+    async function handleSubmit() {
+        const useDefault = document.getElementById("chooseDefault");
+        let items = [];
+        if (useDefault.checked) {
+            const options = {
+                method: "POST",
+                headers: {
+                    cookie: "ci_session=9lejfn4cgisk4havru3sjg4s9e8aiqho",
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: new URLSearchParams({
+                    application_form_id: "6305a2e49bdbf001",
+                    base_option: "Y",
+                    items: [],
+                    sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
+                })
+            };
+            await fetch(`${"http://ewsadm.taiwantradeshows.com.tw/api/"}setApplyHydroItems`, options).then((response)=>response.json()).then((response)=>console.log(response)).then(nextFormStep()).catch((err)=>console.error(err));
+        } else {
+            const checkBoxsOne = document.querySelectorAll(".Form_aGroup__FN6oc input[type='checkbox']");
+            const checkBoxsTwo = document.querySelectorAll(".Form_bGroup__4aN8N input[type='checkbox']");
+            for (let check of checkBoxsOne){
+                if (check.checked) {
+                    items.push({
+                        item_id: check.value,
+                        quantity: "1"
+                    });
+                }
+            }
+            for (let check1 of checkBoxsTwo){
+                if (check1.checked) {
+                    let num = check1.nextSibling.nextSibling.childNodes[1];
+                    if (num.value === "0" || num.value === "") {
+                        alert("請填入數量");
+                    } else {
+                        items.push({
+                            item_id: check1.value,
+                            quantity: num.value
+                        });
+                    }
+                }
+            }
+            if (items.length !== 0) {
+                const options1 = {
+                    method: "POST",
+                    headers: {
+                        cookie: "ci_session=9lejfn4cgisk4havru3sjg4s9e8aiqho",
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: new URLSearchParams({
+                        application_form_id: "6305a2e49bdbf001",
+                        base_option: "N",
+                        items: JSON.stringify(items),
+                        sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
+                    })
+                };
+                await fetch(`${"http://ewsadm.taiwantradeshows.com.tw/api/"}setApplyHydroItems`, options1).then((response)=>response.json()).then((response)=>console.log(response)).then(nextFormStep()).catch((err)=>console.error(err));
+            }
+        }
     }
     const active = (e)=>{
+        const useDefault = document.getElementById("chooseDefault");
+        useDefault.checked = false;
         if (e.target.checked) {
             e.target.parentNode.className = (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().checkedActive);
         } else {
@@ -632,13 +737,37 @@ function Choose({ formStep , nextFormStep  }) {
         }
     };
     const enableNextTextBox = (e)=>{
+        const useDefault = document.getElementById("chooseDefault");
+        useDefault.checked = false;
         if (e.target.checked) {
             e.target.nextSibling.nextSibling.childNodes[1].removeAttribute("disabled");
             e.target.parentNode.className = (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().checkedActive);
         } else {
             e.target.nextSibling.nextSibling.childNodes[1].setAttribute("disabled", "");
-            e.target.nextSibling.nextSibling.childNodes[1].value = null;
+            e.target.nextSibling.nextSibling.childNodes[1].value = 0;
             e.target.parentNode.className = "";
+        }
+    };
+    const handleDefault = (e)=>{
+        const checkBoxsOne = document.querySelectorAll(".Form_aGroup__FN6oc input[type='checkbox']");
+        const checkBoxsTwo = document.querySelectorAll(".Form_bGroup__4aN8N input");
+        if (e.target.checked) {
+            for (let check of checkBoxsOne){
+                if (check.checked) {
+                    check.checked = false;
+                    check.parentNode.className = "";
+                }
+            }
+            for (let check1 of checkBoxsTwo){
+                if (check1.checked) {
+                    check1.checked = false;
+                    check1.parentNode.className = "";
+                }
+                if (check1.type === "number") {
+                    check1.value = 0;
+                    check1.setAttribute("disabled", "");
+                }
+            }
         }
     };
     return /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
@@ -649,6 +778,7 @@ function Choose({ formStep , nextFormStep  }) {
         children: [
             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("button", {
                 className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().temporary),
+                onClick: temporary,
                 children: "暫存"
             }),
             /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_unform_web__WEBPACK_IMPORTED_MODULE_3__.Form, {
@@ -663,7 +793,8 @@ function Choose({ formStep , nextFormStep  }) {
                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
                                 type: "checkbox",
                                 id: "chooseDefault",
-                                value: "useDefault"
+                                value: "useDefault",
+                                onChange: handleDefault
                             }),
                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
                                 htmlFor: "chooseDefault",
@@ -728,100 +859,28 @@ function Choose({ formStep , nextFormStep  }) {
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
                                                             children: "110V 用電計算說明： 0.5KW(千瓦)＝500W(瓦)＝5A(安培)；1KW(千瓦)＝1000W(瓦)＝10A(安培 (a) 110V攤位總用電量(KW)＝攤位上照明用電＋各種電器用品用電(電視、開飲機、電腦等)＋展示產品用電....總計。 (b) 110V免費累計電量(KW)＝參展攤位數 X 500W（每1攤位500W免費) (c) 1100V需追申請之電量(KW)＝110V攤位總用電量扣除了110V免費累計電量；(a) - (b) = (c) 。 請點選計算出的 (c) 值"
                                                         }),
-                                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
                                                             className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().aGroup),
-                                                            children: [
-                                                                /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                                                    htmlFor: "500W",
-                                                                    children: [
-                                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
-                                                                            type: "checkbox",
-                                                                            id: "500W",
-                                                                            value: "110V_5A",
-                                                                            onChange: active
-                                                                        }),
-                                                                        "單 相 110V 5A （500W）",
-                                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("span", {
-                                                                            children: "$ 650"
-                                                                        })
-                                                                    ]
-                                                                }),
-                                                                /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                                                    htmlFor: "1000W",
-                                                                    children: [
-                                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
-                                                                            type: "checkbox",
-                                                                            id: "1000W",
-                                                                            value: "110V_10A",
-                                                                            onChange: active
-                                                                        }),
-                                                                        "單 相 110V 10A（1,000W）",
-                                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("span", {
-                                                                            children: "$ 1,300"
-                                                                        })
-                                                                    ]
-                                                                }),
-                                                                /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                                                    htmlFor: "1500W",
-                                                                    children: [
-                                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
-                                                                            type: "checkbox",
-                                                                            id: "1500W",
-                                                                            value: "110V_15A",
-                                                                            onChange: active
-                                                                        }),
-                                                                        "單 相 110V 15A（1,500W）",
-                                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("span", {
-                                                                            children: "$ 1,950"
-                                                                        })
-                                                                    ]
-                                                                }),
-                                                                /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                                                    htmlFor: "2KW",
-                                                                    children: [
-                                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
-                                                                            type: "checkbox",
-                                                                            id: "2KW",
-                                                                            value: "110V/190V_2",
-                                                                            onChange: active
-                                                                        }),
-                                                                        "三 相 110V/190V 2KW",
-                                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("span", {
-                                                                            children: "$ 2,600"
-                                                                        })
-                                                                    ]
-                                                                }),
-                                                                /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                                                    htmlFor: "4KW",
-                                                                    children: [
-                                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
-                                                                            type: "checkbox",
-                                                                            id: "4KW",
-                                                                            value: "110V/190V_4",
-                                                                            onChange: active
-                                                                        }),
-                                                                        "三 相 110V/190V 4KW",
-                                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("span", {
-                                                                            children: "$ 5,200"
-                                                                        })
-                                                                    ]
-                                                                }),
-                                                                /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                                                    htmlFor: "6KW",
-                                                                    children: [
-                                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
-                                                                            type: "checkbox",
-                                                                            id: "6KW",
-                                                                            value: "110V/190V_6",
-                                                                            onChange: active
-                                                                        }),
-                                                                        "三 相 110V/190V 6KW",
-                                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("span", {
-                                                                            children: "$ 7,800"
-                                                                        })
-                                                                    ]
-                                                                })
-                                                            ]
+                                                            children: priceData.items[0].data.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+                                                                    children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                        htmlFor: item.item_id,
+                                                                        children: [
+                                                                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                                                type: "checkbox",
+                                                                                id: item.item_id,
+                                                                                value: item.item_id,
+                                                                                onChange: active
+                                                                            }),
+                                                                            item.name,
+                                                                            /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("span", {
+                                                                                children: [
+                                                                                    "$ ",
+                                                                                    item.prcie
+                                                                                ]
+                                                                            })
+                                                                        ]
+                                                                    })
+                                                                }))
                                                         })
                                                     ]
                                                 })
@@ -879,85 +938,40 @@ function Choose({ formStep , nextFormStep  }) {
                                                 ref: setCollapsibleElement,
                                                 children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
                                                     className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().dropDownContent),
-                                                    children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                                                    children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
                                                         className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().bGroup),
-                                                        children: [
-                                                            /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                                                htmlFor: "220V_15A",
-                                                                children: [
-                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
-                                                                        type: "checkbox",
-                                                                        id: "220V_15A",
-                                                                        value: "220V_15A",
-                                                                        onChange: enableNextTextBox
-                                                                    }),
-                                                                    "三相 220V 動力用電 15A",
-                                                                    /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                                                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().num),
-                                                                        children: [
-                                                                            "數量",
-                                                                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
-                                                                                type: "number",
-                                                                                disabled: true
-                                                                            })
-                                                                        ]
-                                                                    }),
-                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("span", {
-                                                                        children: "$ 2,994/組"
-                                                                    })
-                                                                ]
-                                                            }),
-                                                            /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                                                htmlFor: "220V_20A",
-                                                                children: [
-                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
-                                                                        type: "checkbox",
-                                                                        id: "220V_20A",
-                                                                        value: "220V_20A",
-                                                                        onChange: enableNextTextBox
-                                                                    }),
-                                                                    "三相 220V 動力用電 20A",
-                                                                    /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                                                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().num),
-                                                                        children: [
-                                                                            "數量",
-                                                                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
-                                                                                type: "number",
-                                                                                disabled: true
-                                                                            })
-                                                                        ]
-                                                                    }),
-                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("span", {
-                                                                        children: "$ 5,889/組"
-                                                                    })
-                                                                ]
-                                                            }),
-                                                            /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                                                htmlFor: "220V_30A",
-                                                                children: [
-                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
-                                                                        type: "checkbox",
-                                                                        id: "220V_30A",
-                                                                        value: "220V_30A",
-                                                                        onChange: enableNextTextBox
-                                                                    }),
-                                                                    "三相 220V 動力用電 30A",
-                                                                    /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                                                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().num),
-                                                                        children: [
-                                                                            "數量",
-                                                                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
-                                                                                type: "number",
-                                                                                disabled: true
-                                                                            })
-                                                                        ]
-                                                                    }),
-                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("span", {
-                                                                        children: "$ 7,834/組"
-                                                                    })
-                                                                ]
-                                                            })
-                                                        ]
+                                                        children: priceData.items[1].data.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+                                                                children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                    htmlFor: item.item_id,
+                                                                    children: [
+                                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                                            type: "checkbox",
+                                                                            id: item.item_id,
+                                                                            value: item.item_id,
+                                                                            onChange: enableNextTextBox
+                                                                        }),
+                                                                        item.name,
+                                                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                            className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().num),
+                                                                            children: [
+                                                                                "數量",
+                                                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                                                    type: "number",
+                                                                                    min: "0",
+                                                                                    disabled: true
+                                                                                })
+                                                                            ]
+                                                                        }),
+                                                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("span", {
+                                                                            children: [
+                                                                                "$ ",
+                                                                                item.prcie,
+                                                                                "/組"
+                                                                            ]
+                                                                        })
+                                                                    ]
+                                                                })
+                                                            }))
                                                     })
                                                 })
                                             })
@@ -1016,31 +1030,38 @@ function Choose({ formStep , nextFormStep  }) {
                                                     className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().dropDownContent),
                                                     children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
                                                         className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().bGroup),
-                                                        children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                                            htmlFor: "380V",
-                                                            children: [
-                                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
-                                                                    type: "checkbox",
-                                                                    id: "380V",
-                                                                    value: "380V",
-                                                                    onChange: enableNextTextBox
-                                                                }),
-                                                                "用電380V電源箱",
-                                                                /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                                                    className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().num),
+                                                        children: priceData.items[2].data.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+                                                                children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                    htmlFor: item.item_id,
                                                                     children: [
-                                                                        "數量",
                                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
-                                                                            type: "number",
-                                                                            disabled: true
+                                                                            type: "checkbox",
+                                                                            id: item.item_id,
+                                                                            value: item.item_id,
+                                                                            onChange: enableNextTextBox
+                                                                        }),
+                                                                        item.name,
+                                                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                            className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().num),
+                                                                            children: [
+                                                                                "數量",
+                                                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                                                    type: "number",
+                                                                                    min: "0",
+                                                                                    disabled: true
+                                                                                })
+                                                                            ]
+                                                                        }),
+                                                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("span", {
+                                                                            children: [
+                                                                                "$ ",
+                                                                                item.prcie,
+                                                                                "/組"
+                                                                            ]
                                                                         })
                                                                     ]
-                                                                }),
-                                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("span", {
-                                                                    children: "$ 2,994/組"
                                                                 })
-                                                            ]
-                                                        })
+                                                            }))
                                                     })
                                                 })
                                             })
@@ -1099,31 +1120,38 @@ function Choose({ formStep , nextFormStep  }) {
                                                     className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().dropDownContent),
                                                     children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
                                                         className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().bGroup),
-                                                        children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                                            htmlFor: "electricity",
-                                                            children: [
-                                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
-                                                                    type: "checkbox",
-                                                                    id: "electricity",
-                                                                    value: "electricity",
-                                                                    onChange: enableNextTextBox
-                                                                }),
-                                                                "24小時用電",
-                                                                /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                                                    className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().num),
+                                                        children: priceData.items[3].data.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+                                                                children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                    htmlFor: item.item_id,
                                                                     children: [
-                                                                        "數量",
                                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
-                                                                            type: "number",
-                                                                            disabled: true
+                                                                            type: "checkbox",
+                                                                            id: item.item_id,
+                                                                            value: item.item_id,
+                                                                            onChange: enableNextTextBox
+                                                                        }),
+                                                                        item.name,
+                                                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                            className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().num),
+                                                                            children: [
+                                                                                "數量",
+                                                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                                                    type: "number",
+                                                                                    min: "0",
+                                                                                    disabled: true
+                                                                                })
+                                                                            ]
+                                                                        }),
+                                                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("span", {
+                                                                            children: [
+                                                                                "$ ",
+                                                                                item.prcie,
+                                                                                "/組"
+                                                                            ]
                                                                         })
                                                                     ]
-                                                                }),
-                                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("span", {
-                                                                    children: "$ 2,994/組"
                                                                 })
-                                                            ]
-                                                        })
+                                                            }))
                                                     })
                                                 })
                                             })
@@ -1182,31 +1210,38 @@ function Choose({ formStep , nextFormStep  }) {
                                                     className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().dropDownContent),
                                                     children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
                                                         className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().bGroup),
-                                                        children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                                            htmlFor: "drain_pipe",
-                                                            children: [
-                                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
-                                                                    type: "checkbox",
-                                                                    id: "drain_pipe",
-                                                                    value: "drain_pipe",
-                                                                    onChange: enableNextTextBox
-                                                                }),
-                                                                "給排水管",
-                                                                /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                                                    className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().num),
+                                                        children: priceData.items[4].data.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+                                                                children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                    htmlFor: item.item_id,
                                                                     children: [
-                                                                        "數量",
                                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
-                                                                            type: "number",
-                                                                            disabled: true
+                                                                            type: "checkbox",
+                                                                            id: item.item_id,
+                                                                            value: item.item_id,
+                                                                            onChange: enableNextTextBox
+                                                                        }),
+                                                                        item.name,
+                                                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                            className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().num),
+                                                                            children: [
+                                                                                "數量",
+                                                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                                                    type: "number",
+                                                                                    min: "0",
+                                                                                    disabled: true
+                                                                                })
+                                                                            ]
+                                                                        }),
+                                                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("span", {
+                                                                            children: [
+                                                                                "$ ",
+                                                                                item.prcie,
+                                                                                "/組"
+                                                                            ]
                                                                         })
                                                                     ]
-                                                                }),
-                                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("span", {
-                                                                    children: "$ 5,000 /組"
                                                                 })
-                                                            ]
-                                                        })
+                                                            }))
                                                     })
                                                 })
                                             })
@@ -1265,31 +1300,38 @@ function Choose({ formStep , nextFormStep  }) {
                                                     className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().dropDownContent),
                                                     children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
                                                         className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().bGroup),
-                                                        children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                                            htmlFor: "press_air",
-                                                            children: [
-                                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
-                                                                    type: "checkbox",
-                                                                    id: "press_air",
-                                                                    value: "press_air",
-                                                                    onChange: enableNextTextBox
-                                                                }),
-                                                                "壓縮空氣",
-                                                                /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                                                    className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().num),
+                                                        children: priceData.items[5].data.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+                                                                children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                    htmlFor: item.item_id,
                                                                     children: [
-                                                                        "數量",
                                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
-                                                                            type: "number",
-                                                                            disabled: true
+                                                                            type: "checkbox",
+                                                                            id: item.item_id,
+                                                                            value: item.item_id,
+                                                                            onChange: enableNextTextBox
+                                                                        }),
+                                                                        item.name,
+                                                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                            className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().num),
+                                                                            children: [
+                                                                                "數量",
+                                                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                                                    type: "number",
+                                                                                    min: "0",
+                                                                                    disabled: true
+                                                                                })
+                                                                            ]
+                                                                        }),
+                                                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("span", {
+                                                                            children: [
+                                                                                "$ ",
+                                                                                item.prcie,
+                                                                                "/組"
+                                                                            ]
                                                                         })
                                                                     ]
-                                                                }),
-                                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("span", {
-                                                                    children: "$ 2,994/組"
                                                                 })
-                                                            ]
-                                                        })
+                                                            }))
                                                     })
                                                 })
                                             })
@@ -2006,11 +2048,14 @@ async function getServerSideProps({ locale  }) {
         },
         body: new URLSearchParams({
             lang: locale,
-            show_id: "FD"
+            sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
         })
     };
     const res = await fetch(`${process.env.API_BASE_URL}getDiscountInfo`, options);
     const infoData = await res.json();
+    //get step two價目表
+    const getPriceTable = await fetch(`${process.env.API_BASE_URL}getPriceTableByGrop`, options);
+    const priceData = await getPriceTable.json();
     //get參展商基本資料
     const company = {
         method: "POST",
@@ -2020,13 +2065,10 @@ async function getServerSideProps({ locale  }) {
         },
         body: new URLSearchParams({
             lang: locale,
-            company_token: "340fe08039b249bdc86ee42def83f48fa59787addc23e7b30fd47b97a2960cd7",
-            show_id: "FD"
+            sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
         })
     };
     const companyRes = await fetch(`${process.env.API_BASE_URL}getExhibitorCompany`, company).then((response)=>response.json());
-    console.log(companyRes);
-    //get申請流程
     const steps = {
         method: "POST",
         headers: {
@@ -2035,21 +2077,27 @@ async function getServerSideProps({ locale  }) {
         },
         body: new URLSearchParams({
             lang: locale,
-            company_token: "340fe08039b249bdc86ee42def83f48fa59787addc23e7b30fd47b97a2960cd7",
-            show_id: "FD",
-            application_form_id: "62fa00de13897001"
+            // application_form_id: companyRes.savadata,
+            application_form_id: "6305a2e49bdbf001",
+            sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
         })
     };
+    //step one
     const stepOneRes = await fetch(`${process.env.API_BASE_URL}getDraftDataStep1`, steps).then((response)=>response.json());
-    // console.log(stepOneRes);
+    console.log(stepOneRes);
+    //step two
+    const stepTwoRes = await fetch(`${process.env.API_BASE_URL}getApplyHydroItems`, steps).then((response)=>response.json());
+    console.log(stepTwoRes);
     return {
         props: {
             ...await (0,next_i18next_serverSideTranslations__WEBPACK_IMPORTED_MODULE_6__.serverSideTranslations)(locale, [
                 "common"
             ]),
             info: infoData,
+            priceData: priceData,
             company: companyRes,
-            stepOne: stepOneRes
+            stepOne: stepOneRes,
+            stepTwo: stepTwoRes
         }
     };
 }
@@ -2091,7 +2139,9 @@ function Apply(props) {
                         }),
                         formStep >= 1 && /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_Components_Forms_Choose__WEBPACK_IMPORTED_MODULE_10__/* ["default"] */ .Z, {
                             formStep: formStep,
-                            nextFormStep: nextFormStep
+                            nextFormStep: nextFormStep,
+                            priceData: props.priceData,
+                            stepTwo: props.stepTwo
                         }),
                         formStep >= 2 && /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_Components_Forms_Write__WEBPACK_IMPORTED_MODULE_11__/* ["default"] */ .Z, {
                             formStep: formStep,
