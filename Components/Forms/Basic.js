@@ -307,6 +307,7 @@ export default function Basic({ formStep, nextFormStep, stepOne, company }) {
                                             id="company_address"
                                             name="drone"
                                             value="1"
+                                            defaultChecked
                                         />
                                     </label>
                                 </div>

@@ -62,8 +62,7 @@ export async function getServerSideProps({ locale }) {
         },
         body: new URLSearchParams({
             lang: locale,
-            // application_form_id: companyRes.savadata,
-            application_form_id: "6305a2e49bdbf001",
+            application_form_id: companyRes.savadata,
             sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
         }),
     };
@@ -73,7 +72,6 @@ export async function getServerSideProps({ locale }) {
         `${process.env.API_BASE_URL}getDraftDataStep1`,
         steps
     ).then((response) => response.json());
-    console.log(stepOneRes);
 
     //step two
     const stepTwoRes = await fetch(
@@ -81,6 +79,12 @@ export async function getServerSideProps({ locale }) {
         steps
     ).then((response) => response.json());
     console.log(stepTwoRes);
+
+    //step three
+    const stepThreeRes = await fetch(
+        `${process.env.API_BASE_URL}getApplyDiagram`,
+        steps
+    ).then((response) => response.json());
 
     return {
         props: {
@@ -90,6 +94,7 @@ export async function getServerSideProps({ locale }) {
             company: companyRes,
             stepOne: stepOneRes,
             stepTwo: stepTwoRes,
+            stepThree: stepThreeRes,
         },
     };
 }
@@ -136,10 +141,13 @@ export default function Apply(props) {
                         <Write
                             formStep={formStep}
                             nextFormStep={nextFormStep}
+                            stepThree={props.stepThree}
                         />
                     )}
 
-                    {formStep > 2 && <Preview />}
+                    {formStep > 2 && (
+                        <Preview applicatonId={props.company.savadata} />
+                    )}
                 </FormCard>
             </Hero>
             <Footer />

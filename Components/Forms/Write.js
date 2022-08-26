@@ -1,42 +1,75 @@
-import * as yup from "yup";
+import { useState } from "react";
 import styles from "../../styles/Form.module.scss";
-import { Form } from "@unform/web";
-import Input from "../Input Fields/Input";
+import Popup from "../Popup/Popup";
 
-const phoneRegExp =
-    /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
-// const schema = yup.object().shape({
-//     email: yup.string().email().required("Email is required"),
-// });
-const schema = yup.object().shape({
-    company: yup.string().required("required"),
-    uniformNum: yup.number().integer().required("required").max(8).min(8),
-    contactPerson: yup.string().required("required"),
-    email: yup.string().email().required("required"),
-    phone: yup
-        .string()
-        .matches(phoneRegExp, "Phone number is not valid")
-        .required("required"),
-    address: yup.string().min(2, "Too short").required("required"),
-});
+export default function Write({ formStep, nextFormStep, stepThree }) {
+    const [imageSrc, setImageSrc] = useState();
+    const [uploadData, setUploadData] = useState();
+    const [goNext, setGoNext] = useState(true);
+    const [show, setShow] = useState(false);
 
-export default function Write({ formStep, nextFormStep }) {
-    async function handleSubmit(data) {
-        console.log(data);
-        const validationResult = await schema
-            .validate(data, { abortEarly: false })
-            .then(nextFormStep())
-            .catch((err) => {
-                return err;
-            });
-        console.log(validationResult.inner);
+    const close = () => {
+        setShow(false);
+    };
+
+    function handleOnChange(changeEvent) {
+        const later = document.querySelector("input[name=cbox1]");
+        const reader = new FileReader();
+
+        reader.onload = function (onLoadEvent) {
+            setImageSrc(onLoadEvent.target.result);
+            setUploadData(undefined);
+        };
+
+        if (changeEvent.target.files !== null) {
+            reader.readAsDataURL(changeEvent.target.files[0]);
+            later.checked = false;
+            setGoNext(false);
+        } else if (later.checked) {
+            setGoNext(false);
+        } else if (changeEvent.target.files === null) {
+            setGoNext(true);
+        }
     }
 
-    const handleUpload = (e) => {
-        const [file] = e.target.files;
-        if (file) {
-            blah.src = URL.createObjectURL(file);
+    async function handleSubmit(event) {
+        event.preventDefault();
+        const formData = event.currentTarget;
+        const fileInput = Array.from(formData.elements).find(
+            ({ name }) => name === "photo"
+        );
+        const form = new FormData();
+        form.append("application_form_id", "6305a2e49bdbf001");
+        form.append(
+            "sid",
+            "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
+        );
+        if (fileInput.files.length === 0) {
+            form.append("imageData", imageSrc);
+        } else {
+            form.append("imageData", fileInput.files[0]);
         }
+
+        const options = {
+            method: "POST",
+        };
+
+        options.body = form;
+
+        await fetch(`${process.env.customKey}setApplyDiagram`, options)
+            .then((response) => response.json())
+            .then((response) => console.log(response))
+            .then(nextFormStep())
+            .catch((err) => console.error(err));
+    }
+
+    const popup = () => {
+        window.open(
+            "https://anbon.vip/twtc_diagram/",
+            "popup",
+            "width=600,height=600"
+        );
+        return false;
     };
 
     return (
@@ -47,10 +80,15 @@ export default function Write({ formStep, nextFormStep }) {
             ].join(" ")}
         >
             <button className={styles.temporary}>暫存</button>
-            <Form onSubmit={handleSubmit}>
+            <form onChange={handleOnChange} onSubmit={handleSubmit}>
                 <h2>請上傳水電配置圖</h2>
                 <div>
-                    <input type="checkbox" id="cbox1" value="first_checkbox" />
+                    <input
+                        type="checkbox"
+                        id="cbox1"
+                        value="first_checkbox"
+                        name="cbox1"
+                    />
                     <label htmlFor="cbox1">
                         水電配置圖尚未完成，待補件上傳
                     </label>
@@ -61,22 +99,68 @@ export default function Write({ formStep, nextFormStep }) {
                         type="file"
                         name="photo"
                         id="upload-photo"
-                        onChange={handleUpload}
                         accept="image/*"
                     />
                 </div>
-                <img id="blah" src="" className={styles.uploadImg} />
+                {stepThree.status === false || stepThree.imageData === "" ? (
+                    <img
+                        id="blah"
+                        src={imageSrc}
+                        className={styles.uploadImg}
+                    />
+                ) : (
+                    <img
+                        id="blah"
+                        src={stepThree.imageData}
+                        className={styles.uploadImg}
+                    />
+                )}
+
                 <h2>或以下方工具繪製水電配置圖</h2>
-                <img src="/img/image7.png" />
+                <a
+                    href="https://anbon.vip/twtc_diagram/"
+                    onClick={() => setShow(true)}
+                    target="iframe_a"
+                >
+                    Open Link in Popup
+                </a>
+                {/* <img src="/img/image7.png" /> */}
                 <h2>水電配置圖範例</h2>
                 <div className={styles.write}>
                     <p>＃請標示鄰攤位及走道，方便識別攤位方位。</p>
                     <img src="/img/image21.png" />
                 </div>
-                <button type="submit" className={styles.next}>
+                <button
+                    type="submit"
+                    className={styles.next}
+                    disabled={goNext}
+                    style={{
+                        cursor: goNext ? "auto" : "pointer",
+                        opacity: goNext ? "0.5" : "1",
+                    }}
+                >
                     下一步
                 </button>
-            </Form>
+            </form>
+            {show ? (
+                <Popup close={close}>
+                    <div
+                        onClick={(e) => {
+                            // do not close modal if anything inside modal content is clicked
+                            e.stopPropagation();
+                        }}
+                        style={{ width: "90%", height: "90%" }}
+                    >
+                        <iframe
+                            src="demo_iframe.htm"
+                            name="iframe_a"
+                            height="100%"
+                            width="100%"
+                            title="Iframe Example"
+                        ></iframe>
+                    </div>
+                </Popup>
+            ) : null}
         </div>
     );
 }
