@@ -4,7 +4,12 @@ import { Form } from "@unform/web";
 import { useRouter } from "next/router";
 import axios from "axios";
 
-export default function Preview({ formStep, nextFormStep, applicatonId }) {
+export default function Preview({
+    formStep,
+    nextFormStep,
+    applicatonId,
+    dataID,
+}) {
     const [data, setData] = useState(null);
     const [isLoading, setLoading] = useState(false);
     const router = useRouter();
@@ -17,7 +22,7 @@ export default function Preview({ formStep, nextFormStep, applicatonId }) {
             // },
             body: new URLSearchParams({
                 lang: router.locale,
-                application_form_id: applicatonId,
+                application_form_id: dataID,
                 sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
             }),
         };
@@ -43,7 +48,7 @@ export default function Preview({ formStep, nextFormStep, applicatonId }) {
                 "Content-Type": "application/x-www-form-urlencoded",
             },
             body: new URLSearchParams({
-                application_form_id: applicatonId,
+                application_form_id: dataID,
                 sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
             }),
         };

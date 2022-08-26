@@ -129,7 +129,7 @@ function Input({ name , label , ...rest }) {
 
 
 
-function Basic({ formStep , nextFormStep , stepOne , company  }) {
+function Basic({ formStep , nextFormStep , stepOne , company , saveID , dataID ,  }) {
     const temporary = async ()=>{
         let company = document.getElementById("company").value;
         let uniformNum = document.getElementById("uniformNum").value;
@@ -170,6 +170,7 @@ function Basic({ formStep , nextFormStep , stepOne , company  }) {
         }).catch((err)=>console.error(err));
     };
     async function handleSubmit(data) {
+        console.log(data);
         let remark = document.getElementById("remark").value;
         let invoice = "";
         const radios = document.querySelectorAll('input[name="drone"]');
@@ -185,8 +186,8 @@ function Basic({ formStep , nextFormStep , stepOne , company  }) {
                 "Content-Type": "application/x-www-form-urlencoded"
             },
             body: new URLSearchParams({
-                application_form_id: "",
-                proxy_company_name: data.compnay,
+                application_form_id: dataID,
+                proxy_company_name: data.company,
                 proxy_tax_id: data.uniformNum,
                 proxy_contact_person: data.contactPerson,
                 proxy_email: data.email,
@@ -197,7 +198,10 @@ function Basic({ formStep , nextFormStep , stepOne , company  }) {
                 sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
             })
         };
-        await fetch(`${"http://ewsadm.taiwantradeshows.com.tw/api/"}setApplyForm`, options).then((response)=>response.json()).then((response)=>console.log(response)).then(nextFormStep()).catch((err)=>console.error(err));
+        await fetch(`${"http://ewsadm.taiwantradeshows.com.tw/api/"}setApplyForm`, options).then((response)=>response.json()).then((response)=>{
+            console.log(response);
+            saveID(response.application_form_id);
+        }).then(nextFormStep()).catch((err)=>console.error(err));
     }
     return /*#__PURE__*/ (0,jsx_runtime_.jsxs)("div", {
         className: [
@@ -401,8 +405,7 @@ function Basic({ formStep , nextFormStep , stepOne , company  }) {
                                                     type: "radio",
                                                     id: "company_address",
                                                     name: "drone",
-                                                    value: "1",
-                                                    defaultChecked: true
+                                                    value: "1"
                                                 })
                                             ]
                                         })
@@ -675,7 +678,7 @@ var external_react_slide_toggle_default = /*#__PURE__*/__webpack_require__.n(ext
 
 
 
-function Choose({ formStep , nextFormStep , priceData , stepTwo  }) {
+function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
     const temporary = async ()=>{
         const useDefault = document.getElementById("chooseDefault");
         let items = [];
@@ -687,7 +690,7 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo  }) {
                     "Content-Type": "application/x-www-form-urlencoded"
                 },
                 body: new URLSearchParams({
-                    application_form_id: "6305a2e49bdbf001",
+                    application_form_id: dataID,
                     base_option: "Y",
                     items: [],
                     sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
@@ -744,7 +747,7 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo  }) {
                     "Content-Type": "application/x-www-form-urlencoded"
                 },
                 body: new URLSearchParams({
-                    application_form_id: "6305a2e49bdbf001",
+                    application_form_id: dataID,
                     base_option: "Y",
                     items: [],
                     sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
@@ -847,7 +850,7 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo  }) {
                 onClick: temporary,
                 children: "暫存"
             }),
-            /*#__PURE__*/ (0,jsx_runtime_.jsxs)(web_.Form, {
+            stepTwo.status === false ? /*#__PURE__*/ (0,jsx_runtime_.jsxs)(web_.Form, {
                 onSubmit: handleSubmit,
                 children: [
                     /*#__PURE__*/ jsx_runtime_.jsx("h2", {
@@ -941,7 +944,8 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo  }) {
                                                                             item.name,
                                                                             /*#__PURE__*/ (0,jsx_runtime_.jsxs)("span", {
                                                                                 children: [
-                                                                                    "$ ",
+                                                                                    "$",
+                                                                                    " ",
                                                                                     item.prcie
                                                                                 ]
                                                                             })
@@ -1031,7 +1035,8 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo  }) {
                                                                         }),
                                                                         /*#__PURE__*/ (0,jsx_runtime_.jsxs)("span", {
                                                                             children: [
-                                                                                "$ ",
+                                                                                "$",
+                                                                                " ",
                                                                                 item.prcie,
                                                                                 "/組"
                                                                             ]
@@ -1121,7 +1126,8 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo  }) {
                                                                         }),
                                                                         /*#__PURE__*/ (0,jsx_runtime_.jsxs)("span", {
                                                                             children: [
-                                                                                "$ ",
+                                                                                "$",
+                                                                                " ",
                                                                                 item.prcie,
                                                                                 "/組"
                                                                             ]
@@ -1211,7 +1217,8 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo  }) {
                                                                         }),
                                                                         /*#__PURE__*/ (0,jsx_runtime_.jsxs)("span", {
                                                                             children: [
-                                                                                "$ ",
+                                                                                "$",
+                                                                                " ",
                                                                                 item.prcie,
                                                                                 "/組"
                                                                             ]
@@ -1301,7 +1308,8 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo  }) {
                                                                         }),
                                                                         /*#__PURE__*/ (0,jsx_runtime_.jsxs)("span", {
                                                                             children: [
-                                                                                "$ ",
+                                                                                "$",
+                                                                                " ",
                                                                                 item.prcie,
                                                                                 "/組"
                                                                             ]
@@ -1391,7 +1399,630 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo  }) {
                                                                         }),
                                                                         /*#__PURE__*/ (0,jsx_runtime_.jsxs)("span", {
                                                                             children: [
-                                                                                "$ ",
+                                                                                "$",
+                                                                                " ",
+                                                                                item.prcie,
+                                                                                "/組"
+                                                                            ]
+                                                                        })
+                                                                    ]
+                                                                })
+                                                            }))
+                                                    })
+                                                })
+                                            })
+                                        ]
+                                    })
+                            })
+                        ]
+                    }),
+                    /*#__PURE__*/ jsx_runtime_.jsx("button", {
+                        type: "submit",
+                        className: (Form_module_default()).next,
+                        children: "下一步"
+                    })
+                ]
+            }) : /*#__PURE__*/ (0,jsx_runtime_.jsxs)(web_.Form, {
+                onSubmit: handleSubmit,
+                children: [
+                    /*#__PURE__*/ jsx_runtime_.jsx("h2", {
+                        children: "水電追加申請項目"
+                    }),
+                    /*#__PURE__*/ (0,jsx_runtime_.jsxs)("div", {
+                        className: (Form_module_default()).applyDefault,
+                        children: [
+                            /*#__PURE__*/ jsx_runtime_.jsx("input", {
+                                type: "checkbox",
+                                id: "chooseDefault",
+                                value: "useDefault",
+                                onChange: handleDefault
+                            }),
+                            /*#__PURE__*/ jsx_runtime_.jsx("label", {
+                                htmlFor: "chooseDefault",
+                                children: "只使用大會提供每 1 攤位免費基本用電 110V 0.5KW"
+                            })
+                        ]
+                    }),
+                    /*#__PURE__*/ (0,jsx_runtime_.jsxs)("div", {
+                        className: (Form_module_default()).applyCheckBox,
+                        children: [
+                            /*#__PURE__*/ jsx_runtime_.jsx((external_react_slide_toggle_default()), {
+                                duration: 1000,
+                                collapsed: true,
+                                whenReversedUseBackwardEase: false,
+                                render: ({ toggle , setCollapsibleElement , toggleState ,  })=>/*#__PURE__*/ (0,jsx_runtime_.jsxs)("div", {
+                                        className: (Form_module_default()).card,
+                                        children: [
+                                            /*#__PURE__*/ jsx_runtime_.jsx("div", {
+                                                className: "card-header",
+                                                children: /*#__PURE__*/ (0,jsx_runtime_.jsxs)("label", {
+                                                    className: [
+                                                        (Form_module_default()).dropDown,
+                                                        toggleState === "COLLAPSED" ? (Form_module_default()).dropDown : (Form_module_default()).active, 
+                                                    ].join(" "),
+                                                    onClick: toggle,
+                                                    children: [
+                                                        "Ａ.用電110V電源箱",
+                                                        /*#__PURE__*/ jsx_runtime_.jsx("span", {
+                                                            children: toggleState === "EXPANDED" || toggleState === "EXPANDING" ? /*#__PURE__*/ jsx_runtime_.jsx("svg", {
+                                                                width: "16",
+                                                                height: "10",
+                                                                viewBox: "0 0 16 10",
+                                                                fill: "none",
+                                                                xmlns: "http://www.w3.org/2000/svg",
+                                                                children: /*#__PURE__*/ jsx_runtime_.jsx("path", {
+                                                                    d: "M1 9L8 2L15 9",
+                                                                    stroke: "white",
+                                                                    strokeWidth: "2"
+                                                                })
+                                                            }) : /*#__PURE__*/ jsx_runtime_.jsx("svg", {
+                                                                width: "16",
+                                                                height: "10",
+                                                                viewBox: "0 0 16 10",
+                                                                fill: "none",
+                                                                xmlns: "http://www.w3.org/2000/svg",
+                                                                children: /*#__PURE__*/ jsx_runtime_.jsx("path", {
+                                                                    d: "M15 1L8 8L1 1",
+                                                                    stroke: "white",
+                                                                    strokeWidth: "2"
+                                                                })
+                                                            })
+                                                        })
+                                                    ]
+                                                })
+                                            }),
+                                            /*#__PURE__*/ jsx_runtime_.jsx("div", {
+                                                className: (Form_module_default()).cardBody,
+                                                ref: setCollapsibleElement,
+                                                children: /*#__PURE__*/ (0,jsx_runtime_.jsxs)("div", {
+                                                    className: (Form_module_default()).dropDownContent,
+                                                    children: [
+                                                        /*#__PURE__*/ jsx_runtime_.jsx("p", {
+                                                            children: "110V 用電計算說明： 0.5KW(千瓦)＝500W(瓦)＝5A(安培)；1KW(千瓦)＝1000W(瓦)＝10A(安培 (a) 110V攤位總用電量(KW)＝攤位上照明用電＋各種電器用品用電(電視、開飲機、電腦等)＋展示產品用電....總計。 (b) 110V免費累計電量(KW)＝參展攤位數 X 500W（每1攤位500W免費) (c) 1100V需追申請之電量(KW)＝110V攤位總用電量扣除了110V免費累計電量；(a) - (b) = (c) 。 請點選計算出的 (c) 值"
+                                                        }),
+                                                        /*#__PURE__*/ jsx_runtime_.jsx("div", {
+                                                            className: (Form_module_default()).aGroup,
+                                                            children: stepTwo.items[0].data.map((item)=>/*#__PURE__*/ jsx_runtime_.jsx(jsx_runtime_.Fragment, {
+                                                                    children: /*#__PURE__*/ (0,jsx_runtime_.jsxs)("label", {
+                                                                        htmlFor: item.item_id,
+                                                                        children: [
+                                                                            item.chk === "N" ? /*#__PURE__*/ jsx_runtime_.jsx("input", {
+                                                                                type: "checkbox",
+                                                                                id: item.item_id,
+                                                                                value: item.item_id,
+                                                                                onChange: active
+                                                                            }) : /*#__PURE__*/ jsx_runtime_.jsx("input", {
+                                                                                type: "checkbox",
+                                                                                id: item.item_id,
+                                                                                value: item.item_id,
+                                                                                onChange: active,
+                                                                                defaultChecked: true
+                                                                            }),
+                                                                            item.name,
+                                                                            /*#__PURE__*/ (0,jsx_runtime_.jsxs)("span", {
+                                                                                children: [
+                                                                                    "$",
+                                                                                    " ",
+                                                                                    item.prcie
+                                                                                ]
+                                                                            })
+                                                                        ]
+                                                                    })
+                                                                }))
+                                                        })
+                                                    ]
+                                                })
+                                            })
+                                        ]
+                                    })
+                            }),
+                            /*#__PURE__*/ jsx_runtime_.jsx((external_react_slide_toggle_default()), {
+                                duration: 1000,
+                                collapsed: true,
+                                whenReversedUseBackwardEase: false,
+                                render: ({ toggle , setCollapsibleElement , toggleState ,  })=>/*#__PURE__*/ (0,jsx_runtime_.jsxs)("div", {
+                                        className: (Form_module_default()).card,
+                                        children: [
+                                            /*#__PURE__*/ jsx_runtime_.jsx("div", {
+                                                className: "card-header",
+                                                children: /*#__PURE__*/ (0,jsx_runtime_.jsxs)("label", {
+                                                    className: [
+                                                        (Form_module_default()).dropDown,
+                                                        toggleState === "COLLAPSED" ? (Form_module_default()).dropDown : (Form_module_default()).active, 
+                                                    ].join(" "),
+                                                    onClick: toggle,
+                                                    children: [
+                                                        "B. 用電220V電源箱",
+                                                        /*#__PURE__*/ jsx_runtime_.jsx("span", {
+                                                            children: toggleState === "EXPANDED" || toggleState === "EXPANDING" ? /*#__PURE__*/ jsx_runtime_.jsx("svg", {
+                                                                width: "16",
+                                                                height: "10",
+                                                                viewBox: "0 0 16 10",
+                                                                fill: "none",
+                                                                xmlns: "http://www.w3.org/2000/svg",
+                                                                children: /*#__PURE__*/ jsx_runtime_.jsx("path", {
+                                                                    d: "M1 9L8 2L15 9",
+                                                                    stroke: "white",
+                                                                    strokeWidth: "2"
+                                                                })
+                                                            }) : /*#__PURE__*/ jsx_runtime_.jsx("svg", {
+                                                                width: "16",
+                                                                height: "10",
+                                                                viewBox: "0 0 16 10",
+                                                                fill: "none",
+                                                                xmlns: "http://www.w3.org/2000/svg",
+                                                                children: /*#__PURE__*/ jsx_runtime_.jsx("path", {
+                                                                    d: "M15 1L8 8L1 1",
+                                                                    stroke: "white",
+                                                                    strokeWidth: "2"
+                                                                })
+                                                            })
+                                                        })
+                                                    ]
+                                                })
+                                            }),
+                                            /*#__PURE__*/ jsx_runtime_.jsx("div", {
+                                                className: (Form_module_default()).cardBody,
+                                                ref: setCollapsibleElement,
+                                                children: /*#__PURE__*/ jsx_runtime_.jsx("div", {
+                                                    className: (Form_module_default()).dropDownContent,
+                                                    children: /*#__PURE__*/ jsx_runtime_.jsx("div", {
+                                                        className: (Form_module_default()).bGroup,
+                                                        children: stepTwo.items[1].data.map((item)=>/*#__PURE__*/ jsx_runtime_.jsx(jsx_runtime_.Fragment, {
+                                                                children: /*#__PURE__*/ (0,jsx_runtime_.jsxs)("label", {
+                                                                    htmlFor: item.item_id,
+                                                                    children: [
+                                                                        item.chk === "N" ? /*#__PURE__*/ jsx_runtime_.jsx("input", {
+                                                                            type: "checkbox",
+                                                                            id: item.item_id,
+                                                                            value: item.item_id,
+                                                                            onChange: enableNextTextBox
+                                                                        }) : /*#__PURE__*/ jsx_runtime_.jsx("input", {
+                                                                            type: "checkbox",
+                                                                            id: item.item_id,
+                                                                            value: item.item_id,
+                                                                            onChange: enableNextTextBox,
+                                                                            defaultChecked: true
+                                                                        }),
+                                                                        item.name,
+                                                                        /*#__PURE__*/ (0,jsx_runtime_.jsxs)("label", {
+                                                                            className: (Form_module_default()).num,
+                                                                            children: [
+                                                                                "數量",
+                                                                                item.quantity === "" ? /*#__PURE__*/ jsx_runtime_.jsx("input", {
+                                                                                    type: "number",
+                                                                                    min: "0",
+                                                                                    disabled: true
+                                                                                }) : /*#__PURE__*/ jsx_runtime_.jsx("input", {
+                                                                                    type: "number",
+                                                                                    min: item.quantity.toString()
+                                                                                })
+                                                                            ]
+                                                                        }),
+                                                                        /*#__PURE__*/ (0,jsx_runtime_.jsxs)("span", {
+                                                                            children: [
+                                                                                "$",
+                                                                                " ",
+                                                                                item.prcie,
+                                                                                "/組"
+                                                                            ]
+                                                                        })
+                                                                    ]
+                                                                })
+                                                            }))
+                                                    })
+                                                })
+                                            })
+                                        ]
+                                    })
+                            }),
+                            /*#__PURE__*/ jsx_runtime_.jsx((external_react_slide_toggle_default()), {
+                                duration: 1000,
+                                collapsed: true,
+                                whenReversedUseBackwardEase: false,
+                                render: ({ toggle , setCollapsibleElement , toggleState ,  })=>/*#__PURE__*/ (0,jsx_runtime_.jsxs)("div", {
+                                        className: (Form_module_default()).card,
+                                        children: [
+                                            /*#__PURE__*/ jsx_runtime_.jsx("div", {
+                                                className: "card-header",
+                                                children: /*#__PURE__*/ (0,jsx_runtime_.jsxs)("label", {
+                                                    className: [
+                                                        (Form_module_default()).dropDown,
+                                                        toggleState === "COLLAPSED" ? (Form_module_default()).dropDown : (Form_module_default()).active, 
+                                                    ].join(" "),
+                                                    onClick: toggle,
+                                                    children: [
+                                                        "C. 用電380V電源箱",
+                                                        /*#__PURE__*/ jsx_runtime_.jsx("span", {
+                                                            children: toggleState === "EXPANDED" || toggleState === "EXPANDING" ? /*#__PURE__*/ jsx_runtime_.jsx("svg", {
+                                                                width: "16",
+                                                                height: "10",
+                                                                viewBox: "0 0 16 10",
+                                                                fill: "none",
+                                                                xmlns: "http://www.w3.org/2000/svg",
+                                                                children: /*#__PURE__*/ jsx_runtime_.jsx("path", {
+                                                                    d: "M1 9L8 2L15 9",
+                                                                    stroke: "white",
+                                                                    strokeWidth: "2"
+                                                                })
+                                                            }) : /*#__PURE__*/ jsx_runtime_.jsx("svg", {
+                                                                width: "16",
+                                                                height: "10",
+                                                                viewBox: "0 0 16 10",
+                                                                fill: "none",
+                                                                xmlns: "http://www.w3.org/2000/svg",
+                                                                children: /*#__PURE__*/ jsx_runtime_.jsx("path", {
+                                                                    d: "M15 1L8 8L1 1",
+                                                                    stroke: "white",
+                                                                    strokeWidth: "2"
+                                                                })
+                                                            })
+                                                        })
+                                                    ]
+                                                })
+                                            }),
+                                            /*#__PURE__*/ jsx_runtime_.jsx("div", {
+                                                className: (Form_module_default()).cardBody,
+                                                ref: setCollapsibleElement,
+                                                children: /*#__PURE__*/ jsx_runtime_.jsx("div", {
+                                                    className: (Form_module_default()).dropDownContent,
+                                                    children: /*#__PURE__*/ jsx_runtime_.jsx("div", {
+                                                        className: (Form_module_default()).bGroup,
+                                                        children: stepTwo.items[2].data.map((item)=>/*#__PURE__*/ jsx_runtime_.jsx(jsx_runtime_.Fragment, {
+                                                                children: /*#__PURE__*/ (0,jsx_runtime_.jsxs)("label", {
+                                                                    htmlFor: item.item_id,
+                                                                    children: [
+                                                                        item.chk === "N" ? /*#__PURE__*/ jsx_runtime_.jsx("input", {
+                                                                            type: "checkbox",
+                                                                            id: item.item_id,
+                                                                            value: item.item_id,
+                                                                            onChange: enableNextTextBox
+                                                                        }) : /*#__PURE__*/ jsx_runtime_.jsx("input", {
+                                                                            type: "checkbox",
+                                                                            id: item.item_id,
+                                                                            value: item.item_id,
+                                                                            onChange: enableNextTextBox,
+                                                                            defaultChecked: true
+                                                                        }),
+                                                                        item.name,
+                                                                        /*#__PURE__*/ (0,jsx_runtime_.jsxs)("label", {
+                                                                            className: (Form_module_default()).num,
+                                                                            children: [
+                                                                                "數量",
+                                                                                item.quantity === "" ? /*#__PURE__*/ jsx_runtime_.jsx("input", {
+                                                                                    type: "number",
+                                                                                    min: "0",
+                                                                                    disabled: true
+                                                                                }) : /*#__PURE__*/ jsx_runtime_.jsx("input", {
+                                                                                    type: "number",
+                                                                                    min: item.quantity.toString()
+                                                                                })
+                                                                            ]
+                                                                        }),
+                                                                        /*#__PURE__*/ (0,jsx_runtime_.jsxs)("span", {
+                                                                            children: [
+                                                                                "$",
+                                                                                " ",
+                                                                                item.prcie,
+                                                                                "/組"
+                                                                            ]
+                                                                        })
+                                                                    ]
+                                                                })
+                                                            }))
+                                                    })
+                                                })
+                                            })
+                                        ]
+                                    })
+                            }),
+                            /*#__PURE__*/ jsx_runtime_.jsx((external_react_slide_toggle_default()), {
+                                duration: 1000,
+                                collapsed: true,
+                                whenReversedUseBackwardEase: false,
+                                render: ({ toggle , setCollapsibleElement , toggleState ,  })=>/*#__PURE__*/ (0,jsx_runtime_.jsxs)("div", {
+                                        className: (Form_module_default()).card,
+                                        children: [
+                                            /*#__PURE__*/ jsx_runtime_.jsx("div", {
+                                                className: "card-header",
+                                                children: /*#__PURE__*/ (0,jsx_runtime_.jsxs)("label", {
+                                                    className: [
+                                                        (Form_module_default()).dropDown,
+                                                        toggleState === "COLLAPSED" ? (Form_module_default()).dropDown : (Form_module_default()).active, 
+                                                    ].join(" "),
+                                                    onClick: toggle,
+                                                    children: [
+                                                        "D. 24小時用電",
+                                                        /*#__PURE__*/ jsx_runtime_.jsx("span", {
+                                                            children: toggleState === "EXPANDED" || toggleState === "EXPANDING" ? /*#__PURE__*/ jsx_runtime_.jsx("svg", {
+                                                                width: "16",
+                                                                height: "10",
+                                                                viewBox: "0 0 16 10",
+                                                                fill: "none",
+                                                                xmlns: "http://www.w3.org/2000/svg",
+                                                                children: /*#__PURE__*/ jsx_runtime_.jsx("path", {
+                                                                    d: "M1 9L8 2L15 9",
+                                                                    stroke: "white",
+                                                                    strokeWidth: "2"
+                                                                })
+                                                            }) : /*#__PURE__*/ jsx_runtime_.jsx("svg", {
+                                                                width: "16",
+                                                                height: "10",
+                                                                viewBox: "0 0 16 10",
+                                                                fill: "none",
+                                                                xmlns: "http://www.w3.org/2000/svg",
+                                                                children: /*#__PURE__*/ jsx_runtime_.jsx("path", {
+                                                                    d: "M15 1L8 8L1 1",
+                                                                    stroke: "white",
+                                                                    strokeWidth: "2"
+                                                                })
+                                                            })
+                                                        })
+                                                    ]
+                                                })
+                                            }),
+                                            /*#__PURE__*/ jsx_runtime_.jsx("div", {
+                                                className: (Form_module_default()).cardBody,
+                                                ref: setCollapsibleElement,
+                                                children: /*#__PURE__*/ jsx_runtime_.jsx("div", {
+                                                    className: (Form_module_default()).dropDownContent,
+                                                    children: /*#__PURE__*/ jsx_runtime_.jsx("div", {
+                                                        className: (Form_module_default()).bGroup,
+                                                        children: stepTwo.items[3].data.map((item)=>/*#__PURE__*/ jsx_runtime_.jsx(jsx_runtime_.Fragment, {
+                                                                children: /*#__PURE__*/ (0,jsx_runtime_.jsxs)("label", {
+                                                                    htmlFor: item.item_id,
+                                                                    children: [
+                                                                        item.chk === "N" ? /*#__PURE__*/ jsx_runtime_.jsx("input", {
+                                                                            type: "checkbox",
+                                                                            id: item.item_id,
+                                                                            value: item.item_id,
+                                                                            onChange: enableNextTextBox
+                                                                        }) : /*#__PURE__*/ jsx_runtime_.jsx("input", {
+                                                                            type: "checkbox",
+                                                                            id: item.item_id,
+                                                                            value: item.item_id,
+                                                                            onChange: enableNextTextBox,
+                                                                            defaultChecked: true
+                                                                        }),
+                                                                        item.name,
+                                                                        /*#__PURE__*/ (0,jsx_runtime_.jsxs)("label", {
+                                                                            className: (Form_module_default()).num,
+                                                                            children: [
+                                                                                "數量",
+                                                                                item.quantity === "" ? /*#__PURE__*/ jsx_runtime_.jsx("input", {
+                                                                                    type: "number",
+                                                                                    min: "0",
+                                                                                    disabled: true
+                                                                                }) : /*#__PURE__*/ jsx_runtime_.jsx("input", {
+                                                                                    type: "number",
+                                                                                    min: item.quantity.toString()
+                                                                                })
+                                                                            ]
+                                                                        }),
+                                                                        /*#__PURE__*/ (0,jsx_runtime_.jsxs)("span", {
+                                                                            children: [
+                                                                                "$",
+                                                                                " ",
+                                                                                item.prcie,
+                                                                                "/組"
+                                                                            ]
+                                                                        })
+                                                                    ]
+                                                                })
+                                                            }))
+                                                    })
+                                                })
+                                            })
+                                        ]
+                                    })
+                            }),
+                            /*#__PURE__*/ jsx_runtime_.jsx((external_react_slide_toggle_default()), {
+                                duration: 1000,
+                                collapsed: true,
+                                whenReversedUseBackwardEase: false,
+                                render: ({ toggle , setCollapsibleElement , toggleState ,  })=>/*#__PURE__*/ (0,jsx_runtime_.jsxs)("div", {
+                                        className: (Form_module_default()).card,
+                                        children: [
+                                            /*#__PURE__*/ jsx_runtime_.jsx("div", {
+                                                className: "card-header",
+                                                children: /*#__PURE__*/ (0,jsx_runtime_.jsxs)("label", {
+                                                    className: [
+                                                        (Form_module_default()).dropDown,
+                                                        toggleState === "COLLAPSED" ? (Form_module_default()).dropDown : (Form_module_default()).active, 
+                                                    ].join(" "),
+                                                    onClick: toggle,
+                                                    children: [
+                                                        "E. 給排水管",
+                                                        /*#__PURE__*/ jsx_runtime_.jsx("span", {
+                                                            children: toggleState === "EXPANDED" || toggleState === "EXPANDING" ? /*#__PURE__*/ jsx_runtime_.jsx("svg", {
+                                                                width: "16",
+                                                                height: "10",
+                                                                viewBox: "0 0 16 10",
+                                                                fill: "none",
+                                                                xmlns: "http://www.w3.org/2000/svg",
+                                                                children: /*#__PURE__*/ jsx_runtime_.jsx("path", {
+                                                                    d: "M1 9L8 2L15 9",
+                                                                    stroke: "white",
+                                                                    strokeWidth: "2"
+                                                                })
+                                                            }) : /*#__PURE__*/ jsx_runtime_.jsx("svg", {
+                                                                width: "16",
+                                                                height: "10",
+                                                                viewBox: "0 0 16 10",
+                                                                fill: "none",
+                                                                xmlns: "http://www.w3.org/2000/svg",
+                                                                children: /*#__PURE__*/ jsx_runtime_.jsx("path", {
+                                                                    d: "M15 1L8 8L1 1",
+                                                                    stroke: "white",
+                                                                    strokeWidth: "2"
+                                                                })
+                                                            })
+                                                        })
+                                                    ]
+                                                })
+                                            }),
+                                            /*#__PURE__*/ jsx_runtime_.jsx("div", {
+                                                className: (Form_module_default()).cardBody,
+                                                ref: setCollapsibleElement,
+                                                children: /*#__PURE__*/ jsx_runtime_.jsx("div", {
+                                                    className: (Form_module_default()).dropDownContent,
+                                                    children: /*#__PURE__*/ jsx_runtime_.jsx("div", {
+                                                        className: (Form_module_default()).bGroup,
+                                                        children: stepTwo.items[4].data.map((item)=>/*#__PURE__*/ jsx_runtime_.jsx(jsx_runtime_.Fragment, {
+                                                                children: /*#__PURE__*/ (0,jsx_runtime_.jsxs)("label", {
+                                                                    htmlFor: item.item_id,
+                                                                    children: [
+                                                                        item.chk === "N" ? /*#__PURE__*/ jsx_runtime_.jsx("input", {
+                                                                            type: "checkbox",
+                                                                            id: item.item_id,
+                                                                            value: item.item_id,
+                                                                            onChange: enableNextTextBox
+                                                                        }) : /*#__PURE__*/ jsx_runtime_.jsx("input", {
+                                                                            type: "checkbox",
+                                                                            id: item.item_id,
+                                                                            value: item.item_id,
+                                                                            onChange: enableNextTextBox,
+                                                                            defaultChecked: true
+                                                                        }),
+                                                                        item.name,
+                                                                        /*#__PURE__*/ (0,jsx_runtime_.jsxs)("label", {
+                                                                            className: (Form_module_default()).num,
+                                                                            children: [
+                                                                                "數量",
+                                                                                item.quantity === "" ? /*#__PURE__*/ jsx_runtime_.jsx("input", {
+                                                                                    type: "number",
+                                                                                    min: "0",
+                                                                                    disabled: true
+                                                                                }) : /*#__PURE__*/ jsx_runtime_.jsx("input", {
+                                                                                    type: "number",
+                                                                                    min: item.quantity.toString()
+                                                                                })
+                                                                            ]
+                                                                        }),
+                                                                        /*#__PURE__*/ (0,jsx_runtime_.jsxs)("span", {
+                                                                            children: [
+                                                                                "$",
+                                                                                " ",
+                                                                                item.prcie,
+                                                                                "/組"
+                                                                            ]
+                                                                        })
+                                                                    ]
+                                                                })
+                                                            }))
+                                                    })
+                                                })
+                                            })
+                                        ]
+                                    })
+                            }),
+                            /*#__PURE__*/ jsx_runtime_.jsx((external_react_slide_toggle_default()), {
+                                duration: 1000,
+                                collapsed: true,
+                                whenReversedUseBackwardEase: false,
+                                render: ({ toggle , setCollapsibleElement , toggleState ,  })=>/*#__PURE__*/ (0,jsx_runtime_.jsxs)("div", {
+                                        className: (Form_module_default()).card,
+                                        children: [
+                                            /*#__PURE__*/ jsx_runtime_.jsx("div", {
+                                                className: "card-header",
+                                                children: /*#__PURE__*/ (0,jsx_runtime_.jsxs)("label", {
+                                                    className: [
+                                                        (Form_module_default()).dropDown,
+                                                        toggleState === "COLLAPSED" ? (Form_module_default()).dropDown : (Form_module_default()).active, 
+                                                    ].join(" "),
+                                                    onClick: toggle,
+                                                    children: [
+                                                        "F. 壓縮空氣",
+                                                        /*#__PURE__*/ jsx_runtime_.jsx("span", {
+                                                            children: toggleState === "EXPANDED" || toggleState === "EXPANDING" ? /*#__PURE__*/ jsx_runtime_.jsx("svg", {
+                                                                width: "16",
+                                                                height: "10",
+                                                                viewBox: "0 0 16 10",
+                                                                fill: "none",
+                                                                xmlns: "http://www.w3.org/2000/svg",
+                                                                children: /*#__PURE__*/ jsx_runtime_.jsx("path", {
+                                                                    d: "M1 9L8 2L15 9",
+                                                                    stroke: "white",
+                                                                    strokeWidth: "2"
+                                                                })
+                                                            }) : /*#__PURE__*/ jsx_runtime_.jsx("svg", {
+                                                                width: "16",
+                                                                height: "10",
+                                                                viewBox: "0 0 16 10",
+                                                                fill: "none",
+                                                                xmlns: "http://www.w3.org/2000/svg",
+                                                                children: /*#__PURE__*/ jsx_runtime_.jsx("path", {
+                                                                    d: "M15 1L8 8L1 1",
+                                                                    stroke: "white",
+                                                                    strokeWidth: "2"
+                                                                })
+                                                            })
+                                                        })
+                                                    ]
+                                                })
+                                            }),
+                                            /*#__PURE__*/ jsx_runtime_.jsx("div", {
+                                                className: (Form_module_default()).cardBody,
+                                                ref: setCollapsibleElement,
+                                                children: /*#__PURE__*/ jsx_runtime_.jsx("div", {
+                                                    className: (Form_module_default()).dropDownContent,
+                                                    children: /*#__PURE__*/ jsx_runtime_.jsx("div", {
+                                                        className: (Form_module_default()).bGroup,
+                                                        children: stepTwo.items[5].data.map((item)=>/*#__PURE__*/ jsx_runtime_.jsx(jsx_runtime_.Fragment, {
+                                                                children: /*#__PURE__*/ (0,jsx_runtime_.jsxs)("label", {
+                                                                    htmlFor: item.item_id,
+                                                                    children: [
+                                                                        item.chk === "N" ? /*#__PURE__*/ jsx_runtime_.jsx("input", {
+                                                                            type: "checkbox",
+                                                                            id: item.item_id,
+                                                                            value: item.item_id,
+                                                                            onChange: enableNextTextBox
+                                                                        }) : /*#__PURE__*/ jsx_runtime_.jsx("input", {
+                                                                            type: "checkbox",
+                                                                            id: item.item_id,
+                                                                            value: item.item_id,
+                                                                            onChange: enableNextTextBox,
+                                                                            defaultChecked: true
+                                                                        }),
+                                                                        item.name,
+                                                                        /*#__PURE__*/ (0,jsx_runtime_.jsxs)("label", {
+                                                                            className: (Form_module_default()).num,
+                                                                            children: [
+                                                                                "數量",
+                                                                                item.quantity === "" ? /*#__PURE__*/ jsx_runtime_.jsx("input", {
+                                                                                    type: "number",
+                                                                                    min: "0",
+                                                                                    disabled: true
+                                                                                }) : /*#__PURE__*/ jsx_runtime_.jsx("input", {
+                                                                                    type: "number",
+                                                                                    min: item.quantity.toString()
+                                                                                })
+                                                                            ]
+                                                                        }),
+                                                                        /*#__PURE__*/ (0,jsx_runtime_.jsxs)("span", {
+                                                                            children: [
+                                                                                "$",
+                                                                                " ",
                                                                                 item.prcie,
                                                                                 "/組"
                                                                             ]
@@ -1451,7 +2082,7 @@ const external_axios_namespaceObject = require("axios");
 
 
 
-function Preview({ formStep , nextFormStep , applicatonId  }) {
+function Preview({ formStep , nextFormStep , applicatonId , dataID ,  }) {
     const { 0: data , 1: setData  } = (0,external_react_.useState)(null);
     const { 0: isLoading , 1: setLoading  } = (0,external_react_.useState)(false);
     const router = (0,router_.useRouter)();
@@ -1464,7 +2095,7 @@ function Preview({ formStep , nextFormStep , applicatonId  }) {
             // },
             body: new URLSearchParams({
                 lang: router.locale,
-                application_form_id: applicatonId,
+                application_form_id: dataID,
                 sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
             })
         };
@@ -1486,7 +2117,7 @@ function Preview({ formStep , nextFormStep , applicatonId  }) {
                 "Content-Type": "application/x-www-form-urlencoded"
             },
             body: new URLSearchParams({
-                application_form_id: applicatonId,
+                application_form_id: dataID,
                 sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
             })
         };
@@ -1756,7 +2387,7 @@ function Preview({ formStep , nextFormStep , applicatonId  }) {
 
 
 
-function Write({ formStep , nextFormStep , stepThree  }) {
+function Write({ formStep , nextFormStep , stepThree , dataID  }) {
     const { 0: imageSrc , 1: setImageSrc  } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)();
     const { 0: uploadData , 1: setUploadData  } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)();
     const { 0: goNext , 1: setGoNext  } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(true);
@@ -2198,6 +2829,8 @@ async function getServerSideProps({ locale  }) {
 function Apply(props) {
     const { t  } = (0,next_i18next__WEBPACK_IMPORTED_MODULE_7__.useTranslation)();
     const { 0: formStep , 1: setFormStep  } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(0);
+    const { 0: savadata , 1: setSavaData  } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(props.company.savadata);
+    const saveID = (item)=>setSavaData(item);
     const nextFormStep = ()=>setFormStep((currentStep)=>currentStep + 1);
     const prevFormStep = ()=>setFormStep((currentStep)=>currentStep - 1);
     return /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
@@ -2229,21 +2862,26 @@ function Apply(props) {
                             formStep: formStep,
                             nextFormStep: nextFormStep,
                             stepOne: props.stepOne,
-                            company: props.company
+                            company: props.company,
+                            saveID: saveID,
+                            dataID: savadata
                         }),
                         formStep >= 1 && /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_Components_Forms_Choose__WEBPACK_IMPORTED_MODULE_10__/* ["default"] */ .Z, {
                             formStep: formStep,
                             nextFormStep: nextFormStep,
                             priceData: props.priceData,
-                            stepTwo: props.stepTwo
+                            stepTwo: props.stepTwo,
+                            dataID: savadata
                         }),
                         formStep >= 2 && /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_Components_Forms_Write__WEBPACK_IMPORTED_MODULE_11__/* ["default"] */ .Z, {
                             formStep: formStep,
                             nextFormStep: nextFormStep,
-                            stepThree: props.stepThree
+                            stepThree: props.stepThree,
+                            dataID: savadata
                         }),
                         formStep > 2 && /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_Components_Forms_Preview__WEBPACK_IMPORTED_MODULE_12__/* ["default"] */ .Z, {
-                            applicatonId: props.company.savadata
+                            applicatonId: props.company.savadata,
+                            dataID: savadata
                         })
                     ]
                 })

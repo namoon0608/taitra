@@ -2,7 +2,14 @@ import styles from "../../styles/Form.module.scss";
 import { Form } from "@unform/web";
 import Input from "../Input Fields/Input";
 
-export default function Basic({ formStep, nextFormStep, stepOne, company }) {
+export default function Basic({
+    formStep,
+    nextFormStep,
+    stepOne,
+    company,
+    saveID,
+    dataID,
+}) {
     const temporary = async () => {
         let company = document.getElementById("company").value;
         let uniformNum = document.getElementById("uniformNum").value;
@@ -48,6 +55,7 @@ export default function Basic({ formStep, nextFormStep, stepOne, company }) {
     };
 
     async function handleSubmit(data) {
+        console.log(data);
         let remark = document.getElementById("remark").value;
         let invoice = "";
         const radios = document.querySelectorAll('input[name="drone"]');
@@ -64,8 +72,8 @@ export default function Basic({ formStep, nextFormStep, stepOne, company }) {
                 "Content-Type": "application/x-www-form-urlencoded",
             },
             body: new URLSearchParams({
-                application_form_id: "",
-                proxy_company_name: data.compnay,
+                application_form_id: dataID,
+                proxy_company_name: data.company,
                 proxy_tax_id: data.uniformNum,
                 proxy_contact_person: data.contactPerson,
                 proxy_email: data.email,
@@ -78,7 +86,10 @@ export default function Basic({ formStep, nextFormStep, stepOne, company }) {
         };
         await fetch(`${process.env.customKey}setApplyForm`, options)
             .then((response) => response.json())
-            .then((response) => console.log(response))
+            .then((response) => {
+                console.log(response);
+                saveID(response.application_form_id);
+            })
             .then(nextFormStep())
             .catch((err) => console.error(err));
     }
@@ -197,7 +208,6 @@ export default function Basic({ formStep, nextFormStep, stepOne, company }) {
                                         id="company_address"
                                         name="drone"
                                         value="1"
-                                        defaultChecked
                                     />
                                 </label>
                             </div>

@@ -102,6 +102,9 @@ export async function getServerSideProps({ locale }) {
 export default function Apply(props) {
     const { t } = useTranslation();
     const [formStep, setFormStep] = useState(0);
+    const [savadata, setSavaData] = useState(props.company.savadata);
+
+    const saveID = (item) => setSavaData(item);
 
     const nextFormStep = () => setFormStep((currentStep) => currentStep + 1);
 
@@ -127,6 +130,8 @@ export default function Apply(props) {
                             nextFormStep={nextFormStep}
                             stepOne={props.stepOne}
                             company={props.company}
+                            saveID={saveID}
+                            dataID={savadata}
                         />
                     )}
                     {formStep >= 1 && (
@@ -135,6 +140,7 @@ export default function Apply(props) {
                             nextFormStep={nextFormStep}
                             priceData={props.priceData}
                             stepTwo={props.stepTwo}
+                            dataID={savadata}
                         />
                     )}
                     {formStep >= 2 && (
@@ -142,11 +148,15 @@ export default function Apply(props) {
                             formStep={formStep}
                             nextFormStep={nextFormStep}
                             stepThree={props.stepThree}
+                            dataID={savadata}
                         />
                     )}
 
                     {formStep > 2 && (
-                        <Preview applicatonId={props.company.savadata} />
+                        <Preview
+                            applicatonId={props.company.savadata}
+                            dataID={savadata}
+                        />
                     )}
                 </FormCard>
             </Hero>

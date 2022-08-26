@@ -1,11 +1,11 @@
 {
-    "logo": "Water and Power Application System of Taiwan Trade Shows",
+    "logo": "Water and Power Application",
     "nav": {
         "applyNote": "Application Kit",
         "price": "Price List",
         "apply": "Apply",
-        "search": "Track Your Application",
-        "complete": "Completion & Signing",
+        "search": "Status",
+        "complete": "Completion",
         "contact": "Contact"
     },
     "apply": "Apply"

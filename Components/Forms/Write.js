@@ -2,7 +2,7 @@ import { useState } from "react";
 import styles from "../../styles/Form.module.scss";
 import Popup from "../Popup/Popup";
 
-export default function Write({ formStep, nextFormStep, stepThree }) {
+export default function Write({ formStep, nextFormStep, stepThree, dataID }) {
     const [imageSrc, setImageSrc] = useState();
     const [uploadData, setUploadData] = useState();
     const [goNext, setGoNext] = useState(true);

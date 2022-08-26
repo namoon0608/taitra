@@ -4,7 +4,13 @@ import styles from "../../styles/Form.module.scss";
 import { Form } from "@unform/web";
 import SlideToggle from "react-slide-toggle";
 
-export default function Choose({ formStep, nextFormStep, priceData, stepTwo }) {
+export default function Choose({
+    formStep,
+    nextFormStep,
+    priceData,
+    stepTwo,
+    dataID,
+}) {
     const temporary = async () => {
         const useDefault = document.getElementById("chooseDefault");
         let items = [];
@@ -16,7 +22,7 @@ export default function Choose({ formStep, nextFormStep, priceData, stepTwo }) {
                     "Content-Type": "application/x-www-form-urlencoded",
                 },
                 body: new URLSearchParams({
-                    application_form_id: "6305a2e49bdbf001",
+                    application_form_id: dataID,
                     base_option: "Y",
                     items: [],
                     sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
@@ -81,7 +87,7 @@ export default function Choose({ formStep, nextFormStep, priceData, stepTwo }) {
                     "Content-Type": "application/x-www-form-urlencoded",
                 },
                 body: new URLSearchParams({
-                    application_form_id: "6305a2e49bdbf001",
+                    application_form_id: dataID,
                     base_option: "Y",
                     items: [],
                     sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
@@ -205,337 +211,343 @@ export default function Choose({ formStep, nextFormStep, priceData, stepTwo }) {
             <button className={styles.temporary} onClick={temporary}>
                 暫存
             </button>
-            <Form onSubmit={handleSubmit}>
-                <h2>水電追加申請項目</h2>
-                <div className={styles.applyDefault}>
-                    <input
-                        type="checkbox"
-                        id="chooseDefault"
-                        value="useDefault"
-                        onChange={handleDefault}
-                        defaultChecked
-                    />
-                    <label htmlFor="chooseDefault">
-                        只使用大會提供每 1 攤位免費基本用電 110V 0.5KW
-                    </label>
-                </div>
-                <div className={styles.applyCheckBox}>
-                    <SlideToggle
-                        duration={1000}
-                        collapsed={true}
-                        whenReversedUseBackwardEase={false}
-                        render={({
-                            toggle,
-                            setCollapsibleElement,
-                            toggleState,
-                        }) => (
-                            <div className={styles.card}>
-                                <div className="card-header">
-                                    <label
-                                        className={[
-                                            styles.dropDown,
-                                            toggleState === "COLLAPSED"
-                                                ? styles.dropDown
-                                                : styles.active,
-                                        ].join(" ")}
-                                        onClick={toggle}
+            {stepTwo.status === false ? (
+                <Form onSubmit={handleSubmit}>
+                    <h2>水電追加申請項目</h2>
+                    <div className={styles.applyDefault}>
+                        <input
+                            type="checkbox"
+                            id="chooseDefault"
+                            value="useDefault"
+                            onChange={handleDefault}
+                            defaultChecked
+                        />
+                        <label htmlFor="chooseDefault">
+                            只使用大會提供每 1 攤位免費基本用電 110V 0.5KW
+                        </label>
+                    </div>
+                    <div className={styles.applyCheckBox}>
+                        <SlideToggle
+                            duration={1000}
+                            collapsed={true}
+                            whenReversedUseBackwardEase={false}
+                            render={({
+                                toggle,
+                                setCollapsibleElement,
+                                toggleState,
+                            }) => (
+                                <div className={styles.card}>
+                                    <div className="card-header">
+                                        <label
+                                            className={[
+                                                styles.dropDown,
+                                                toggleState === "COLLAPSED"
+                                                    ? styles.dropDown
+                                                    : styles.active,
+                                            ].join(" ")}
+                                            onClick={toggle}
+                                        >
+                                            Ａ.用電110V電源箱
+                                            <span>
+                                                {toggleState === "EXPANDED" ||
+                                                toggleState === "EXPANDING" ? (
+                                                    <svg
+                                                        width="16"
+                                                        height="10"
+                                                        viewBox="0 0 16 10"
+                                                        fill="none"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                    >
+                                                        <path
+                                                            d="M1 9L8 2L15 9"
+                                                            stroke="white"
+                                                            strokeWidth="2"
+                                                        />
+                                                    </svg>
+                                                ) : (
+                                                    <svg
+                                                        width="16"
+                                                        height="10"
+                                                        viewBox="0 0 16 10"
+                                                        fill="none"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                    >
+                                                        <path
+                                                            d="M15 1L8 8L1 1"
+                                                            stroke="white"
+                                                            strokeWidth="2"
+                                                        />
+                                                    </svg>
+                                                )}
+                                            </span>
+                                        </label>
+                                    </div>
+                                    <div
+                                        className={styles.cardBody}
+                                        ref={setCollapsibleElement}
                                     >
-                                        Ａ.用電110V電源箱
-                                        <span>
-                                            {toggleState === "EXPANDED" ||
-                                            toggleState === "EXPANDING" ? (
-                                                <svg
-                                                    width="16"
-                                                    height="10"
-                                                    viewBox="0 0 16 10"
-                                                    fill="none"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                >
-                                                    <path
-                                                        d="M1 9L8 2L15 9"
-                                                        stroke="white"
-                                                        strokeWidth="2"
-                                                    />
-                                                </svg>
-                                            ) : (
-                                                <svg
-                                                    width="16"
-                                                    height="10"
-                                                    viewBox="0 0 16 10"
-                                                    fill="none"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                >
-                                                    <path
-                                                        d="M15 1L8 8L1 1"
-                                                        stroke="white"
-                                                        strokeWidth="2"
-                                                    />
-                                                </svg>
-                                            )}
-                                        </span>
-                                    </label>
-                                </div>
-                                <div
-                                    className={styles.cardBody}
-                                    ref={setCollapsibleElement}
-                                >
-                                    <div className={styles.dropDownContent}>
-                                        <p>
-                                            110V 用電計算說明：
-                                            0.5KW(千瓦)＝500W(瓦)＝5A(安培)；1KW(千瓦)＝1000W(瓦)＝10A(安培
-                                            (a)
-                                            110V攤位總用電量(KW)＝攤位上照明用電＋各種電器用品用電(電視、開飲機、電腦等)＋展示產品用電....總計。
-                                            (b) 110V免費累計電量(KW)＝參展攤位數
-                                            X 500W（每1攤位500W免費) (c)
-                                            1100V需追申請之電量(KW)＝110V攤位總用電量扣除了110V免費累計電量；(a)
-                                            - (b) = (c) 。 請點選計算出的 (c) 值
-                                        </p>
-                                        <div className={styles.aGroup}>
-                                            {priceData.items[0].data.map(
-                                                (item) => (
-                                                    <>
-                                                        <label
-                                                            htmlFor={
-                                                                item.item_id
-                                                            }
-                                                        >
-                                                            <input
-                                                                type="checkbox"
-                                                                id={
+                                        <div className={styles.dropDownContent}>
+                                            <p>
+                                                110V 用電計算說明：
+                                                0.5KW(千瓦)＝500W(瓦)＝5A(安培)；1KW(千瓦)＝1000W(瓦)＝10A(安培
+                                                (a)
+                                                110V攤位總用電量(KW)＝攤位上照明用電＋各種電器用品用電(電視、開飲機、電腦等)＋展示產品用電....總計。
+                                                (b)
+                                                110V免費累計電量(KW)＝參展攤位數
+                                                X 500W（每1攤位500W免費) (c)
+                                                1100V需追申請之電量(KW)＝110V攤位總用電量扣除了110V免費累計電量；(a)
+                                                - (b) = (c) 。 請點選計算出的
+                                                (c) 值
+                                            </p>
+                                            <div className={styles.aGroup}>
+                                                {priceData.items[0].data.map(
+                                                    (item) => (
+                                                        <>
+                                                            <label
+                                                                htmlFor={
                                                                     item.item_id
                                                                 }
-                                                                value={
-                                                                    item.item_id
-                                                                }
-                                                                onChange={
-                                                                    active
-                                                                }
-                                                            />
-                                                            {item.name}
-                                                            <span>
-                                                                $ {item.prcie}
-                                                            </span>
-                                                        </label>
-                                                    </>
-                                                )
-                                            )}
+                                                            >
+                                                                <input
+                                                                    type="checkbox"
+                                                                    id={
+                                                                        item.item_id
+                                                                    }
+                                                                    value={
+                                                                        item.item_id
+                                                                    }
+                                                                    onChange={
+                                                                        active
+                                                                    }
+                                                                />
+                                                                {item.name}
+                                                                <span>
+                                                                    ${" "}
+                                                                    {item.prcie}
+                                                                </span>
+                                                            </label>
+                                                        </>
+                                                    )
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        )}
-                    />
-                    <SlideToggle
-                        duration={1000}
-                        collapsed={true}
-                        whenReversedUseBackwardEase={false}
-                        render={({
-                            toggle,
-                            setCollapsibleElement,
-                            toggleState,
-                        }) => (
-                            <div className={styles.card}>
-                                <div className="card-header">
-                                    <label
-                                        className={[
-                                            styles.dropDown,
-                                            toggleState === "COLLAPSED"
-                                                ? styles.dropDown
-                                                : styles.active,
-                                        ].join(" ")}
-                                        onClick={toggle}
+                            )}
+                        />
+                        <SlideToggle
+                            duration={1000}
+                            collapsed={true}
+                            whenReversedUseBackwardEase={false}
+                            render={({
+                                toggle,
+                                setCollapsibleElement,
+                                toggleState,
+                            }) => (
+                                <div className={styles.card}>
+                                    <div className="card-header">
+                                        <label
+                                            className={[
+                                                styles.dropDown,
+                                                toggleState === "COLLAPSED"
+                                                    ? styles.dropDown
+                                                    : styles.active,
+                                            ].join(" ")}
+                                            onClick={toggle}
+                                        >
+                                            B. 用電220V電源箱
+                                            <span>
+                                                {toggleState === "EXPANDED" ||
+                                                toggleState === "EXPANDING" ? (
+                                                    <svg
+                                                        width="16"
+                                                        height="10"
+                                                        viewBox="0 0 16 10"
+                                                        fill="none"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                    >
+                                                        <path
+                                                            d="M1 9L8 2L15 9"
+                                                            stroke="white"
+                                                            strokeWidth="2"
+                                                        />
+                                                    </svg>
+                                                ) : (
+                                                    <svg
+                                                        width="16"
+                                                        height="10"
+                                                        viewBox="0 0 16 10"
+                                                        fill="none"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                    >
+                                                        <path
+                                                            d="M15 1L8 8L1 1"
+                                                            stroke="white"
+                                                            strokeWidth="2"
+                                                        />
+                                                    </svg>
+                                                )}
+                                            </span>
+                                        </label>
+                                    </div>
+                                    <div
+                                        className={styles.cardBody}
+                                        ref={setCollapsibleElement}
                                     >
-                                        B. 用電220V電源箱
-                                        <span>
-                                            {toggleState === "EXPANDED" ||
-                                            toggleState === "EXPANDING" ? (
-                                                <svg
-                                                    width="16"
-                                                    height="10"
-                                                    viewBox="0 0 16 10"
-                                                    fill="none"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                >
-                                                    <path
-                                                        d="M1 9L8 2L15 9"
-                                                        stroke="white"
-                                                        strokeWidth="2"
-                                                    />
-                                                </svg>
-                                            ) : (
-                                                <svg
-                                                    width="16"
-                                                    height="10"
-                                                    viewBox="0 0 16 10"
-                                                    fill="none"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                >
-                                                    <path
-                                                        d="M15 1L8 8L1 1"
-                                                        stroke="white"
-                                                        strokeWidth="2"
-                                                    />
-                                                </svg>
-                                            )}
-                                        </span>
-                                    </label>
-                                </div>
-                                <div
-                                    className={styles.cardBody}
-                                    ref={setCollapsibleElement}
-                                >
-                                    <div className={styles.dropDownContent}>
-                                        <div className={styles.bGroup}>
-                                            {priceData.items[1].data.map(
-                                                (item) => (
-                                                    <>
-                                                        <label
-                                                            htmlFor={
-                                                                item.item_id
-                                                            }
-                                                        >
-                                                            <input
-                                                                type="checkbox"
-                                                                id={
-                                                                    item.item_id
-                                                                }
-                                                                value={
-                                                                    item.item_id
-                                                                }
-                                                                onChange={
-                                                                    enableNextTextBox
-                                                                }
-                                                            />
-                                                            {item.name}
+                                        <div className={styles.dropDownContent}>
+                                            <div className={styles.bGroup}>
+                                                {priceData.items[1].data.map(
+                                                    (item) => (
+                                                        <>
                                                             <label
-                                                                className={
-                                                                    styles.num
+                                                                htmlFor={
+                                                                    item.item_id
                                                                 }
                                                             >
-                                                                數量
                                                                 <input
-                                                                    type="number"
-                                                                    min="0"
-                                                                    disabled
+                                                                    type="checkbox"
+                                                                    id={
+                                                                        item.item_id
+                                                                    }
+                                                                    value={
+                                                                        item.item_id
+                                                                    }
+                                                                    onChange={
+                                                                        enableNextTextBox
+                                                                    }
                                                                 />
+                                                                {item.name}
+                                                                <label
+                                                                    className={
+                                                                        styles.num
+                                                                    }
+                                                                >
+                                                                    數量
+                                                                    <input
+                                                                        type="number"
+                                                                        min="0"
+                                                                        disabled
+                                                                    />
+                                                                </label>
+                                                                <span>
+                                                                    ${" "}
+                                                                    {item.prcie}
+                                                                    /組
+                                                                </span>
                                                             </label>
-                                                            <span>
-                                                                $ {item.prcie}
-                                                                /組
-                                                            </span>
-                                                        </label>
-                                                    </>
-                                                )
-                                            )}
+                                                        </>
+                                                    )
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        )}
-                    />
-                    <SlideToggle
-                        duration={1000}
-                        collapsed={true}
-                        whenReversedUseBackwardEase={false}
-                        render={({
-                            toggle,
-                            setCollapsibleElement,
-                            toggleState,
-                        }) => (
-                            <div className={styles.card}>
-                                <div className="card-header">
-                                    <label
-                                        className={[
-                                            styles.dropDown,
-                                            toggleState === "COLLAPSED"
-                                                ? styles.dropDown
-                                                : styles.active,
-                                        ].join(" ")}
-                                        onClick={toggle}
+                            )}
+                        />
+                        <SlideToggle
+                            duration={1000}
+                            collapsed={true}
+                            whenReversedUseBackwardEase={false}
+                            render={({
+                                toggle,
+                                setCollapsibleElement,
+                                toggleState,
+                            }) => (
+                                <div className={styles.card}>
+                                    <div className="card-header">
+                                        <label
+                                            className={[
+                                                styles.dropDown,
+                                                toggleState === "COLLAPSED"
+                                                    ? styles.dropDown
+                                                    : styles.active,
+                                            ].join(" ")}
+                                            onClick={toggle}
+                                        >
+                                            C. 用電380V電源箱
+                                            <span>
+                                                {toggleState === "EXPANDED" ||
+                                                toggleState === "EXPANDING" ? (
+                                                    <svg
+                                                        width="16"
+                                                        height="10"
+                                                        viewBox="0 0 16 10"
+                                                        fill="none"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                    >
+                                                        <path
+                                                            d="M1 9L8 2L15 9"
+                                                            stroke="white"
+                                                            strokeWidth="2"
+                                                        />
+                                                    </svg>
+                                                ) : (
+                                                    <svg
+                                                        width="16"
+                                                        height="10"
+                                                        viewBox="0 0 16 10"
+                                                        fill="none"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                    >
+                                                        <path
+                                                            d="M15 1L8 8L1 1"
+                                                            stroke="white"
+                                                            strokeWidth="2"
+                                                        />
+                                                    </svg>
+                                                )}
+                                            </span>
+                                        </label>
+                                    </div>
+                                    <div
+                                        className={styles.cardBody}
+                                        ref={setCollapsibleElement}
                                     >
-                                        C. 用電380V電源箱
-                                        <span>
-                                            {toggleState === "EXPANDED" ||
-                                            toggleState === "EXPANDING" ? (
-                                                <svg
-                                                    width="16"
-                                                    height="10"
-                                                    viewBox="0 0 16 10"
-                                                    fill="none"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                >
-                                                    <path
-                                                        d="M1 9L8 2L15 9"
-                                                        stroke="white"
-                                                        strokeWidth="2"
-                                                    />
-                                                </svg>
-                                            ) : (
-                                                <svg
-                                                    width="16"
-                                                    height="10"
-                                                    viewBox="0 0 16 10"
-                                                    fill="none"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                >
-                                                    <path
-                                                        d="M15 1L8 8L1 1"
-                                                        stroke="white"
-                                                        strokeWidth="2"
-                                                    />
-                                                </svg>
-                                            )}
-                                        </span>
-                                    </label>
-                                </div>
-                                <div
-                                    className={styles.cardBody}
-                                    ref={setCollapsibleElement}
-                                >
-                                    <div className={styles.dropDownContent}>
-                                        <div className={styles.bGroup}>
-                                            {priceData.items[2].data.map(
-                                                (item) => (
-                                                    <>
-                                                        <label
-                                                            htmlFor={
-                                                                item.item_id
-                                                            }
-                                                        >
-                                                            <input
-                                                                type="checkbox"
-                                                                id={
-                                                                    item.item_id
-                                                                }
-                                                                value={
-                                                                    item.item_id
-                                                                }
-                                                                onChange={
-                                                                    enableNextTextBox
-                                                                }
-                                                            />
-                                                            {item.name}
+                                        <div className={styles.dropDownContent}>
+                                            <div className={styles.bGroup}>
+                                                {priceData.items[2].data.map(
+                                                    (item) => (
+                                                        <>
                                                             <label
-                                                                className={
-                                                                    styles.num
+                                                                htmlFor={
+                                                                    item.item_id
                                                                 }
                                                             >
-                                                                數量
                                                                 <input
-                                                                    type="number"
-                                                                    min="0"
-                                                                    disabled
+                                                                    type="checkbox"
+                                                                    id={
+                                                                        item.item_id
+                                                                    }
+                                                                    value={
+                                                                        item.item_id
+                                                                    }
+                                                                    onChange={
+                                                                        enableNextTextBox
+                                                                    }
                                                                 />
+                                                                {item.name}
+                                                                <label
+                                                                    className={
+                                                                        styles.num
+                                                                    }
+                                                                >
+                                                                    數量
+                                                                    <input
+                                                                        type="number"
+                                                                        min="0"
+                                                                        disabled
+                                                                    />
+                                                                </label>
+                                                                <span>
+                                                                    ${" "}
+                                                                    {item.prcie}
+                                                                    /組
+                                                                </span>
                                                             </label>
-                                                            <span>
-                                                                $ {item.prcie}
-                                                                /組
-                                                            </span>
-                                                        </label>
-                                                    </>
-                                                )
-                                            )}
-                                            {/* <label htmlFor="380V">
+                                                        </>
+                                                    )
+                                                )}
+                                                {/* <label htmlFor="380V">
                                                 <input
                                                     type="checkbox"
                                                     id="380V"
@@ -553,115 +565,116 @@ export default function Choose({ formStep, nextFormStep, priceData, stepTwo }) {
                                                 </label>
                                                 <span>$ 2,994/組</span>
                                             </label> */}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        )}
-                    />
-                    <SlideToggle
-                        duration={1000}
-                        collapsed={true}
-                        whenReversedUseBackwardEase={false}
-                        render={({
-                            toggle,
-                            setCollapsibleElement,
-                            toggleState,
-                        }) => (
-                            <div className={styles.card}>
-                                <div className="card-header">
-                                    <label
-                                        className={[
-                                            styles.dropDown,
-                                            toggleState === "COLLAPSED"
-                                                ? styles.dropDown
-                                                : styles.active,
-                                        ].join(" ")}
-                                        onClick={toggle}
+                            )}
+                        />
+                        <SlideToggle
+                            duration={1000}
+                            collapsed={true}
+                            whenReversedUseBackwardEase={false}
+                            render={({
+                                toggle,
+                                setCollapsibleElement,
+                                toggleState,
+                            }) => (
+                                <div className={styles.card}>
+                                    <div className="card-header">
+                                        <label
+                                            className={[
+                                                styles.dropDown,
+                                                toggleState === "COLLAPSED"
+                                                    ? styles.dropDown
+                                                    : styles.active,
+                                            ].join(" ")}
+                                            onClick={toggle}
+                                        >
+                                            D. 24小時用電
+                                            <span>
+                                                {toggleState === "EXPANDED" ||
+                                                toggleState === "EXPANDING" ? (
+                                                    <svg
+                                                        width="16"
+                                                        height="10"
+                                                        viewBox="0 0 16 10"
+                                                        fill="none"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                    >
+                                                        <path
+                                                            d="M1 9L8 2L15 9"
+                                                            stroke="white"
+                                                            strokeWidth="2"
+                                                        />
+                                                    </svg>
+                                                ) : (
+                                                    <svg
+                                                        width="16"
+                                                        height="10"
+                                                        viewBox="0 0 16 10"
+                                                        fill="none"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                    >
+                                                        <path
+                                                            d="M15 1L8 8L1 1"
+                                                            stroke="white"
+                                                            strokeWidth="2"
+                                                        />
+                                                    </svg>
+                                                )}
+                                            </span>
+                                        </label>
+                                    </div>
+                                    <div
+                                        className={styles.cardBody}
+                                        ref={setCollapsibleElement}
                                     >
-                                        D. 24小時用電
-                                        <span>
-                                            {toggleState === "EXPANDED" ||
-                                            toggleState === "EXPANDING" ? (
-                                                <svg
-                                                    width="16"
-                                                    height="10"
-                                                    viewBox="0 0 16 10"
-                                                    fill="none"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                >
-                                                    <path
-                                                        d="M1 9L8 2L15 9"
-                                                        stroke="white"
-                                                        strokeWidth="2"
-                                                    />
-                                                </svg>
-                                            ) : (
-                                                <svg
-                                                    width="16"
-                                                    height="10"
-                                                    viewBox="0 0 16 10"
-                                                    fill="none"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                >
-                                                    <path
-                                                        d="M15 1L8 8L1 1"
-                                                        stroke="white"
-                                                        strokeWidth="2"
-                                                    />
-                                                </svg>
-                                            )}
-                                        </span>
-                                    </label>
-                                </div>
-                                <div
-                                    className={styles.cardBody}
-                                    ref={setCollapsibleElement}
-                                >
-                                    <div className={styles.dropDownContent}>
-                                        <div className={styles.bGroup}>
-                                            {priceData.items[3].data.map(
-                                                (item) => (
-                                                    <>
-                                                        <label
-                                                            htmlFor={
-                                                                item.item_id
-                                                            }
-                                                        >
-                                                            <input
-                                                                type="checkbox"
-                                                                id={
-                                                                    item.item_id
-                                                                }
-                                                                value={
-                                                                    item.item_id
-                                                                }
-                                                                onChange={
-                                                                    enableNextTextBox
-                                                                }
-                                                            />
-                                                            {item.name}
+                                        <div className={styles.dropDownContent}>
+                                            <div className={styles.bGroup}>
+                                                {priceData.items[3].data.map(
+                                                    (item) => (
+                                                        <>
                                                             <label
-                                                                className={
-                                                                    styles.num
+                                                                htmlFor={
+                                                                    item.item_id
                                                                 }
                                                             >
-                                                                數量
                                                                 <input
-                                                                    type="number"
-                                                                    min="0"
-                                                                    disabled
+                                                                    type="checkbox"
+                                                                    id={
+                                                                        item.item_id
+                                                                    }
+                                                                    value={
+                                                                        item.item_id
+                                                                    }
+                                                                    onChange={
+                                                                        enableNextTextBox
+                                                                    }
                                                                 />
+                                                                {item.name}
+                                                                <label
+                                                                    className={
+                                                                        styles.num
+                                                                    }
+                                                                >
+                                                                    數量
+                                                                    <input
+                                                                        type="number"
+                                                                        min="0"
+                                                                        disabled
+                                                                    />
+                                                                </label>
+                                                                <span>
+                                                                    ${" "}
+                                                                    {item.prcie}
+                                                                    /組
+                                                                </span>
                                                             </label>
-                                                            <span>
-                                                                $ {item.prcie}
-                                                                /組
-                                                            </span>
-                                                        </label>
-                                                    </>
-                                                )
-                                            )}
-                                            {/* <label htmlFor="electricity">
+                                                        </>
+                                                    )
+                                                )}
+                                                {/* <label htmlFor="electricity">
                                                 <input
                                                     type="checkbox"
                                                     id="electricity"
@@ -679,233 +692,1092 @@ export default function Choose({ formStep, nextFormStep, priceData, stepTwo }) {
                                                 </label>
                                                 <span>$ 2,994/組</span>
                                             </label> */}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        )}
-                    />
-                    <SlideToggle
-                        duration={1000}
-                        collapsed={true}
-                        whenReversedUseBackwardEase={false}
-                        render={({
-                            toggle,
-                            setCollapsibleElement,
-                            toggleState,
-                        }) => (
-                            <div className={styles.card}>
-                                <div className="card-header">
-                                    <label
-                                        className={[
-                                            styles.dropDown,
-                                            toggleState === "COLLAPSED"
-                                                ? styles.dropDown
-                                                : styles.active,
-                                        ].join(" ")}
-                                        onClick={toggle}
+                            )}
+                        />
+                        <SlideToggle
+                            duration={1000}
+                            collapsed={true}
+                            whenReversedUseBackwardEase={false}
+                            render={({
+                                toggle,
+                                setCollapsibleElement,
+                                toggleState,
+                            }) => (
+                                <div className={styles.card}>
+                                    <div className="card-header">
+                                        <label
+                                            className={[
+                                                styles.dropDown,
+                                                toggleState === "COLLAPSED"
+                                                    ? styles.dropDown
+                                                    : styles.active,
+                                            ].join(" ")}
+                                            onClick={toggle}
+                                        >
+                                            E. 給排水管
+                                            <span>
+                                                {toggleState === "EXPANDED" ||
+                                                toggleState === "EXPANDING" ? (
+                                                    <svg
+                                                        width="16"
+                                                        height="10"
+                                                        viewBox="0 0 16 10"
+                                                        fill="none"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                    >
+                                                        <path
+                                                            d="M1 9L8 2L15 9"
+                                                            stroke="white"
+                                                            strokeWidth="2"
+                                                        />
+                                                    </svg>
+                                                ) : (
+                                                    <svg
+                                                        width="16"
+                                                        height="10"
+                                                        viewBox="0 0 16 10"
+                                                        fill="none"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                    >
+                                                        <path
+                                                            d="M15 1L8 8L1 1"
+                                                            stroke="white"
+                                                            strokeWidth="2"
+                                                        />
+                                                    </svg>
+                                                )}
+                                            </span>
+                                        </label>
+                                    </div>
+                                    <div
+                                        className={styles.cardBody}
+                                        ref={setCollapsibleElement}
                                     >
-                                        E. 給排水管
-                                        <span>
-                                            {toggleState === "EXPANDED" ||
-                                            toggleState === "EXPANDING" ? (
-                                                <svg
-                                                    width="16"
-                                                    height="10"
-                                                    viewBox="0 0 16 10"
-                                                    fill="none"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                >
-                                                    <path
-                                                        d="M1 9L8 2L15 9"
-                                                        stroke="white"
-                                                        strokeWidth="2"
-                                                    />
-                                                </svg>
-                                            ) : (
-                                                <svg
-                                                    width="16"
-                                                    height="10"
-                                                    viewBox="0 0 16 10"
-                                                    fill="none"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                >
-                                                    <path
-                                                        d="M15 1L8 8L1 1"
-                                                        stroke="white"
-                                                        strokeWidth="2"
-                                                    />
-                                                </svg>
-                                            )}
-                                        </span>
-                                    </label>
-                                </div>
-                                <div
-                                    className={styles.cardBody}
-                                    ref={setCollapsibleElement}
-                                >
-                                    <div className={styles.dropDownContent}>
-                                        <div className={styles.bGroup}>
-                                            {priceData.items[4].data.map(
-                                                (item) => (
-                                                    <>
-                                                        <label
-                                                            htmlFor={
-                                                                item.item_id
-                                                            }
-                                                        >
-                                                            <input
-                                                                type="checkbox"
-                                                                id={
-                                                                    item.item_id
-                                                                }
-                                                                value={
-                                                                    item.item_id
-                                                                }
-                                                                onChange={
-                                                                    enableNextTextBox
-                                                                }
-                                                            />
-                                                            {item.name}
+                                        <div className={styles.dropDownContent}>
+                                            <div className={styles.bGroup}>
+                                                {priceData.items[4].data.map(
+                                                    (item) => (
+                                                        <>
                                                             <label
-                                                                className={
-                                                                    styles.num
+                                                                htmlFor={
+                                                                    item.item_id
                                                                 }
                                                             >
-                                                                數量
                                                                 <input
-                                                                    type="number"
-                                                                    min="0"
-                                                                    disabled
+                                                                    type="checkbox"
+                                                                    id={
+                                                                        item.item_id
+                                                                    }
+                                                                    value={
+                                                                        item.item_id
+                                                                    }
+                                                                    onChange={
+                                                                        enableNextTextBox
+                                                                    }
                                                                 />
+                                                                {item.name}
+                                                                <label
+                                                                    className={
+                                                                        styles.num
+                                                                    }
+                                                                >
+                                                                    數量
+                                                                    <input
+                                                                        type="number"
+                                                                        min="0"
+                                                                        disabled
+                                                                    />
+                                                                </label>
+                                                                <span>
+                                                                    ${" "}
+                                                                    {item.prcie}
+                                                                    /組
+                                                                </span>
                                                             </label>
-                                                            <span>
-                                                                $ {item.prcie}
-                                                                /組
-                                                            </span>
-                                                        </label>
-                                                    </>
-                                                )
-                                            )}
+                                                        </>
+                                                    )
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        )}
-                    />
-                    <SlideToggle
-                        duration={1000}
-                        collapsed={true}
-                        whenReversedUseBackwardEase={false}
-                        render={({
-                            toggle,
-                            setCollapsibleElement,
-                            toggleState,
-                        }) => (
-                            <div className={styles.card}>
-                                <div className="card-header">
-                                    <label
-                                        className={[
-                                            styles.dropDown,
-                                            toggleState === "COLLAPSED"
-                                                ? styles.dropDown
-                                                : styles.active,
-                                        ].join(" ")}
-                                        onClick={toggle}
+                            )}
+                        />
+                        <SlideToggle
+                            duration={1000}
+                            collapsed={true}
+                            whenReversedUseBackwardEase={false}
+                            render={({
+                                toggle,
+                                setCollapsibleElement,
+                                toggleState,
+                            }) => (
+                                <div className={styles.card}>
+                                    <div className="card-header">
+                                        <label
+                                            className={[
+                                                styles.dropDown,
+                                                toggleState === "COLLAPSED"
+                                                    ? styles.dropDown
+                                                    : styles.active,
+                                            ].join(" ")}
+                                            onClick={toggle}
+                                        >
+                                            F. 壓縮空氣
+                                            <span>
+                                                {toggleState === "EXPANDED" ||
+                                                toggleState === "EXPANDING" ? (
+                                                    <svg
+                                                        width="16"
+                                                        height="10"
+                                                        viewBox="0 0 16 10"
+                                                        fill="none"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                    >
+                                                        <path
+                                                            d="M1 9L8 2L15 9"
+                                                            stroke="white"
+                                                            strokeWidth="2"
+                                                        />
+                                                    </svg>
+                                                ) : (
+                                                    <svg
+                                                        width="16"
+                                                        height="10"
+                                                        viewBox="0 0 16 10"
+                                                        fill="none"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                    >
+                                                        <path
+                                                            d="M15 1L8 8L1 1"
+                                                            stroke="white"
+                                                            strokeWidth="2"
+                                                        />
+                                                    </svg>
+                                                )}
+                                            </span>
+                                        </label>
+                                    </div>
+                                    <div
+                                        className={styles.cardBody}
+                                        ref={setCollapsibleElement}
                                     >
-                                        F. 壓縮空氣
-                                        <span>
-                                            {toggleState === "EXPANDED" ||
-                                            toggleState === "EXPANDING" ? (
-                                                <svg
-                                                    width="16"
-                                                    height="10"
-                                                    viewBox="0 0 16 10"
-                                                    fill="none"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                >
-                                                    <path
-                                                        d="M1 9L8 2L15 9"
-                                                        stroke="white"
-                                                        strokeWidth="2"
-                                                    />
-                                                </svg>
-                                            ) : (
-                                                <svg
-                                                    width="16"
-                                                    height="10"
-                                                    viewBox="0 0 16 10"
-                                                    fill="none"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                >
-                                                    <path
-                                                        d="M15 1L8 8L1 1"
-                                                        stroke="white"
-                                                        strokeWidth="2"
-                                                    />
-                                                </svg>
-                                            )}
-                                        </span>
-                                    </label>
-                                </div>
-                                <div
-                                    className={styles.cardBody}
-                                    ref={setCollapsibleElement}
-                                >
-                                    <div className={styles.dropDownContent}>
-                                        <div className={styles.bGroup}>
-                                            {priceData.items[5].data.map(
-                                                (item) => (
-                                                    <>
-                                                        <label
-                                                            htmlFor={
-                                                                item.item_id
-                                                            }
-                                                        >
-                                                            <input
-                                                                type="checkbox"
-                                                                id={
-                                                                    item.item_id
-                                                                }
-                                                                value={
-                                                                    item.item_id
-                                                                }
-                                                                onChange={
-                                                                    enableNextTextBox
-                                                                }
-                                                            />
-                                                            {item.name}
+                                        <div className={styles.dropDownContent}>
+                                            <div className={styles.bGroup}>
+                                                {priceData.items[5].data.map(
+                                                    (item) => (
+                                                        <>
                                                             <label
-                                                                className={
-                                                                    styles.num
+                                                                htmlFor={
+                                                                    item.item_id
                                                                 }
                                                             >
-                                                                數量
                                                                 <input
-                                                                    type="number"
-                                                                    min="0"
-                                                                    disabled
+                                                                    type="checkbox"
+                                                                    id={
+                                                                        item.item_id
+                                                                    }
+                                                                    value={
+                                                                        item.item_id
+                                                                    }
+                                                                    onChange={
+                                                                        enableNextTextBox
+                                                                    }
                                                                 />
+                                                                {item.name}
+                                                                <label
+                                                                    className={
+                                                                        styles.num
+                                                                    }
+                                                                >
+                                                                    數量
+                                                                    <input
+                                                                        type="number"
+                                                                        min="0"
+                                                                        disabled
+                                                                    />
+                                                                </label>
+                                                                <span>
+                                                                    ${" "}
+                                                                    {item.prcie}
+                                                                    /組
+                                                                </span>
                                                             </label>
-                                                            <span>
-                                                                $ {item.prcie}
-                                                                /組
-                                                            </span>
-                                                        </label>
-                                                    </>
-                                                )
-                                            )}
+                                                        </>
+                                                    )
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        )}
-                    />
-                </div>
-                <button type="submit" className={styles.next}>
-                    下一步
-                </button>
-            </Form>
+                            )}
+                        />
+                    </div>
+                    <button type="submit" className={styles.next}>
+                        下一步
+                    </button>
+                </Form>
+            ) : (
+                <Form onSubmit={handleSubmit}>
+                    <h2>水電追加申請項目</h2>
+                    <div className={styles.applyDefault}>
+                        <input
+                            type="checkbox"
+                            id="chooseDefault"
+                            value="useDefault"
+                            onChange={handleDefault}
+                        />
+                        <label htmlFor="chooseDefault">
+                            只使用大會提供每 1 攤位免費基本用電 110V 0.5KW
+                        </label>
+                    </div>
+                    <div className={styles.applyCheckBox}>
+                        <SlideToggle
+                            duration={1000}
+                            collapsed={true}
+                            whenReversedUseBackwardEase={false}
+                            render={({
+                                toggle,
+                                setCollapsibleElement,
+                                toggleState,
+                            }) => (
+                                <div className={styles.card}>
+                                    <div className="card-header">
+                                        <label
+                                            className={[
+                                                styles.dropDown,
+                                                toggleState === "COLLAPSED"
+                                                    ? styles.dropDown
+                                                    : styles.active,
+                                            ].join(" ")}
+                                            onClick={toggle}
+                                        >
+                                            Ａ.用電110V電源箱
+                                            <span>
+                                                {toggleState === "EXPANDED" ||
+                                                toggleState === "EXPANDING" ? (
+                                                    <svg
+                                                        width="16"
+                                                        height="10"
+                                                        viewBox="0 0 16 10"
+                                                        fill="none"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                    >
+                                                        <path
+                                                            d="M1 9L8 2L15 9"
+                                                            stroke="white"
+                                                            strokeWidth="2"
+                                                        />
+                                                    </svg>
+                                                ) : (
+                                                    <svg
+                                                        width="16"
+                                                        height="10"
+                                                        viewBox="0 0 16 10"
+                                                        fill="none"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                    >
+                                                        <path
+                                                            d="M15 1L8 8L1 1"
+                                                            stroke="white"
+                                                            strokeWidth="2"
+                                                        />
+                                                    </svg>
+                                                )}
+                                            </span>
+                                        </label>
+                                    </div>
+                                    <div
+                                        className={styles.cardBody}
+                                        ref={setCollapsibleElement}
+                                    >
+                                        <div className={styles.dropDownContent}>
+                                            <p>
+                                                110V 用電計算說明：
+                                                0.5KW(千瓦)＝500W(瓦)＝5A(安培)；1KW(千瓦)＝1000W(瓦)＝10A(安培
+                                                (a)
+                                                110V攤位總用電量(KW)＝攤位上照明用電＋各種電器用品用電(電視、開飲機、電腦等)＋展示產品用電....總計。
+                                                (b)
+                                                110V免費累計電量(KW)＝參展攤位數
+                                                X 500W（每1攤位500W免費) (c)
+                                                1100V需追申請之電量(KW)＝110V攤位總用電量扣除了110V免費累計電量；(a)
+                                                - (b) = (c) 。 請點選計算出的
+                                                (c) 值
+                                            </p>
+                                            <div className={styles.aGroup}>
+                                                {stepTwo.items[0].data.map(
+                                                    (item) => (
+                                                        <>
+                                                            <label
+                                                                htmlFor={
+                                                                    item.item_id
+                                                                }
+                                                            >
+                                                                {item.chk ===
+                                                                "N" ? (
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        id={
+                                                                            item.item_id
+                                                                        }
+                                                                        value={
+                                                                            item.item_id
+                                                                        }
+                                                                        onChange={
+                                                                            active
+                                                                        }
+                                                                    />
+                                                                ) : (
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        id={
+                                                                            item.item_id
+                                                                        }
+                                                                        value={
+                                                                            item.item_id
+                                                                        }
+                                                                        onChange={
+                                                                            active
+                                                                        }
+                                                                        defaultChecked
+                                                                    />
+                                                                )}
+                                                                {item.name}
+                                                                <span>
+                                                                    ${" "}
+                                                                    {item.prcie}
+                                                                </span>
+                                                            </label>
+                                                        </>
+                                                    )
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        />
+                        <SlideToggle
+                            duration={1000}
+                            collapsed={true}
+                            whenReversedUseBackwardEase={false}
+                            render={({
+                                toggle,
+                                setCollapsibleElement,
+                                toggleState,
+                            }) => (
+                                <div className={styles.card}>
+                                    <div className="card-header">
+                                        <label
+                                            className={[
+                                                styles.dropDown,
+                                                toggleState === "COLLAPSED"
+                                                    ? styles.dropDown
+                                                    : styles.active,
+                                            ].join(" ")}
+                                            onClick={toggle}
+                                        >
+                                            B. 用電220V電源箱
+                                            <span>
+                                                {toggleState === "EXPANDED" ||
+                                                toggleState === "EXPANDING" ? (
+                                                    <svg
+                                                        width="16"
+                                                        height="10"
+                                                        viewBox="0 0 16 10"
+                                                        fill="none"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                    >
+                                                        <path
+                                                            d="M1 9L8 2L15 9"
+                                                            stroke="white"
+                                                            strokeWidth="2"
+                                                        />
+                                                    </svg>
+                                                ) : (
+                                                    <svg
+                                                        width="16"
+                                                        height="10"
+                                                        viewBox="0 0 16 10"
+                                                        fill="none"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                    >
+                                                        <path
+                                                            d="M15 1L8 8L1 1"
+                                                            stroke="white"
+                                                            strokeWidth="2"
+                                                        />
+                                                    </svg>
+                                                )}
+                                            </span>
+                                        </label>
+                                    </div>
+                                    <div
+                                        className={styles.cardBody}
+                                        ref={setCollapsibleElement}
+                                    >
+                                        <div className={styles.dropDownContent}>
+                                            <div className={styles.bGroup}>
+                                                {stepTwo.items[1].data.map(
+                                                    (item) => (
+                                                        <>
+                                                            <label
+                                                                htmlFor={
+                                                                    item.item_id
+                                                                }
+                                                            >
+                                                                {item.chk ===
+                                                                "N" ? (
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        id={
+                                                                            item.item_id
+                                                                        }
+                                                                        value={
+                                                                            item.item_id
+                                                                        }
+                                                                        onChange={
+                                                                            enableNextTextBox
+                                                                        }
+                                                                    />
+                                                                ) : (
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        id={
+                                                                            item.item_id
+                                                                        }
+                                                                        value={
+                                                                            item.item_id
+                                                                        }
+                                                                        onChange={
+                                                                            enableNextTextBox
+                                                                        }
+                                                                        defaultChecked
+                                                                    />
+                                                                )}
+
+                                                                {item.name}
+                                                                <label
+                                                                    className={
+                                                                        styles.num
+                                                                    }
+                                                                >
+                                                                    數量
+                                                                    {item.quantity ===
+                                                                    "" ? (
+                                                                        <input
+                                                                            type="number"
+                                                                            min="0"
+                                                                            disabled
+                                                                        />
+                                                                    ) : (
+                                                                        <input
+                                                                            type="number"
+                                                                            min={item.quantity.toString()}
+                                                                        />
+                                                                    )}
+                                                                </label>
+                                                                <span>
+                                                                    ${" "}
+                                                                    {item.prcie}
+                                                                    /組
+                                                                </span>
+                                                            </label>
+                                                        </>
+                                                    )
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        />
+                        <SlideToggle
+                            duration={1000}
+                            collapsed={true}
+                            whenReversedUseBackwardEase={false}
+                            render={({
+                                toggle,
+                                setCollapsibleElement,
+                                toggleState,
+                            }) => (
+                                <div className={styles.card}>
+                                    <div className="card-header">
+                                        <label
+                                            className={[
+                                                styles.dropDown,
+                                                toggleState === "COLLAPSED"
+                                                    ? styles.dropDown
+                                                    : styles.active,
+                                            ].join(" ")}
+                                            onClick={toggle}
+                                        >
+                                            C. 用電380V電源箱
+                                            <span>
+                                                {toggleState === "EXPANDED" ||
+                                                toggleState === "EXPANDING" ? (
+                                                    <svg
+                                                        width="16"
+                                                        height="10"
+                                                        viewBox="0 0 16 10"
+                                                        fill="none"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                    >
+                                                        <path
+                                                            d="M1 9L8 2L15 9"
+                                                            stroke="white"
+                                                            strokeWidth="2"
+                                                        />
+                                                    </svg>
+                                                ) : (
+                                                    <svg
+                                                        width="16"
+                                                        height="10"
+                                                        viewBox="0 0 16 10"
+                                                        fill="none"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                    >
+                                                        <path
+                                                            d="M15 1L8 8L1 1"
+                                                            stroke="white"
+                                                            strokeWidth="2"
+                                                        />
+                                                    </svg>
+                                                )}
+                                            </span>
+                                        </label>
+                                    </div>
+                                    <div
+                                        className={styles.cardBody}
+                                        ref={setCollapsibleElement}
+                                    >
+                                        <div className={styles.dropDownContent}>
+                                            <div className={styles.bGroup}>
+                                                {stepTwo.items[2].data.map(
+                                                    (item) => (
+                                                        <>
+                                                            <label
+                                                                htmlFor={
+                                                                    item.item_id
+                                                                }
+                                                            >
+                                                                {item.chk ===
+                                                                "N" ? (
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        id={
+                                                                            item.item_id
+                                                                        }
+                                                                        value={
+                                                                            item.item_id
+                                                                        }
+                                                                        onChange={
+                                                                            enableNextTextBox
+                                                                        }
+                                                                    />
+                                                                ) : (
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        id={
+                                                                            item.item_id
+                                                                        }
+                                                                        value={
+                                                                            item.item_id
+                                                                        }
+                                                                        onChange={
+                                                                            enableNextTextBox
+                                                                        }
+                                                                        defaultChecked
+                                                                    />
+                                                                )}
+
+                                                                {item.name}
+                                                                <label
+                                                                    className={
+                                                                        styles.num
+                                                                    }
+                                                                >
+                                                                    數量
+                                                                    {item.quantity ===
+                                                                    "" ? (
+                                                                        <input
+                                                                            type="number"
+                                                                            min="0"
+                                                                            disabled
+                                                                        />
+                                                                    ) : (
+                                                                        <input
+                                                                            type="number"
+                                                                            min={item.quantity.toString()}
+                                                                        />
+                                                                    )}
+                                                                </label>
+                                                                <span>
+                                                                    ${" "}
+                                                                    {item.prcie}
+                                                                    /組
+                                                                </span>
+                                                            </label>
+                                                        </>
+                                                    )
+                                                )}
+                                                {/* <label htmlFor="380V">
+                                                <input
+                                                    type="checkbox"
+                                                    id="380V"
+                                                    value="380V"
+                                                    onChange={enableNextTextBox}
+                                                />
+                                                用電380V電源箱
+                                                <label className={styles.num}>
+                                                    數量
+                                                    <input
+                                                        type="number"
+                                                        min="0"
+                                                        disabled
+                                                    />
+                                                </label>
+                                                <span>$ 2,994/組</span>
+                                            </label> */}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        />
+                        <SlideToggle
+                            duration={1000}
+                            collapsed={true}
+                            whenReversedUseBackwardEase={false}
+                            render={({
+                                toggle,
+                                setCollapsibleElement,
+                                toggleState,
+                            }) => (
+                                <div className={styles.card}>
+                                    <div className="card-header">
+                                        <label
+                                            className={[
+                                                styles.dropDown,
+                                                toggleState === "COLLAPSED"
+                                                    ? styles.dropDown
+                                                    : styles.active,
+                                            ].join(" ")}
+                                            onClick={toggle}
+                                        >
+                                            D. 24小時用電
+                                            <span>
+                                                {toggleState === "EXPANDED" ||
+                                                toggleState === "EXPANDING" ? (
+                                                    <svg
+                                                        width="16"
+                                                        height="10"
+                                                        viewBox="0 0 16 10"
+                                                        fill="none"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                    >
+                                                        <path
+                                                            d="M1 9L8 2L15 9"
+                                                            stroke="white"
+                                                            strokeWidth="2"
+                                                        />
+                                                    </svg>
+                                                ) : (
+                                                    <svg
+                                                        width="16"
+                                                        height="10"
+                                                        viewBox="0 0 16 10"
+                                                        fill="none"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                    >
+                                                        <path
+                                                            d="M15 1L8 8L1 1"
+                                                            stroke="white"
+                                                            strokeWidth="2"
+                                                        />
+                                                    </svg>
+                                                )}
+                                            </span>
+                                        </label>
+                                    </div>
+                                    <div
+                                        className={styles.cardBody}
+                                        ref={setCollapsibleElement}
+                                    >
+                                        <div className={styles.dropDownContent}>
+                                            <div className={styles.bGroup}>
+                                                {stepTwo.items[3].data.map(
+                                                    (item) => (
+                                                        <>
+                                                            <label
+                                                                htmlFor={
+                                                                    item.item_id
+                                                                }
+                                                            >
+                                                                {item.chk ===
+                                                                "N" ? (
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        id={
+                                                                            item.item_id
+                                                                        }
+                                                                        value={
+                                                                            item.item_id
+                                                                        }
+                                                                        onChange={
+                                                                            enableNextTextBox
+                                                                        }
+                                                                    />
+                                                                ) : (
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        id={
+                                                                            item.item_id
+                                                                        }
+                                                                        value={
+                                                                            item.item_id
+                                                                        }
+                                                                        onChange={
+                                                                            enableNextTextBox
+                                                                        }
+                                                                        defaultChecked
+                                                                    />
+                                                                )}
+
+                                                                {item.name}
+                                                                <label
+                                                                    className={
+                                                                        styles.num
+                                                                    }
+                                                                >
+                                                                    數量
+                                                                    {item.quantity ===
+                                                                    "" ? (
+                                                                        <input
+                                                                            type="number"
+                                                                            min="0"
+                                                                            disabled
+                                                                        />
+                                                                    ) : (
+                                                                        <input
+                                                                            type="number"
+                                                                            min={item.quantity.toString()}
+                                                                        />
+                                                                    )}
+                                                                </label>
+                                                                <span>
+                                                                    ${" "}
+                                                                    {item.prcie}
+                                                                    /組
+                                                                </span>
+                                                            </label>
+                                                        </>
+                                                    )
+                                                )}
+                                                {/* <label htmlFor="electricity">
+                                                <input
+                                                    type="checkbox"
+                                                    id="electricity"
+                                                    value="electricity"
+                                                    onChange={enableNextTextBox}
+                                                />
+                                                24小時用電
+                                                <label className={styles.num}>
+                                                    數量
+                                                    <input
+                                                        type="number"
+                                                        min="0"
+                                                        disabled
+                                                    />
+                                                </label>
+                                                <span>$ 2,994/組</span>
+                                            </label> */}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        />
+                        <SlideToggle
+                            duration={1000}
+                            collapsed={true}
+                            whenReversedUseBackwardEase={false}
+                            render={({
+                                toggle,
+                                setCollapsibleElement,
+                                toggleState,
+                            }) => (
+                                <div className={styles.card}>
+                                    <div className="card-header">
+                                        <label
+                                            className={[
+                                                styles.dropDown,
+                                                toggleState === "COLLAPSED"
+                                                    ? styles.dropDown
+                                                    : styles.active,
+                                            ].join(" ")}
+                                            onClick={toggle}
+                                        >
+                                            E. 給排水管
+                                            <span>
+                                                {toggleState === "EXPANDED" ||
+                                                toggleState === "EXPANDING" ? (
+                                                    <svg
+                                                        width="16"
+                                                        height="10"
+                                                        viewBox="0 0 16 10"
+                                                        fill="none"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                    >
+                                                        <path
+                                                            d="M1 9L8 2L15 9"
+                                                            stroke="white"
+                                                            strokeWidth="2"
+                                                        />
+                                                    </svg>
+                                                ) : (
+                                                    <svg
+                                                        width="16"
+                                                        height="10"
+                                                        viewBox="0 0 16 10"
+                                                        fill="none"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                    >
+                                                        <path
+                                                            d="M15 1L8 8L1 1"
+                                                            stroke="white"
+                                                            strokeWidth="2"
+                                                        />
+                                                    </svg>
+                                                )}
+                                            </span>
+                                        </label>
+                                    </div>
+                                    <div
+                                        className={styles.cardBody}
+                                        ref={setCollapsibleElement}
+                                    >
+                                        <div className={styles.dropDownContent}>
+                                            <div className={styles.bGroup}>
+                                                {stepTwo.items[4].data.map(
+                                                    (item) => (
+                                                        <>
+                                                            <label
+                                                                htmlFor={
+                                                                    item.item_id
+                                                                }
+                                                            >
+                                                                {item.chk ===
+                                                                "N" ? (
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        id={
+                                                                            item.item_id
+                                                                        }
+                                                                        value={
+                                                                            item.item_id
+                                                                        }
+                                                                        onChange={
+                                                                            enableNextTextBox
+                                                                        }
+                                                                    />
+                                                                ) : (
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        id={
+                                                                            item.item_id
+                                                                        }
+                                                                        value={
+                                                                            item.item_id
+                                                                        }
+                                                                        onChange={
+                                                                            enableNextTextBox
+                                                                        }
+                                                                        defaultChecked
+                                                                    />
+                                                                )}
+
+                                                                {item.name}
+                                                                <label
+                                                                    className={
+                                                                        styles.num
+                                                                    }
+                                                                >
+                                                                    數量
+                                                                    {item.quantity ===
+                                                                    "" ? (
+                                                                        <input
+                                                                            type="number"
+                                                                            min="0"
+                                                                            disabled
+                                                                        />
+                                                                    ) : (
+                                                                        <input
+                                                                            type="number"
+                                                                            min={item.quantity.toString()}
+                                                                        />
+                                                                    )}
+                                                                </label>
+                                                                <span>
+                                                                    ${" "}
+                                                                    {item.prcie}
+                                                                    /組
+                                                                </span>
+                                                            </label>
+                                                        </>
+                                                    )
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        />
+                        <SlideToggle
+                            duration={1000}
+                            collapsed={true}
+                            whenReversedUseBackwardEase={false}
+                            render={({
+                                toggle,
+                                setCollapsibleElement,
+                                toggleState,
+                            }) => (
+                                <div className={styles.card}>
+                                    <div className="card-header">
+                                        <label
+                                            className={[
+                                                styles.dropDown,
+                                                toggleState === "COLLAPSED"
+                                                    ? styles.dropDown
+                                                    : styles.active,
+                                            ].join(" ")}
+                                            onClick={toggle}
+                                        >
+                                            F. 壓縮空氣
+                                            <span>
+                                                {toggleState === "EXPANDED" ||
+                                                toggleState === "EXPANDING" ? (
+                                                    <svg
+                                                        width="16"
+                                                        height="10"
+                                                        viewBox="0 0 16 10"
+                                                        fill="none"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                    >
+                                                        <path
+                                                            d="M1 9L8 2L15 9"
+                                                            stroke="white"
+                                                            strokeWidth="2"
+                                                        />
+                                                    </svg>
+                                                ) : (
+                                                    <svg
+                                                        width="16"
+                                                        height="10"
+                                                        viewBox="0 0 16 10"
+                                                        fill="none"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                    >
+                                                        <path
+                                                            d="M15 1L8 8L1 1"
+                                                            stroke="white"
+                                                            strokeWidth="2"
+                                                        />
+                                                    </svg>
+                                                )}
+                                            </span>
+                                        </label>
+                                    </div>
+                                    <div
+                                        className={styles.cardBody}
+                                        ref={setCollapsibleElement}
+                                    >
+                                        <div className={styles.dropDownContent}>
+                                            <div className={styles.bGroup}>
+                                                {stepTwo.items[5].data.map(
+                                                    (item) => (
+                                                        <>
+                                                            <label
+                                                                htmlFor={
+                                                                    item.item_id
+                                                                }
+                                                            >
+                                                                {item.chk ===
+                                                                "N" ? (
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        id={
+                                                                            item.item_id
+                                                                        }
+                                                                        value={
+                                                                            item.item_id
+                                                                        }
+                                                                        onChange={
+                                                                            enableNextTextBox
+                                                                        }
+                                                                    />
+                                                                ) : (
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        id={
+                                                                            item.item_id
+                                                                        }
+                                                                        value={
+                                                                            item.item_id
+                                                                        }
+                                                                        onChange={
+                                                                            enableNextTextBox
+                                                                        }
+                                                                        defaultChecked
+                                                                    />
+                                                                )}
+
+                                                                {item.name}
+                                                                <label
+                                                                    className={
+                                                                        styles.num
+                                                                    }
+                                                                >
+                                                                    數量
+                                                                    {item.quantity ===
+                                                                    "" ? (
+                                                                        <input
+                                                                            type="number"
+                                                                            min="0"
+                                                                            disabled
+                                                                        />
+                                                                    ) : (
+                                                                        <input
+                                                                            type="number"
+                                                                            min={item.quantity.toString()}
+                                                                        />
+                                                                    )}
+                                                                </label>
+                                                                <span>
+                                                                    ${" "}
+                                                                    {item.prcie}
+                                                                    /組
+                                                                </span>
+                                                            </label>
+                                                        </>
+                                                    )
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        />
+                    </div>
+                    <button type="submit" className={styles.next}>
+                        下一步
+                    </button>
+                </Form>
+            )}
         </div>
     );
 }
