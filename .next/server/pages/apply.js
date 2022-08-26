@@ -46,7 +46,8 @@ module.exports = {
 	"checkedActive": "Form_checkedActive__FJhsG",
 	"steps": "Form_steps__lvY8Y",
 	"step": "Form_step__ihYvP",
-	"pass": "Form_pass__FCM_r"
+	"pass": "Form_pass__FCM_r",
+	"uploadImg": "Form_uploadImg__oUHU_"
 };
 
 
@@ -794,7 +795,8 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo  }) {
                                 type: "checkbox",
                                 id: "chooseDefault",
                                 value: "useDefault",
-                                onChange: handleDefault
+                                onChange: handleDefault,
+                                defaultChecked: true
                             }),
                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
                                 htmlFor: "chooseDefault",
@@ -1723,6 +1725,12 @@ function Write({ formStep , nextFormStep  }) {
         });
         console.log(validationResult.inner);
     }
+    const handleUpload = (e)=>{
+        const [file] = e.target.files;
+        if (file) {
+            blah.src = URL.createObjectURL(file);
+        }
+    };
     return /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
         className: [
             (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().form),
@@ -1762,9 +1770,16 @@ function Write({ formStep , nextFormStep  }) {
                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
                                 type: "file",
                                 name: "photo",
-                                id: "upload-photo"
+                                id: "upload-photo",
+                                onChange: handleUpload,
+                                accept: "image/*"
                             })
                         ]
+                    }),
+                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("img", {
+                        id: "blah",
+                        src: "",
+                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().uploadImg)
                     }),
                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("h2", {
                         children: "或以下方工具繪製水電配置圖"

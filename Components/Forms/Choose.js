@@ -213,6 +213,7 @@ export default function Choose({ formStep, nextFormStep, priceData, stepTwo }) {
                         id="chooseDefault"
                         value="useDefault"
                         onChange={handleDefault}
+                        defaultChecked
                     />
                     <label htmlFor="chooseDefault">
                         只使用大會提供每 1 攤位免費基本用電 110V 0.5KW

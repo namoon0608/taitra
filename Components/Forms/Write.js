@@ -32,6 +32,13 @@ export default function Write({ formStep, nextFormStep }) {
         console.log(validationResult.inner);
     }
 
+    const handleUpload = (e) => {
+        const [file] = e.target.files;
+        if (file) {
+            blah.src = URL.createObjectURL(file);
+        }
+    };
+
     return (
         <div
             className={[
@@ -50,9 +57,15 @@ export default function Write({ formStep, nextFormStep }) {
                 </div>
                 <div className={styles.upload}>
                     <label htmlFor="upload-photo">請選擇檔案上傳</label>
-                    <input type="file" name="photo" id="upload-photo" />
+                    <input
+                        type="file"
+                        name="photo"
+                        id="upload-photo"
+                        onChange={handleUpload}
+                        accept="image/*"
+                    />
                 </div>
-
+                <img id="blah" src="" className={styles.uploadImg} />
                 <h2>或以下方工具繪製水電配置圖</h2>
                 <img src="/img/image7.png" />
                 <h2>水電配置圖範例</h2>
