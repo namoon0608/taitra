@@ -148,7 +148,7 @@ function Basic({ formStep , nextFormStep , stepOne , company , saveID , dataID ,
         const options = {
             method: "POST",
             headers: {
-                cookie: "ci_session=2tuoeunna8cs9312goi03j36jam80pm2",
+                // cookie: "ci_session=2tuoeunna8cs9312goi03j36jam80pm2",
                 "Content-Type": "application/x-www-form-urlencoded"
             },
             body: new URLSearchParams({
@@ -182,7 +182,7 @@ function Basic({ formStep , nextFormStep , stepOne , company , saveID , dataID ,
         const options = {
             method: "POST",
             headers: {
-                cookie: "ci_session=2tuoeunna8cs9312goi03j36jam80pm2",
+                // cookie: "ci_session=2tuoeunna8cs9312goi03j36jam80pm2",
                 "Content-Type": "application/x-www-form-urlencoded"
             },
             body: new URLSearchParams({
@@ -686,7 +686,7 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
             const options = {
                 method: "POST",
                 headers: {
-                    cookie: "ci_session=9lejfn4cgisk4havru3sjg4s9e8aiqho",
+                    // cookie: "ci_session=9lejfn4cgisk4havru3sjg4s9e8aiqho",
                     "Content-Type": "application/x-www-form-urlencoded"
                 },
                 body: new URLSearchParams({
@@ -720,7 +720,7 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
             const options1 = {
                 method: "POST",
                 headers: {
-                    cookie: "ci_session=9lejfn4cgisk4havru3sjg4s9e8aiqho",
+                    // cookie: "ci_session=9lejfn4cgisk4havru3sjg4s9e8aiqho",
                     "Content-Type": "application/x-www-form-urlencoded"
                 },
                 body: new URLSearchParams({
@@ -743,7 +743,7 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
             const options = {
                 method: "POST",
                 headers: {
-                    cookie: "ci_session=9lejfn4cgisk4havru3sjg4s9e8aiqho",
+                    // cookie: "ci_session=9lejfn4cgisk4havru3sjg4s9e8aiqho",
                     "Content-Type": "application/x-www-form-urlencoded"
                 },
                 body: new URLSearchParams({
@@ -782,7 +782,7 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                 const options1 = {
                     method: "POST",
                     headers: {
-                        cookie: "ci_session=9lejfn4cgisk4havru3sjg4s9e8aiqho",
+                        // cookie: "ci_session=9lejfn4cgisk4havru3sjg4s9e8aiqho",
                         "Content-Type": "application/x-www-form-urlencoded"
                     },
                     body: new URLSearchParams({
@@ -2089,10 +2089,10 @@ function Preview({ formStep , nextFormStep , applicatonId , dataID ,  }) {
     async function initProducts() {
         const options = {
             method: "POST",
-            // headers: {
-            //     cookie: "ci_session=8v7iclm76gcb6fsic32lodnk29j11j6b",
-            //     "Content-Type": "application/x-www-form-urlencoded",
-            // },
+            headers: {
+                // cookie: "ci_session=8v7iclm76gcb6fsic32lodnk29j11j6b",
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
             body: new URLSearchParams({
                 lang: router.locale,
                 application_form_id: dataID,
@@ -2113,7 +2113,7 @@ function Preview({ formStep , nextFormStep , applicatonId , dataID ,  }) {
         const options = {
             method: "POST",
             headers: {
-                cookie: "ci_session=b49bmqbdckrr8bpfre3h8ncme6nohol9",
+                // cookie: "ci_session=b49bmqbdckrr8bpfre3h8ncme6nohol9",
                 "Content-Type": "application/x-www-form-urlencoded"
             },
             body: new URLSearchParams({
@@ -2430,10 +2430,6 @@ function Write({ formStep , nextFormStep , stepThree , dataID  }) {
         options.body = form;
         await fetch(`${"http://ewsadm.taiwantradeshows.com.tw/api/"}setApplyDiagram`, options).then((response)=>response.json()).then((response)=>console.log(response)).then(nextFormStep()).catch((err)=>console.error(err));
     }
-    const popup = ()=>{
-        window.open("https://anbon.vip/twtc_diagram/", "popup", "width=600,height=600");
-        return false;
-    };
     return /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
         className: [
             (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_3___default().form),

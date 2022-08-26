@@ -16,10 +16,10 @@ export default function Preview({
     async function initProducts() {
         const options = {
             method: "POST",
-            // headers: {
-            //     cookie: "ci_session=8v7iclm76gcb6fsic32lodnk29j11j6b",
-            //     "Content-Type": "application/x-www-form-urlencoded",
-            // },
+            headers: {
+                // cookie: "ci_session=8v7iclm76gcb6fsic32lodnk29j11j6b",
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
             body: new URLSearchParams({
                 lang: router.locale,
                 application_form_id: dataID,
@@ -44,7 +44,7 @@ export default function Preview({
         const options = {
             method: "POST",
             headers: {
-                cookie: "ci_session=b49bmqbdckrr8bpfre3h8ncme6nohol9",
+                // cookie: "ci_session=b49bmqbdckrr8bpfre3h8ncme6nohol9",
                 "Content-Type": "application/x-www-form-urlencoded",
             },
             body: new URLSearchParams({

@@ -63,15 +63,6 @@ export default function Write({ formStep, nextFormStep, stepThree, dataID }) {
             .catch((err) => console.error(err));
     }
 
-    const popup = () => {
-        window.open(
-            "https://anbon.vip/twtc_diagram/",
-            "popup",
-            "width=600,height=600"
-        );
-        return false;
-    };
-
     return (
         <div
             className={[

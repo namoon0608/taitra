@@ -18,7 +18,7 @@ export default function Choose({
             const options = {
                 method: "POST",
                 headers: {
-                    cookie: "ci_session=9lejfn4cgisk4havru3sjg4s9e8aiqho",
+                    // cookie: "ci_session=9lejfn4cgisk4havru3sjg4s9e8aiqho",
                     "Content-Type": "application/x-www-form-urlencoded",
                 },
                 body: new URLSearchParams({
@@ -57,7 +57,7 @@ export default function Choose({
             const options = {
                 method: "POST",
                 headers: {
-                    cookie: "ci_session=9lejfn4cgisk4havru3sjg4s9e8aiqho",
+                    // cookie: "ci_session=9lejfn4cgisk4havru3sjg4s9e8aiqho",
                     "Content-Type": "application/x-www-form-urlencoded",
                 },
                 body: new URLSearchParams({
@@ -83,7 +83,7 @@ export default function Choose({
             const options = {
                 method: "POST",
                 headers: {
-                    cookie: "ci_session=9lejfn4cgisk4havru3sjg4s9e8aiqho",
+                    // cookie: "ci_session=9lejfn4cgisk4havru3sjg4s9e8aiqho",
                     "Content-Type": "application/x-www-form-urlencoded",
                 },
                 body: new URLSearchParams({
@@ -127,7 +127,7 @@ export default function Choose({
                 const options = {
                     method: "POST",
                     headers: {
-                        cookie: "ci_session=9lejfn4cgisk4havru3sjg4s9e8aiqho",
+                        // cookie: "ci_session=9lejfn4cgisk4havru3sjg4s9e8aiqho",
                         "Content-Type": "application/x-www-form-urlencoded",
                     },
                     body: new URLSearchParams({

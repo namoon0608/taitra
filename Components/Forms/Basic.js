@@ -29,7 +29,7 @@ export default function Basic({
         const options = {
             method: "POST",
             headers: {
-                cookie: "ci_session=2tuoeunna8cs9312goi03j36jam80pm2",
+                // cookie: "ci_session=2tuoeunna8cs9312goi03j36jam80pm2",
                 "Content-Type": "application/x-www-form-urlencoded",
             },
             body: new URLSearchParams({
@@ -68,7 +68,7 @@ export default function Basic({
         const options = {
             method: "POST",
             headers: {
-                cookie: "ci_session=2tuoeunna8cs9312goi03j36jam80pm2",
+                // cookie: "ci_session=2tuoeunna8cs9312goi03j36jam80pm2",
                 "Content-Type": "application/x-www-form-urlencoded",
             },
             body: new URLSearchParams({
