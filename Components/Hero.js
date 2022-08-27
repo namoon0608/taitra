@@ -8,7 +8,7 @@ export default function Hero({ children, info }) {
         <div className={styles.container}>
             <div className={styles.bgWrap}>
                 <img
-                    src={`http://ewsadm.taiwantradeshows.com.tw/${info.data.banner}`}
+                    src="/img/16615795476309b11bc685e.jpeg"
                     alt="MEGO SHOWS"
                     layout="fill"
                     objectfit="cover"

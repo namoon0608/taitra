@@ -176,7 +176,7 @@ function Hero({ children , info  }) {
             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
                 className: (_styles_Hero_module_scss__WEBPACK_IMPORTED_MODULE_2___default().bgWrap),
                 children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("img", {
-                    src: `http://ewsadm.taiwantradeshows.com.tw/${info.data.banner}`,
+                    src: "/img/16615795476309b11bc685e.jpeg",
                     alt: "MEGO SHOWS",
                     layout: "fill",
                     objectfit: "cover",
