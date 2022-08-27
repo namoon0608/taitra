@@ -11,7 +11,7 @@ export default function Write({ formStep, nextFormStep, stepThree, dataID }) {
     const [show, setShow] = useState(false);
 
     useEffect(() => {
-        if (imageSrc !== null) {
+        if (imageSrc !== null || imageSrc !== "") {
             setGoNext(false);
         }
     }, []);
