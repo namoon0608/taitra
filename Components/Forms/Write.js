@@ -12,7 +12,7 @@ export default function Write({ formStep, nextFormStep, stepThree, dataID }) {
 
     useEffect(() => {
         console.log(imageSrc);
-        if (imageSrc !== null || imageSrc !== "") {
+        if (imageSrc !== null || imageSrc !== "" || imageSrc !== undefined) {
             setGoNext(false);
         }
     }, []);
