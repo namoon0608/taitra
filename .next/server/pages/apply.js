@@ -2502,7 +2502,7 @@ function Write({ formStep , nextFormStep , stepThree , dataID  }) {
     const { 0: show , 1: setShow  } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
     (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(()=>{
         console.log(imageSrc);
-        if (imageSrc !== null || imageSrc !== "" || imageSrc !== undefined) {
+        if (imageSrc !== undefined) {
             setGoNext(false);
         }
     }, []);
