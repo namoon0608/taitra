@@ -42,10 +42,7 @@ export async function getServerSideProps({ locale }) {
 
 export default function Home(props) {
     const { t } = useTranslation();
-    let str = props.applyInfo.content;
-    const reg = /^["|'](.*)["|']$/g;
-    let newStr = str.replace(reg, "$1");
-    console.log(typeof newStr);
+
     return (
         <div className={styles.container}>
             <Head>
@@ -59,10 +56,15 @@ export default function Home(props) {
 
             <Nav />
             <Hero info={props.info}>
-                <h3>水電申請說明</h3>
-                <div className={styles.homeContent}>
+                <h3>{t("home.title")}</h3>
+                <div
+                    className={styles.homeContent}
+                    dangerouslySetInnerHTML={{
+                        __html: props.applyInfo.content,
+                    }}
+                >
                     {/* {props.applyInfo.content} */}
-                    <p>{props.applyInfo.content}</p>
+                    {/* <p>{props.applyInfo.content}</p> */}
                 </div>
                 <Link href={"/apply"}>
                     <a className={styles.homeApply}>{t("apply")}</a>

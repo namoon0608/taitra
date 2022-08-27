@@ -1,6 +1,7 @@
 import styles from "../../styles/Form.module.scss";
 import { Form } from "@unform/web";
 import Input from "../Input Fields/Input";
+import { useTranslation } from "next-i18next";
 
 export default function Basic({
     formStep,
@@ -10,6 +11,8 @@ export default function Basic({
     saveID,
     dataID,
 }) {
+    const { t } = useTranslation();
+
     const temporary = async () => {
         let company = document.getElementById("company").value;
         let uniformNum = document.getElementById("uniformNum").value;
@@ -49,7 +52,7 @@ export default function Basic({
             .then((response) => response.json())
             .then((response) => {
                 console.log(response);
-                alert(response.msg);
+                alert("success");
             })
             .catch((err) => console.error(err));
     };
@@ -102,38 +105,50 @@ export default function Basic({
             ].join(" ")}
         >
             <button className={styles.temporary} onClick={temporary}>
-                暫存
+                {t("applyForm.stepper.save")}
             </button>
-            <h2>參展廠商基本資料</h2>
+            <h2>{t("applyForm.stepOne.groupOne.title")}</h2>
             <div className={styles.companyGroupOne}>
                 <div>
-                    <p className={styles.title}>攤位名稱</p>
+                    <p className={styles.title}>
+                        {t("applyForm.stepOne.groupOne.companyName")}
+                    </p>
                     <p className={styles.content}>
                         {company.company.company_name}
                     </p>
                 </div>
                 <div>
-                    <p className={styles.title}>攤位號碼</p>
+                    <p className={styles.title}>
+                        {t("applyForm.stepOne.groupOne.boothNo")}
+                    </p>
                     <p className={styles.content}>{company.company.booth_no}</p>
                 </div>
                 <div>
-                    <p className={styles.title}>攤位數量</p>
+                    <p className={styles.title}>
+                        {t("applyForm.stepOne.groupOne.quantityOfBooths")}
+                    </p>
                     <p className={styles.content}>
-                        {company.company.booth_cnt} 個
+                        {company.company.booth_cnt}
                     </p>
                 </div>
                 <div>
-                    <p className={styles.title}>聯絡人</p>
+                    <p className={styles.title}>
+                        {t("applyForm.stepOne.groupOne.contactPerson")}
+                    </p>
                     <p className={styles.content}>
                         {company.company.contact_person}
                     </p>
                 </div>
                 <div>
-                    <p className={styles.title}>聯絡電話</p>
+                    <p className={styles.title}>
+                        {t("applyForm.stepOne.groupOne.phone")}
+                    </p>
                     <p className={styles.content}>{company.company.com_tel}</p>
                 </div>
                 <div>
-                    <p className={styles.title}>統一編號</p>
+                    <p className={styles.title}>
+                        {t("applyForm.stepOne.groupOne.taxID")}
+                    </p>
                     <p className={styles.content}>{company.company.tax_id}</p>
                 </div>
             </div>
@@ -143,38 +158,50 @@ export default function Basic({
                     <p className={styles.content}>{company.company.email}</p>
                 </div>
                 <div>
-                    <p className={styles.title}>地址</p>
+                    <p className={styles.title}>
+                        {t("applyForm.stepOne.groupOne.address")}
+                    </p>
                     <p className={styles.content}>{company.company.address}</p>
                 </div>
             </div>
             {stepOne.status === false ? (
                 <Form onSubmit={handleSubmit}>
-                    <h2>代理或裝潢公司基本資料</h2>
+                    <h2>{t("applyForm.stepOne.groupTwo.title")}</h2>
                     <div className={styles.form}>
                         <div className={styles.formRow}>
                             <Input
                                 name="company"
-                                label="公司名稱"
+                                label={t(
+                                    "applyForm.stepOne.groupTwo.companyName"
+                                )}
                                 type="text"
-                                placeholder="請輸入公司名稱"
+                                placeholder={t(
+                                    "applyForm.stepOne.groupTwo.companyPlaceHolder"
+                                )}
                                 id="company"
                             />
                         </div>
                         <div className={styles.formRow}>
                             <Input
                                 name="uniformNum"
-                                label="統一編號"
+                                label={t("applyForm.stepOne.groupTwo.taxID")}
                                 type="text"
-                                placeholder="請輸入統一編號"
+                                placeholder={t(
+                                    "applyForm.stepOne.groupTwo.taxIdPlaceHolder"
+                                )}
                                 id="uniformNum"
                             />
                         </div>
                         <div className={styles.formRow}>
                             <Input
                                 name="contactPerson"
-                                label="聯絡人"
+                                label={t(
+                                    "applyForm.stepOne.groupTwo.contactPerson"
+                                )}
                                 type="text"
-                                placeholder="請輸入聯絡人姓名"
+                                placeholder={t(
+                                    "applyForm.stepOne.groupTwo.contactPersonPlaceHolder"
+                                )}
                                 id="contactPerson"
                             />
                         </div>
@@ -183,26 +210,32 @@ export default function Basic({
                                 name="email"
                                 label="E-mail"
                                 type="email"
-                                placeholder="請輸入電子郵件"
+                                placeholder={t(
+                                    "applyForm.stepOne.groupTwo.emailPlaceHolder"
+                                )}
                                 id="email"
                             />
                         </div>
                         <div className={styles.formRow}>
                             <Input
                                 name="phone"
-                                label="聯絡電話"
+                                label={t("applyForm.stepOne.groupTwo.phone")}
                                 type="tel"
-                                placeholder="請輸入聯絡電話"
+                                placeholder={t(
+                                    "applyForm.stepOne.groupTwo.phonePlaceHolder"
+                                )}
                                 id="phone"
                             />
                         </div>
                     </div>
-                    <h2>開立發票資訊</h2>
+                    <h2>{t("applyForm.stepOne.groupThree.title")}</h2>
                     <div className={styles.form}>
                         <div className={styles.addressGroup}>
                             <div>
                                 <label htmlFor="company_address">
-                                    同參展廠商
+                                    {t(
+                                        "applyForm.stepOne.groupThree.asTheExhibitor"
+                                    )}
                                     <input
                                         type="radio"
                                         id="company_address"
@@ -213,7 +246,9 @@ export default function Basic({
                             </div>
                             <div>
                                 <label htmlFor="agent_address">
-                                    同代理或裝潢公司
+                                    {t(
+                                        "applyForm.stepOne.groupThree.asTheAgent"
+                                    )}
                                     <input
                                         type="radio"
                                         id="agent_address"
@@ -230,9 +265,13 @@ export default function Basic({
                         >
                             <Input
                                 name="address"
-                                label="發票寄送地址"
+                                label={t(
+                                    "applyForm.stepOne.groupThree.invoiceAddress"
+                                )}
                                 type="text"
-                                placeholder="請輸入發票寄送地址"
+                                placeholder={t(
+                                    "applyForm.stepOne.groupThree.invoicePlaceHolder"
+                                )}
                                 id="address"
                             />
                         </div>
@@ -241,25 +280,31 @@ export default function Basic({
                                 " "
                             )}
                         >
-                            <label htmlFor="prepare">備註</label>
+                            <label htmlFor="prepare">
+                                {t("applyForm.stepOne.groupThree.remark")}
+                            </label>
                             <textarea id="remark"></textarea>
                         </div>
                     </div>
 
                     <button type="submit" className={styles.firstNext}>
-                        下一步
+                        {t("applyForm.stepper.next")}
                     </button>
                 </Form>
             ) : (
                 <Form onSubmit={handleSubmit}>
-                    <h2>代理或裝潢公司基本資料</h2>
+                    <h2>{t("applyForm.stepOne.groupTwo.title")}</h2>
                     <div className={styles.form}>
                         <div className={styles.formRow}>
                             <Input
                                 name="company"
-                                label="公司名稱"
+                                label={t(
+                                    "applyForm.stepOne.groupTwo.companyName"
+                                )}
                                 type="text"
-                                placeholder="請輸入公司名稱"
+                                placeholder={t(
+                                    "applyForm.stepOne.groupTwo.companyPlaceHolder"
+                                )}
                                 id="company"
                                 defaultValue={stepOne.data.proxy_company_name}
                             />
@@ -267,9 +312,11 @@ export default function Basic({
                         <div className={styles.formRow}>
                             <Input
                                 name="uniformNum"
-                                label="統一編號"
+                                label={t("applyForm.stepOne.groupTwo.taxID")}
                                 type="text"
-                                placeholder="請輸入統一編號"
+                                placeholder={t(
+                                    "applyForm.stepOne.groupTwo.taxIdPlaceHolder"
+                                )}
                                 id="uniformNum"
                                 defaultValue={stepOne.data.proxy_tax_id}
                             />
@@ -277,9 +324,13 @@ export default function Basic({
                         <div className={styles.formRow}>
                             <Input
                                 name="contactPerson"
-                                label="聯絡人"
+                                label={t(
+                                    "applyForm.stepOne.groupTwo.contactPerson"
+                                )}
                                 type="text"
-                                placeholder="請輸入聯絡人姓名"
+                                placeholder={t(
+                                    "applyForm.stepOne.groupTwo.contactPersonPlaceHolder"
+                                )}
                                 id="contactPerson"
                                 defaultValue={stepOne.data.proxy_contact_person}
                             />
@@ -289,7 +340,9 @@ export default function Basic({
                                 name="email"
                                 label="E-mail"
                                 type="email"
-                                placeholder="請輸入電子郵件"
+                                placeholder={t(
+                                    "applyForm.stepOne.groupTwo.emailPlaceHolder"
+                                )}
                                 id="email"
                                 defaultValue={stepOne.data.proxy_email}
                             />
@@ -297,21 +350,25 @@ export default function Basic({
                         <div className={styles.formRow}>
                             <Input
                                 name="phone"
-                                label="聯絡電話"
+                                label={t("applyForm.stepOne.groupTwo.phone")}
                                 type="tel"
-                                placeholder="請輸入聯絡電話"
+                                placeholder={t(
+                                    "applyForm.stepOne.groupTwo.phonePlaceHolder"
+                                )}
                                 id="phone"
                                 defaultValue={stepOne.data.proxy_phone}
                             />
                         </div>
                     </div>
-                    <h2>開立發票資訊</h2>
+                    <h2>{t("applyForm.stepOne.groupThree.title")}</h2>
                     <div className={styles.form}>
                         {stepOne.data.invoice_title === "1" ? (
                             <div className={styles.addressGroup}>
                                 <div>
                                     <label htmlFor="company_address">
-                                        同參展廠商
+                                        {t(
+                                            "applyForm.stepOne.groupThree.asTheExhibitor"
+                                        )}
                                         <input
                                             type="radio"
                                             id="company_address"
@@ -323,7 +380,9 @@ export default function Basic({
                                 </div>
                                 <div>
                                     <label htmlFor="agent_address">
-                                        同代理或裝潢公司
+                                        {t(
+                                            "applyForm.stepOne.groupThree.asTheAgent"
+                                        )}
                                         <input
                                             type="radio"
                                             id="agent_address"
@@ -337,7 +396,9 @@ export default function Basic({
                             <div className={styles.addressGroup}>
                                 <div>
                                     <label htmlFor="company_address">
-                                        同參展廠商
+                                        {t(
+                                            "applyForm.stepOne.groupThree.asTheExhibitor"
+                                        )}
                                         <input
                                             type="radio"
                                             id="company_address"
@@ -348,7 +409,9 @@ export default function Basic({
                                 </div>
                                 <div>
                                     <label htmlFor="agent_address">
-                                        同代理或裝潢公司
+                                        {t(
+                                            "applyForm.stepOne.groupThree.asTheAgent"
+                                        )}
                                         <input
                                             type="radio"
                                             id="agent_address"
@@ -368,9 +431,13 @@ export default function Basic({
                         >
                             <Input
                                 name="address"
-                                label="發票寄送地址"
+                                label={t(
+                                    "applyForm.stepOne.groupThree.invoiceAddress"
+                                )}
                                 type="text"
-                                placeholder="請輸入發票寄送地址"
+                                placeholder={t(
+                                    "applyForm.stepOne.groupThree.invoicePlaceHolder"
+                                )}
                                 id="address"
                                 defaultValue={stepOne.data.invoice_address}
                             />
@@ -380,7 +447,9 @@ export default function Basic({
                                 " "
                             )}
                         >
-                            <label htmlFor="prepare">備註</label>
+                            <label htmlFor="prepare">
+                                {t("applyForm.stepOne.groupThree.remark")}
+                            </label>
                             <textarea
                                 id="remark"
                                 defaultValue={stepOne.data.remark}
@@ -389,111 +458,10 @@ export default function Basic({
                     </div>
 
                     <button type="submit" className={styles.firstNext}>
-                        下一步
+                        {t("applyForm.stepper.next")}
                     </button>
                 </Form>
             )}
-            {/* <Form onSubmit={handleSubmit}>
-                <h2>代理或裝潢公司基本資料</h2>
-                <div className={styles.form}>
-                    <div className={styles.formRow}>
-                        <Input
-                            name="company"
-                            label="公司名稱"
-                            type="text"
-                            placeholder="請輸入公司名稱"
-                            id="company"
-                            
-                        />
-                    </div>
-                    <div className={styles.formRow}>
-                        <Input
-                            name="uniformNum"
-                            label="統一編號"
-                            type="text"
-                            placeholder="請輸入統一編號"
-                            id="uniformNum"
-                            
-                        />
-                    </div>
-                    <div className={styles.formRow}>
-                        <Input
-                            name="contactPerson"
-                            label="聯絡人"
-                            type="text"
-                            placeholder="請輸入聯絡人姓名"
-                            id="contactPerson"
-                            
-                        />
-                    </div>
-                    <div className={styles.formRow}>
-                        <Input
-                            name="email"
-                            label="E-mail"
-                            type="email"
-                            placeholder="請輸入電子郵件"
-                            id="email"
-                            
-                        />
-                    </div>
-                    <div className={styles.formRow}>
-                        <Input
-                            name="phone"
-                            label="聯絡電話"
-                            type="tel"
-                            placeholder="請輸入聯絡電話"
-                            id="phone"
-                            
-                        />
-                    </div>
-                </div>
-                <h2>開立發票資訊</h2>
-                <div className={styles.form}>
-                    <div className={styles.addressGroup}>
-                        <div>
-                            <label htmlFor="company_address">
-                                同參展廠商
-                                <input
-                                    type="radio"
-                                    id="company_address"
-                                    name="drone"
-                                    value="1"
-                                    defaultChecked
-                                />
-                            </label>
-                        </div>
-                        <div>
-                            <label htmlFor="agent_address">
-                                同代理或裝潢公司
-                                <input
-                                    type="radio"
-                                    id="agent_address"
-                                    name="drone"
-                                    value="2"
-                                />
-                            </label>
-                        </div>
-                    </div>
-                    <div className={[styles.formRow, styles.address].join(" ")}>
-                        <Input
-                            name="address"
-                            label="發票寄送地址"
-                            type="text"
-                            placeholder="請輸入發票寄送地址"
-                            id="address"
-                            
-                        />
-                    </div>
-                    <div className={[styles.formRow, styles.prepare].join(" ")}>
-                        <label htmlFor="prepare">備註</label>
-                        <textarea id="remark"></textarea>
-                    </div>
-                </div>
-
-                <button type="submit" className={styles.firstNext}>
-                    下一步
-                </button>
-            </Form> */}
         </div>
     );
 }

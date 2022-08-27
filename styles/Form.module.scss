@@ -106,17 +106,17 @@
         }
         .content {
             padding-left: 20px;
-            font-size: 24px;
+            // font-size: 24px;
             font-weight: 400;
             font-feature-settings: "pnum" on, "lnum" on;
             color: #333333;
             margin: 0 0 20px 0;
-            @include laptop_S() {
-                font-size: 20px;
-            }
-            @include tablet_S() {
-                font-size: 18px;
-            }
+            // @include laptop_S() {
+            //     font-size: 20px;
+            // }
+            // @include tablet_S() {
+            //     font-size: 18px;
+            // }
             @include mobile_L() {
                 padding: 0;
                 font-size: 14px;
@@ -163,6 +163,13 @@
                 text-indent: 16px;
                 &:focus {
                     outline: none;
+                }
+                &::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+                    color: #999999;
+                    opacity: 1; /* Firefox */
+                }
+                &::-ms-input-placeholder { /* Microsoft Edge */
+                    color: #999999;
                 }
             }
         }
@@ -365,7 +372,7 @@
         }
         p {
             padding-left: 20px;
-            font-size: 24px;
+            // font-size: 24px;
             font-weight: 400;
             font-feature-settings: "pnum" on, "lnum" on;
             color: #333333;
@@ -405,7 +412,7 @@
         }
         p {
             padding-left: 20px;
-            font-size: 24px;
+            // font-size: 24px;
             font-weight: 400;
             font-feature-settings: "pnum" on, "lnum" on;
             color: #333333;

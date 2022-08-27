@@ -1,15 +1,47 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "../../styles/Form.module.scss";
 import Popup from "../Popup/Popup";
+import { useTranslation } from "next-i18next";
 
 export default function Write({ formStep, nextFormStep, stepThree, dataID }) {
-    const [imageSrc, setImageSrc] = useState();
+    const { t } = useTranslation();
+    const [imageSrc, setImageSrc] = useState(stepThree.imageData);
     const [uploadData, setUploadData] = useState();
     const [goNext, setGoNext] = useState(true);
     const [show, setShow] = useState(false);
 
+    useEffect(() => {
+        if (imageSrc !== null) {
+            setGoNext(false);
+        }
+    }, []);
+
     const close = () => {
         setShow(false);
+    };
+
+    const temporary = async () => {
+        const form = new FormData();
+        form.append("application_form_id", dataID);
+        form.append(
+            "sid",
+            "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
+        );
+        form.append("imageData", imageSrc);
+
+        const options = {
+            method: "POST",
+        };
+
+        options.body = form;
+
+        await fetch(`${process.env.customKey}setApplyDiagram`, options)
+            .then((response) => response.json())
+            .then((response) => {
+                console.log(response);
+                alert("success");
+            })
+            .catch((err) => console.error(err));
     };
 
     function handleOnChange(changeEvent) {
@@ -39,7 +71,7 @@ export default function Write({ formStep, nextFormStep, stepThree, dataID }) {
             ({ name }) => name === "photo"
         );
         const form = new FormData();
-        form.append("application_form_id", "6305a2e49bdbf001");
+        form.append("application_form_id", dataID);
         form.append(
             "sid",
             "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
@@ -47,7 +79,9 @@ export default function Write({ formStep, nextFormStep, stepThree, dataID }) {
         if (fileInput.files.length === 0) {
             form.append("imageData", imageSrc);
         } else {
-            form.append("imageData", fileInput.files[0]);
+            const file = fileInput.files[0];
+            form.append("imageData", URL.createObjectURL(file));
+            // form.append("imageData", fileInput.files[0]);
         }
 
         const options = {
@@ -70,9 +104,11 @@ export default function Write({ formStep, nextFormStep, stepThree, dataID }) {
                 formStep === 2 ? styles.showForm : styles.hideForm,
             ].join(" ")}
         >
-            <button className={styles.temporary}>暫存</button>
+            <button className={styles.temporary} onClick={temporary}>
+                {t("applyForm.stepper.save")}
+            </button>
             <form onChange={handleOnChange} onSubmit={handleSubmit}>
-                <h2>請上傳水電配置圖</h2>
+                <h2>{t("applyForm.stepThree.groupOne.title")}</h2>
                 <div>
                     <input
                         type="checkbox"
@@ -81,11 +117,13 @@ export default function Write({ formStep, nextFormStep, stepThree, dataID }) {
                         name="cbox1"
                     />
                     <label htmlFor="cbox1">
-                        水電配置圖尚未完成，待補件上傳
+                        {t("applyForm.stepThree.groupOne.pending")}
                     </label>
                 </div>
                 <div className={styles.upload}>
-                    <label htmlFor="upload-photo">請選擇檔案上傳</label>
+                    <label htmlFor="upload-photo">
+                        {t("applyForm.stepThree.groupOne.uploadFile")}
+                    </label>
                     <input
                         type="file"
                         name="photo"
@@ -93,32 +131,20 @@ export default function Write({ formStep, nextFormStep, stepThree, dataID }) {
                         accept="image/*"
                     />
                 </div>
-                {stepThree.status === false || stepThree.imageData === "" ? (
-                    <img
-                        id="blah"
-                        src={imageSrc}
-                        className={styles.uploadImg}
-                    />
-                ) : (
-                    <img
-                        id="blah"
-                        src={stepThree.imageData}
-                        className={styles.uploadImg}
-                    />
-                )}
+                <img id="blah" src={imageSrc} className={styles.uploadImg} />
 
-                <h2>或以下方工具繪製水電配置圖</h2>
+                <h2>{t("applyForm.stepThree.groupTwo.title")}</h2>
                 <a
                     href="https://anbon.vip/twtc_diagram/"
                     onClick={() => setShow(true)}
                     target="iframe_a"
                 >
-                    Open Link in Popup
+                    {t("applyForm.stepThree.groupTwo.clickPopup")}
                 </a>
                 {/* <img src="/img/image7.png" /> */}
-                <h2>水電配置圖範例</h2>
+                <h2>{t("applyForm.stepThree.groupThree.title")}</h2>
                 <div className={styles.write}>
-                    <p>＃請標示鄰攤位及走道，方便識別攤位方位。</p>
+                    <p>＃{t("applyForm.stepThree.groupThree.content")}</p>
                     <img src="/img/image21.png" />
                 </div>
                 <button
@@ -130,7 +156,7 @@ export default function Write({ formStep, nextFormStep, stepThree, dataID }) {
                         opacity: goNext ? "0.5" : "1",
                     }}
                 >
-                    下一步
+                    {t("applyForm.stepper.next")}
                 </button>
             </form>
             {show ? (

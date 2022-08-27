@@ -68,10 +68,6 @@ async function getServerSideProps({ locale  }) {
 }
 function Home(props) {
     const { t  } = (0,next_i18next__WEBPACK_IMPORTED_MODULE_6__.useTranslation)();
-    let str = props.applyInfo.content;
-    const reg = /^["|'](.*)["|']$/g;
-    let newStr = str.replace(reg, "$1");
-    console.log(typeof newStr);
     return /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
         className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default().container),
         children: [
@@ -95,13 +91,13 @@ function Home(props) {
                 info: props.info,
                 children: [
                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("h3", {
-                        children: "水電申請說明"
+                        children: t("home.title")
                     }),
                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
                         className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default().homeContent),
-                        children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
-                            children: props.applyInfo.content
-                        })
+                        dangerouslySetInnerHTML: {
+                            __html: props.applyInfo.content
+                        }
                     }),
                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx((next_link__WEBPACK_IMPORTED_MODULE_7___default()), {
                         href: "/apply",

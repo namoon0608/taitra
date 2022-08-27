@@ -27,19 +27,20 @@
         }
         .tabContent {
             position: relative;
+            margin-top: -12%;
             .upperTab {
-                position: absolute;
-                top: -149px;
-                right: 0;
-                left: 0;
+                // position: absolute;
+                // top: -149px;
+                // right: 0;
+                // left: 0;
                 background: #073b74;
                 mix-blend-mode: normal;
                 opacity: 0.89;
                 border-radius: 20px 20px 0px 0px;
                 max-width: 1000px;
-                display: flex;
+                display: grid;
+                grid-template-columns: 1fr 2fr;
                 align-items: center;
-                justify-content: space-between;
                 margin: 0 auto;
                 padding: 28px 40px 40px 40px;
                 @include laptop_L() {
@@ -49,22 +50,21 @@
                     padding: 28px 30px 60px 30px;
                 }
                 @include tablet_L() {
-                    flex-direction: column;
-                    gap: 0;
-                    top: -180px;
+                    grid-template-columns: 1fr;
                 }
                 @include mobile_L() {
                     padding: 28px 0 60px 0;
                 }
-                @include mobile_S() {
-                    top: -220px;
-                }
+                // @include mobile_S() {
+                //     top: -220px;
+                // }
                 h1 {
                     color: #ffffff;
                     font-size: 33px;
                     margin-top: 0;
                     @include laptop_L() {
                         font-size: 25px;
+                        text-align: center;
                     }
                     @include laptop_M() {
                         font-size: 20px;
@@ -106,26 +106,26 @@
             height: auto;
             max-width: 1000px;
             margin: 0 auto;
-            margin-top: -45px;
+            margin-top: -50px;
             padding: 30px 40px 70px 40px;
-            @include desktop() {
-                margin-top: 0px;
-            }
-            @include laptop_L() {
-                margin-top: 50px;
-            }
-            @include tablet_L() {
-                margin-top: 100px;
-            }
-            @include tablet_S() {
-                margin-top: 120px;
-            }
-            @include mobile_L() {
-                margin-top: 140px;
-            }
-            @include mobile_S() {
-                margin-top: 150px;
-            }
+            // @include desktop() {
+            //     margin-top: 0px;
+            // }
+            // @include laptop_L() {
+            //     margin-top: 50px;
+            // }
+            // @include tablet_L() {
+            //     margin-top: 100px;
+            // }
+            // @include tablet_S() {
+            //     margin-top: 120px;
+            // }
+            // @include mobile_L() {
+            //     margin-top: 140px;
+            // }
+            // @include mobile_S() {
+            //     margin-top: 150px;
+            // }
             h3 {
                 font-size: 32px;
                 color: #225183;

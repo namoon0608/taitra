@@ -161,18 +161,22 @@ function Footer() {
 /* harmony export */ });
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(997);
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _styles_Hero_module_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(8353);
-/* harmony import */ var _styles_Hero_module_scss__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_styles_Hero_module_scss__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _styles_Hero_module_scss__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(8353);
+/* harmony import */ var _styles_Hero_module_scss__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_styles_Hero_module_scss__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var next_i18next__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1377);
+/* harmony import */ var next_i18next__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(next_i18next__WEBPACK_IMPORTED_MODULE_1__);
+
 
 
 function Hero({ children , info  }) {
+    const { t  } = (0,next_i18next__WEBPACK_IMPORTED_MODULE_1__.useTranslation)();
     return /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-        className: (_styles_Hero_module_scss__WEBPACK_IMPORTED_MODULE_1___default().container),
+        className: (_styles_Hero_module_scss__WEBPACK_IMPORTED_MODULE_2___default().container),
         children: [
             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                className: (_styles_Hero_module_scss__WEBPACK_IMPORTED_MODULE_1___default().bgWrap),
+                className: (_styles_Hero_module_scss__WEBPACK_IMPORTED_MODULE_2___default().bgWrap),
                 children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("img", {
-                    src: info.data.banner,
+                    src: `http://ewsadm.taiwantradeshows.com.tw/${info.data.banner}`,
                     alt: "MEGO SHOWS",
                     layout: "fill",
                     objectfit: "cover",
@@ -180,26 +184,37 @@ function Hero({ children , info  }) {
                 })
             }),
             /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                className: (_styles_Hero_module_scss__WEBPACK_IMPORTED_MODULE_1___default().main),
+                className: (_styles_Hero_module_scss__WEBPACK_IMPORTED_MODULE_2___default().main),
                 children: [
                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                        className: (_styles_Hero_module_scss__WEBPACK_IMPORTED_MODULE_1___default().tabContent),
+                        className: (_styles_Hero_module_scss__WEBPACK_IMPORTED_MODULE_2___default().tabContent),
                         children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                            className: (_styles_Hero_module_scss__WEBPACK_IMPORTED_MODULE_1___default().upperTab),
+                            className: (_styles_Hero_module_scss__WEBPACK_IMPORTED_MODULE_2___default().upperTab),
                             children: [
                                 /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("h1", {
                                     children: info.data.event_name
                                 }),
-                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("ul", {
-                                    children: info.data.info.map((item, idx)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("li", {
-                                            children: item
-                                        }, idx))
+                                /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("ul", {
+                                    children: [
+                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("li", {
+                                            children: t("info.item1")
+                                        }),
+                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("li", {
+                                            children: t("info.item2")
+                                        }),
+                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("li", {
+                                            children: t("info.item3")
+                                        }),
+                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("li", {
+                                            children: t("info.item4")
+                                        })
+                                    ]
                                 })
                             ]
                         })
                     }),
                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                        className: (_styles_Hero_module_scss__WEBPACK_IMPORTED_MODULE_1___default().content),
+                        className: (_styles_Hero_module_scss__WEBPACK_IMPORTED_MODULE_2___default().content),
                         children: children
                     })
                 ]

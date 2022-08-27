@@ -1,6 +1,9 @@
 import styles from "../../styles/Form.module.scss";
+import { useTranslation } from "next-i18next";
 
 export default function FormCard({ children, currentStep, prevFormStep }) {
+    const { t } = useTranslation();
+
     return (
         <div className="">
             {currentStep < 4 && (
@@ -11,7 +14,7 @@ export default function FormCard({ children, currentStep, prevFormStep }) {
                             onClick={prevFormStep}
                             type="button"
                         >
-                            上一步
+                            {t("applyForm.stepper.prev")}
                         </button>
                     )}
                     <div className={styles.steps}>
@@ -24,7 +27,7 @@ export default function FormCard({ children, currentStep, prevFormStep }) {
                                 }
                             >
                                 <span>Step 1</span>
-                                <p>基本資料</p>
+                                <p>{t("applyForm.stepper.step1")}</p>
                             </div>
                         </div>
                         <svg
@@ -53,7 +56,7 @@ export default function FormCard({ children, currentStep, prevFormStep }) {
                                 }
                             >
                                 <span>Step 2</span>
-                                <p>水電申請</p>
+                                <p>{t("applyForm.stepper.step2")}</p>
                             </div>
                         </div>
                         <svg
@@ -82,7 +85,7 @@ export default function FormCard({ children, currentStep, prevFormStep }) {
                                 }
                             >
                                 <span>Step 3</span>
-                                <p>水電配置圖</p>
+                                <p>{t("applyForm.stepper.step3")}</p>
                             </div>
                         </div>
                         <svg
@@ -107,7 +110,7 @@ export default function FormCard({ children, currentStep, prevFormStep }) {
                                 }
                             >
                                 <span>Step 4</span>
-                                <p>預覽</p>
+                                <p>{t("applyForm.stepper.step4")}</p>
                             </div>
                         </div>
                     </div>

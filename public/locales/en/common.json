@@ -8,5 +8,121 @@
         "complete": "Completion",
         "contact": "Contact"
     },
-    "apply": "Apply"
+    "info":{
+        "item1":"Before Aug. 16, 2022, 10% Discount .",
+        "item2":"During Aug. 17 – Aug. 25, 2022, Set price.",
+        "item3":"During Aug. 26 – Sept. 5, 2022, 20% Overdue Charge.",
+        "item4":"After Sept. 6, 2022, 50% Overdue Charge."
+    },
+    "home": {
+        "title": "Application Kit"
+    },
+    "apply": "Apply",
+    "priceList":{
+        "title":"Price List",
+        "no":"No.",
+        "itemNo": "Item No.",
+        "item":"Item",
+        "price":"Price (Tax included)"
+    },
+    "applyForm": {
+        "stepper": {
+            "save":"save",
+            "next":"Next",
+            "prev":"Prev",
+            "send":"Complete",
+            "step1":"Basic",
+            "step2":"Application",
+            "step3":"Layout Plan",
+            "step4":"Preview"
+        },
+        "stepOne": {
+            "groupOne":{
+                "title":"Exhibitor Info",
+                "companyName":"Company Name",
+                "boothNo":"Booth No.",
+                "quantityOfBooths":"Quantity of Booths",
+                "contactPerson": "Contact Person",
+                "phone":"Phone",
+                "taxID":"Tax ID",
+                "address":"Address"
+            },
+            "groupTwo":{
+                "title":"Agent/Contractor Information",
+                "companyName":"Company Name",
+                "contactPerson": "Contact Person",
+                "phone":"Phone",
+                "taxID":"Tax ID",
+                "companyPlaceHolder":"Please enter company name",
+                "taxIdPlaceHolder":"Please enter tax ID",
+                "contactPersonPlaceHolder":"Please enter contact person",
+                "emailPlaceHolder":"Please enter e-mail",
+                "phonePlaceHolder":"02-XXXXXXXX #ext. or mobile number"
+            },
+            "groupThree":{
+                "title":"Invoice Information",
+                "asTheExhibitor":"As the exhibitor",
+                "asTheAgent":"As the agent or contractor",
+                "invoiceAddress":"Invoice Address",
+                "invoicePlaceHolder":"Please enter the address to which the invoice should be sent",
+                "remark":"Note"
+            }
+        },
+        "stepTwo": {
+            "title": "Additional Items of Application",
+            "useDefault": "Only use the basic (free of charge) electricity, which is 110V 0.5KW per booth (accumulated based on the quantity of booths).",
+            "itemA":"110V power caculation information: 0.5KW=500W=5A, 1KW=1000W=10A (a) The total power(KW) of 110V= Booth Lighting+Electronic Equipments (TV, water dispenser, computers, etc.)+ Show Exhibits…etc. (b) The total free of charge power of 110V = the Q'ty of booths * 500W (500W free of charge per booth) (c) Additional power needs to apply of 110V = The totoal power usage of your booth deduct the total free of charge power. (a)-(b)=(c) Please click to calculate the value of (c)",
+            "itemBCD":"NBF and box are included, without socket.",
+            "itemE":"about 7.5kg/cm², 600l/min; offer quick coupling female connector ",
+            "itemF":"The pressure on the 1st floor is about 2.2kg/cm², and the 4th floor is about 1kg/cm²; offer globe valve.",
+            "quantity":"Qty",
+            "set":"set"
+        },
+        "stepThree": {
+            "groupOne":{
+                "title":"Please upload your water and electricity layout plan",
+                "pending":"The layout plan is unfinished, please upload additional file.",
+                "uploadFile":"Please choose file to upload"
+            },
+            "groupTwo":{
+                "title":"or use the tool below to create your water and electricity layout plan",
+                "clickPopup":"Please click me to draw utility configuration"
+            },
+            "groupThree":{
+                "title":"The example of layout plan",
+                "content":"To identify the direction, please indicate the aisle and neighbor booth."
+            }
+        },
+        "preview":{
+            "groupOne":{
+                "title":"Agent/Contractor Information",
+                "companyName":"Company Name",
+                "contactPerson": "Contact Person",
+                "phone":"Phone",
+                "taxID":"Tax ID"
+            },
+            "groupTwo":{
+                "title":"Invoice Information",
+                "companyName":"Company Name",
+                "taxID":"Tax ID",
+                "invoiceAddress":"Invoice Address",
+                "remark":"Note"
+            },
+            "groupThree":{
+                "title": "Additional Items of Application",
+                "no":"No.",
+                "item":"Application Items",
+                "quantity":"Quantity",
+                "unitPrice":"Unit Price",
+                "itemCost":"Item Cost",
+                "total":"Total",
+                "useDefault": "Only use the basic (free of charge) electricity, which is 110V 0.5KW per booth (accumulated based on the quantity of booths)."
+            },
+            "groupFour":{
+                "title":"Water and electricity layout plan",
+                "file":"File",
+                "pending":"The layout plan is unfinished, please upload additional file."
+            }
+        }
+    }
 }

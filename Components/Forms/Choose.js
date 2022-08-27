@@ -1,8 +1,8 @@
-import * as yup from "yup";
 import { useState } from "react";
 import styles from "../../styles/Form.module.scss";
 import { Form } from "@unform/web";
 import SlideToggle from "react-slide-toggle";
+import { useTranslation } from "next-i18next";
 
 export default function Choose({
     formStep,
@@ -11,6 +11,8 @@ export default function Choose({
     stepTwo,
     dataID,
 }) {
+    const { t } = useTranslation();
+
     const temporary = async () => {
         const useDefault = document.getElementById("chooseDefault");
         let items = [];
@@ -71,7 +73,7 @@ export default function Choose({
                 .then((response) => response.json())
                 .then((response) => {
                     console.log(response);
-                    alert(response.msg);
+                    alert("success");
                 })
                 .catch((err) => console.error(err));
         }
@@ -209,11 +211,11 @@ export default function Choose({
             ].join(" ")}
         >
             <button className={styles.temporary} onClick={temporary}>
-                暫存
+                {t("applyForm.stepper.save")}
             </button>
             {stepTwo.status === false ? (
                 <Form onSubmit={handleSubmit}>
-                    <h2>水電追加申請項目</h2>
+                    <h2>{t("applyForm.stepTwo.title")}</h2>
                     <div className={styles.applyDefault}>
                         <input
                             type="checkbox"
@@ -223,7 +225,7 @@ export default function Choose({
                             defaultChecked
                         />
                         <label htmlFor="chooseDefault">
-                            只使用大會提供每 1 攤位免費基本用電 110V 0.5KW
+                            {t("applyForm.stepTwo.useDefault")}
                         </label>
                     </div>
                     <div className={styles.applyCheckBox}>
@@ -288,16 +290,7 @@ export default function Choose({
                                     >
                                         <div className={styles.dropDownContent}>
                                             <p>
-                                                110V 用電計算說明：
-                                                0.5KW(千瓦)＝500W(瓦)＝5A(安培)；1KW(千瓦)＝1000W(瓦)＝10A(安培
-                                                (a)
-                                                110V攤位總用電量(KW)＝攤位上照明用電＋各種電器用品用電(電視、開飲機、電腦等)＋展示產品用電....總計。
-                                                (b)
-                                                110V免費累計電量(KW)＝參展攤位數
-                                                X 500W（每1攤位500W免費) (c)
-                                                1100V需追申請之電量(KW)＝110V攤位總用電量扣除了110V免費累計電量；(a)
-                                                - (b) = (c) 。 請點選計算出的
-                                                (c) 值
+                                                {t("applyForm.stepTwo.itemA")}
                                             </p>
                                             <div className={styles.aGroup}>
                                                 {priceData.items[0].data.map(
@@ -395,6 +388,9 @@ export default function Choose({
                                         ref={setCollapsibleElement}
                                     >
                                         <div className={styles.dropDownContent}>
+                                            <p>
+                                                {t("applyForm.stepTwo.itemBCD")}
+                                            </p>
                                             <div className={styles.bGroup}>
                                                 {priceData.items[1].data.map(
                                                     (item) => (
@@ -422,7 +418,9 @@ export default function Choose({
                                                                         styles.num
                                                                     }
                                                                 >
-                                                                    數量
+                                                                    {t(
+                                                                        "applyForm.stepTwo.quantity"
+                                                                    )}
                                                                     <input
                                                                         type="number"
                                                                         min="0"
@@ -432,7 +430,10 @@ export default function Choose({
                                                                 <span>
                                                                     ${" "}
                                                                     {item.prcie}
-                                                                    /組
+                                                                    /
+                                                                    {t(
+                                                                        "applyForm.stepTwo.set"
+                                                                    )}
                                                                 </span>
                                                             </label>
                                                         </>
@@ -504,6 +505,9 @@ export default function Choose({
                                         ref={setCollapsibleElement}
                                     >
                                         <div className={styles.dropDownContent}>
+                                            <p>
+                                                {t("applyForm.stepTwo.itemBCD")}
+                                            </p>
                                             <div className={styles.bGroup}>
                                                 {priceData.items[2].data.map(
                                                     (item) => (
@@ -531,7 +535,9 @@ export default function Choose({
                                                                         styles.num
                                                                     }
                                                                 >
-                                                                    數量
+                                                                    {t(
+                                                                        "applyForm.stepTwo.quantity"
+                                                                    )}
                                                                     <input
                                                                         type="number"
                                                                         min="0"
@@ -541,7 +547,10 @@ export default function Choose({
                                                                 <span>
                                                                     ${" "}
                                                                     {item.prcie}
-                                                                    /組
+                                                                    /
+                                                                    {t(
+                                                                        "applyForm.stepTwo.set"
+                                                                    )}
                                                                 </span>
                                                             </label>
                                                         </>
@@ -556,14 +565,14 @@ export default function Choose({
                                                 />
                                                 用電380V電源箱
                                                 <label className={styles.num}>
-                                                    數量
+                                                    {t("applyForm.stepTwo.quantity")}
                                                     <input
                                                         type="number"
                                                         min="0"
                                                         disabled
                                                     />
                                                 </label>
-                                                <span>$ 2,994/組</span>
+                                                <span>$ 2,994/{t("applyForm.stepTwo.set")}</span>
                                             </label> */}
                                             </div>
                                         </div>
@@ -631,6 +640,9 @@ export default function Choose({
                                         ref={setCollapsibleElement}
                                     >
                                         <div className={styles.dropDownContent}>
+                                            <p>
+                                                {t("applyForm.stepTwo.itemBCD")}
+                                            </p>
                                             <div className={styles.bGroup}>
                                                 {priceData.items[3].data.map(
                                                     (item) => (
@@ -658,7 +670,9 @@ export default function Choose({
                                                                         styles.num
                                                                     }
                                                                 >
-                                                                    數量
+                                                                    {t(
+                                                                        "applyForm.stepTwo.quantity"
+                                                                    )}
                                                                     <input
                                                                         type="number"
                                                                         min="0"
@@ -668,7 +682,10 @@ export default function Choose({
                                                                 <span>
                                                                     ${" "}
                                                                     {item.prcie}
-                                                                    /組
+                                                                    /
+                                                                    {t(
+                                                                        "applyForm.stepTwo.set"
+                                                                    )}
                                                                 </span>
                                                             </label>
                                                         </>
@@ -683,14 +700,14 @@ export default function Choose({
                                                 />
                                                 24小時用電
                                                 <label className={styles.num}>
-                                                    數量
+                                                    {t("applyForm.stepTwo.quantity")}
                                                     <input
                                                         type="number"
                                                         min="0"
                                                         disabled
                                                     />
                                                 </label>
-                                                <span>$ 2,994/組</span>
+                                                <span>$ 2,994/{t("applyForm.stepTwo.set")}</span>
                                             </label> */}
                                             </div>
                                         </div>
@@ -758,6 +775,9 @@ export default function Choose({
                                         ref={setCollapsibleElement}
                                     >
                                         <div className={styles.dropDownContent}>
+                                            <p>
+                                                {t("applyForm.stepTwo.itemE")}
+                                            </p>
                                             <div className={styles.bGroup}>
                                                 {priceData.items[4].data.map(
                                                     (item) => (
@@ -785,7 +805,9 @@ export default function Choose({
                                                                         styles.num
                                                                     }
                                                                 >
-                                                                    數量
+                                                                    {t(
+                                                                        "applyForm.stepTwo.quantity"
+                                                                    )}
                                                                     <input
                                                                         type="number"
                                                                         min="0"
@@ -795,7 +817,10 @@ export default function Choose({
                                                                 <span>
                                                                     ${" "}
                                                                     {item.prcie}
-                                                                    /組
+                                                                    /
+                                                                    {t(
+                                                                        "applyForm.stepTwo.set"
+                                                                    )}
                                                                 </span>
                                                             </label>
                                                         </>
@@ -867,6 +892,9 @@ export default function Choose({
                                         ref={setCollapsibleElement}
                                     >
                                         <div className={styles.dropDownContent}>
+                                            <p>
+                                                {t("applyForm.stepTwo.itemF")}
+                                            </p>
                                             <div className={styles.bGroup}>
                                                 {priceData.items[5].data.map(
                                                     (item) => (
@@ -894,7 +922,9 @@ export default function Choose({
                                                                         styles.num
                                                                     }
                                                                 >
-                                                                    數量
+                                                                    {t(
+                                                                        "applyForm.stepTwo.quantity"
+                                                                    )}
                                                                     <input
                                                                         type="number"
                                                                         min="0"
@@ -904,7 +934,10 @@ export default function Choose({
                                                                 <span>
                                                                     ${" "}
                                                                     {item.prcie}
-                                                                    /組
+                                                                    /
+                                                                    {t(
+                                                                        "applyForm.stepTwo.set"
+                                                                    )}
                                                                 </span>
                                                             </label>
                                                         </>
@@ -918,12 +951,12 @@ export default function Choose({
                         />
                     </div>
                     <button type="submit" className={styles.next}>
-                        下一步
+                        {t("applyForm.stepper.next")}
                     </button>
                 </Form>
             ) : (
                 <Form onSubmit={handleSubmit}>
-                    <h2>水電追加申請項目</h2>
+                    <h2>{t("applyForm.stepTwo.title")}</h2>
                     <div className={styles.applyDefault}>
                         <input
                             type="checkbox"
@@ -932,7 +965,7 @@ export default function Choose({
                             onChange={handleDefault}
                         />
                         <label htmlFor="chooseDefault">
-                            只使用大會提供每 1 攤位免費基本用電 110V 0.5KW
+                            {t("applyForm.stepTwo.useDefault")}
                         </label>
                     </div>
                     <div className={styles.applyCheckBox}>
@@ -997,16 +1030,12 @@ export default function Choose({
                                     >
                                         <div className={styles.dropDownContent}>
                                             <p>
-                                                110V 用電計算說明：
-                                                0.5KW(千瓦)＝500W(瓦)＝5A(安培)；1KW(千瓦)＝1000W(瓦)＝10A(安培
-                                                (a)
-                                                110V攤位總用電量(KW)＝攤位上照明用電＋各種電器用品用電(電視、開飲機、電腦等)＋展示產品用電....總計。
-                                                (b)
-                                                110V免費累計電量(KW)＝參展攤位數
-                                                X 500W（每1攤位500W免費) (c)
-                                                1100V需追申請之電量(KW)＝110V攤位總用電量扣除了110V免費累計電量；(a)
-                                                - (b) = (c) 。 請點選計算出的
-                                                (c) 值
+                                                {t(
+                                                    "applyForm.stepTwo.itemA"
+                                                ).replace(
+                                                    "/\r\n|\r|\n/",
+                                                    "<br />"
+                                                )}
                                             </p>
                                             <div className={styles.aGroup}>
                                                 {stepTwo.items[0].data.map(
@@ -1121,6 +1150,9 @@ export default function Choose({
                                         ref={setCollapsibleElement}
                                     >
                                         <div className={styles.dropDownContent}>
+                                            <p>
+                                                {t("applyForm.stepTwo.itemBCD")}
+                                            </p>
                                             <div className={styles.bGroup}>
                                                 {stepTwo.items[1].data.map(
                                                     (item) => (
@@ -1166,7 +1198,9 @@ export default function Choose({
                                                                         styles.num
                                                                     }
                                                                 >
-                                                                    數量
+                                                                    {t(
+                                                                        "applyForm.stepTwo.quantity"
+                                                                    )}
                                                                     {item.quantity ===
                                                                     "" ? (
                                                                         <input
@@ -1184,7 +1218,10 @@ export default function Choose({
                                                                 <span>
                                                                     ${" "}
                                                                     {item.prcie}
-                                                                    /組
+                                                                    /
+                                                                    {t(
+                                                                        "applyForm.stepTwo.set"
+                                                                    )}
                                                                 </span>
                                                             </label>
                                                         </>
@@ -1256,6 +1293,9 @@ export default function Choose({
                                         ref={setCollapsibleElement}
                                     >
                                         <div className={styles.dropDownContent}>
+                                            <p>
+                                                {t("applyForm.stepTwo.itemBCD")}
+                                            </p>
                                             <div className={styles.bGroup}>
                                                 {stepTwo.items[2].data.map(
                                                     (item) => (
@@ -1301,7 +1341,9 @@ export default function Choose({
                                                                         styles.num
                                                                     }
                                                                 >
-                                                                    數量
+                                                                    {t(
+                                                                        "applyForm.stepTwo.quantity"
+                                                                    )}
                                                                     {item.quantity ===
                                                                     "" ? (
                                                                         <input
@@ -1319,7 +1361,10 @@ export default function Choose({
                                                                 <span>
                                                                     ${" "}
                                                                     {item.prcie}
-                                                                    /組
+                                                                    /
+                                                                    {t(
+                                                                        "applyForm.stepTwo.set"
+                                                                    )}
                                                                 </span>
                                                             </label>
                                                         </>
@@ -1334,14 +1379,14 @@ export default function Choose({
                                                 />
                                                 用電380V電源箱
                                                 <label className={styles.num}>
-                                                    數量
+                                                    {t("applyForm.stepTwo.quantity")}
                                                     <input
                                                         type="number"
                                                         min="0"
                                                         disabled
                                                     />
                                                 </label>
-                                                <span>$ 2,994/組</span>
+                                                <span>$ 2,994/{t("applyForm.stepTwo.set")}</span>
                                             </label> */}
                                             </div>
                                         </div>
@@ -1409,6 +1454,9 @@ export default function Choose({
                                         ref={setCollapsibleElement}
                                     >
                                         <div className={styles.dropDownContent}>
+                                            <p>
+                                                {t("applyForm.stepTwo.itemBCD")}
+                                            </p>
                                             <div className={styles.bGroup}>
                                                 {stepTwo.items[3].data.map(
                                                     (item) => (
@@ -1454,7 +1502,9 @@ export default function Choose({
                                                                         styles.num
                                                                     }
                                                                 >
-                                                                    數量
+                                                                    {t(
+                                                                        "applyForm.stepTwo.quantity"
+                                                                    )}
                                                                     {item.quantity ===
                                                                     "" ? (
                                                                         <input
@@ -1472,7 +1522,10 @@ export default function Choose({
                                                                 <span>
                                                                     ${" "}
                                                                     {item.prcie}
-                                                                    /組
+                                                                    /
+                                                                    {t(
+                                                                        "applyForm.stepTwo.set"
+                                                                    )}
                                                                 </span>
                                                             </label>
                                                         </>
@@ -1487,14 +1540,14 @@ export default function Choose({
                                                 />
                                                 24小時用電
                                                 <label className={styles.num}>
-                                                    數量
+                                                    {t("applyForm.stepTwo.quantity")}
                                                     <input
                                                         type="number"
                                                         min="0"
                                                         disabled
                                                     />
                                                 </label>
-                                                <span>$ 2,994/組</span>
+                                                <span>$ 2,994/{t("applyForm.stepTwo.set")}</span>
                                             </label> */}
                                             </div>
                                         </div>
@@ -1562,6 +1615,9 @@ export default function Choose({
                                         ref={setCollapsibleElement}
                                     >
                                         <div className={styles.dropDownContent}>
+                                            <p>
+                                                {t("applyForm.stepTwo.itemE")}
+                                            </p>
                                             <div className={styles.bGroup}>
                                                 {stepTwo.items[4].data.map(
                                                     (item) => (
@@ -1607,7 +1663,9 @@ export default function Choose({
                                                                         styles.num
                                                                     }
                                                                 >
-                                                                    數量
+                                                                    {t(
+                                                                        "applyForm.stepTwo.quantity"
+                                                                    )}
                                                                     {item.quantity ===
                                                                     "" ? (
                                                                         <input
@@ -1625,7 +1683,10 @@ export default function Choose({
                                                                 <span>
                                                                     ${" "}
                                                                     {item.prcie}
-                                                                    /組
+                                                                    /
+                                                                    {t(
+                                                                        "applyForm.stepTwo.set"
+                                                                    )}
                                                                 </span>
                                                             </label>
                                                         </>
@@ -1697,6 +1758,9 @@ export default function Choose({
                                         ref={setCollapsibleElement}
                                     >
                                         <div className={styles.dropDownContent}>
+                                            <p>
+                                                {t("applyForm.stepTwo.itemF")}
+                                            </p>
                                             <div className={styles.bGroup}>
                                                 {stepTwo.items[5].data.map(
                                                     (item) => (
@@ -1742,7 +1806,9 @@ export default function Choose({
                                                                         styles.num
                                                                     }
                                                                 >
-                                                                    數量
+                                                                    {t(
+                                                                        "applyForm.stepTwo.quantity"
+                                                                    )}
                                                                     {item.quantity ===
                                                                     "" ? (
                                                                         <input
@@ -1760,7 +1826,10 @@ export default function Choose({
                                                                 <span>
                                                                     ${" "}
                                                                     {item.prcie}
-                                                                    /組
+                                                                    /
+                                                                    {t(
+                                                                        "applyForm.stepTwo.set"
+                                                                    )}
                                                                 </span>
                                                             </label>
                                                         </>
@@ -1774,7 +1843,7 @@ export default function Choose({
                         />
                     </div>
                     <button type="submit" className={styles.next}>
-                        下一步
+                        {t("applyForm.stepper.next")}
                     </button>
                 </Form>
             )}

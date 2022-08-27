@@ -8,14 +8,121 @@
         "complete": "簽收完工",
         "contact": "聯絡"
     },
+    "info":{
+        "item1":"111 年 08 月 16 日前完成申請，可享 9 折優惠。",
+        "item2":"111 年 08 月 17 日至 08 月 25 日申請者按標準收費。",
+        "item3":"111 年 08 月 26 日至 09 月 05 日申請者須加付逾期申請費 20%。",
+        "item4":"111 年 09 月 06 日（含當日）以後須加付逾期申請費 50%。"
+    },
+    "home": {
+        "title": "水電申請說明"
+    },
     "apply": "我要申請",
+    "priceList":{
+        "title":"價目表",
+        "no":"項次",
+        "itemNo": "用電項目",
+        "item":"項目名稱",
+        "price":"定價(含稅)"
+    },
     "applyForm": {
+        "stepper": {
+            "save":"暫存",
+            "next":"下一步",
+            "prev":"上一步",
+            "send":"完成申請",
+            "step1":"基本資料",
+            "step2":"水電申請",
+            "step3":"水電配置圖",
+            "step4":"預覽"
+        },
         "stepOne": {
-
+            "groupOne":{
+                "title":"參展廠商基本資料",
+                "companyName":"攤位名稱",
+                "boothNo":"攤位號碼",
+                "quantityOfBooths":"攤位數量",
+                "contactPerson": "聯絡人",
+                "phone":"聯絡電話",
+                "taxID":"統一編號",
+                "address":"地址"
+            },
+            "groupTwo":{
+                "title":"代理或裝潢公司基本資料",
+                "companyName":"公司名稱",
+                "contactPerson": "聯絡人",
+                "phone":"聯絡電話",
+                "taxID":"統一編號",
+                "companyPlaceHolder":"請輸入公司名稱",
+                "taxIdPlaceHolder":"請輸入統一編號",
+                "contactPersonPlaceHolder":"請輸入聯絡人姓名",
+                "emailPlaceHolder":"請輸入電子郵件",
+                "phonePlaceHolder":"請輸入聯絡電話"
+            },
+            "groupThree":{
+                "title":"開立發票資訊",
+                "asTheExhibitor":"同參展廠商",
+                "asTheAgent":"同代理或裝潢公司",
+                "invoiceAddress":"發票寄送地址",
+                "invoicePlaceHolder":"請輸入發票寄送地址",
+                "remark":"備註"
+            }
         },
         "stepTwo": {
-            "additionalItems": "水電追加申請項目",
-            "useDefault": "只使用大會提供每 1 攤位免費基本用電 110V 0.5KW"
+            "title": "水電追加申請項目",
+            "useDefault": "只使用大會提供每 1 攤位免費基本用電 110V 0.5KW",
+            "itemA":"110V 用電計算說明： 0.5KW(千瓦)＝500W(瓦)＝5A(安培)；1KW(千瓦)＝1000W(瓦)＝10A(安培\r\n(a) 110V攤位總用電量(KW)＝攤位上照明用電＋各種電器用品用電(電視、開飲機、電腦等)＋展示產品用電....總計。\r\n(b) 110V免費累計電量(KW)＝參展攤位數 X 500W（每1攤位500W免費)\r\n(c) 1100V需追申請之電量(KW)＝110V攤位總用電量扣除了110V免費累計電量；(a) - (b) = (c) 。\r\n請點選計算出的 (c) 值",
+            "itemBCD":"附NFB 及箱體，無提供插座。",
+            "itemE":"約 7.5 公斤/平方公分，600 公升/分鐘；供應快速接頭母接頭。",
+            "itemF":"1樓壓力約2.2公斤/平方公分，4樓壓力約1.0公斤/平方公分; 供應球閥。",
+            "quantity":"數量",
+            "set":"組"
+        },
+        "stepThree": {
+            "groupOne":{
+                "title":"請上傳水電配置圖",
+                "pending":"水電配置圖尚未完成，待補件上傳",
+                "uploadFile":"請選擇檔案上傳"
+            },
+            "groupTwo":{
+                "title":"或以下方工具繪製水電配置圖",
+                "clickPopup":"繪製水電配置圖請點我"
+            },
+            "groupThree":{
+                "title":"水電配置圖範例",
+                "content":"請標示鄰攤位及走道，方便識別攤位方位。"
+            }
+        },
+        "preview":{
+            "groupOne":{
+                "title":"代理或裝潢公司基本資料",
+                "companyName":"公司名稱",
+                "contactPerson": "聯絡人",
+                "phone":"聯絡電話",
+                "taxID":"統一編號"
+            },
+            "groupTwo":{
+                "title":"開立發票資訊",
+                "companyName":"公司名稱",
+                "taxID":"統一編號",
+                "invoiceAddress":"發票寄送地址",
+                "remark":"備註"
+            },
+            "groupThree":{
+                "title": "水電追加申請項目",
+                "no":"項次",
+                "item":"申請項目",
+                "quantity":"數量",
+                "unitPrice":"單價",
+                "itemCost":"複價",
+                "total":"合計總金額",
+                "useDefault": "只使用大會提供每 1 攤位免費基本用電 110V 0.5KW"
+            },
+            "groupFour":{
+                "title":"水電配置圖",
+                "file":"檔案",
+                "pending":"水電配置圖尚未完成，待補件上傳"
+            }
         }
     }
 }
