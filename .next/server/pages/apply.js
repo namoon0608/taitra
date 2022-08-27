@@ -2173,11 +2173,16 @@ function Preview({ formStep , nextFormStep , applicatonId , dataID ,  }) {
                 sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
             })
         };
-        await fetch(`${"http://ewsadm.taiwantradeshows.com.tw/api/"}sumbitApply`, options).then((response)=>response.json()).then((response)=>{
-            console.log(response);
-            alert("success");
-            router.push("/");
-        }).catch((err)=>console.error(err));
+        alert("success");
+        router.push("/");
+    // await fetch(`${process.env.customKey}sumbitApply`, options)
+    //     .then((response) => response.json())
+    //     .then((response) => {
+    //         console.log(response);
+    //         alert("success");
+    //         router.push("/");
+    //     })
+    //     .catch((err) => console.error(err));
     }
     // if (isLoading) return <p>Loading...</p>;
     // if (!data) return <p>No profile data</p>;
