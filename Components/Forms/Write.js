@@ -80,9 +80,9 @@ export default function Write({ formStep, nextFormStep, stepThree, dataID }) {
         if (fileInput.files.length === 0) {
             form.append("imageData", imageSrc);
         } else {
-            const file = fileInput.files[0];
-            form.append("imageData", URL.createObjectURL(file));
-            // form.append("imageData", fileInput.files[0]);
+            // const file = fileInput.files[0];
+            // form.append("imageData", URL.createObjectURL(file));
+            form.append("imageData", fileInput.files[0]);
         }
 
         const options = {

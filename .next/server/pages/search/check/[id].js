@@ -1,11 +1,11 @@
 "use strict";
 (() => {
 var exports = {};
-exports.id = 378;
-exports.ids = [378];
+exports.id = 361;
+exports.ids = [361];
 exports.modules = {
 
-/***/ 2976:
+/***/ 9275:
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __webpack_async_result__) => { try {
@@ -45,7 +45,7 @@ async function getServerSideProps({ locale  }) {
         },
         body: new URLSearchParams({
             lang: locale,
-            show_id: "FD"
+            sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
         })
     };
     const infoRes = await fetch(`${process.env.API_BASE_URL}getDiscountInfo`, options);
@@ -616,7 +616,7 @@ module.exports = import("@headlessui/react");;
 var __webpack_require__ = require("../../../webpack-runtime.js");
 __webpack_require__.C(exports);
 var __webpack_exec__ = (moduleId) => (__webpack_require__(__webpack_require__.s = moduleId))
-var __webpack_exports__ = __webpack_require__.X(0, [952,61,845,325], () => (__webpack_exec__(2976)));
+var __webpack_exports__ = __webpack_require__.X(0, [952,61,845,325], () => (__webpack_exec__(9275)));
 module.exports = __webpack_exports__;
 
 })();

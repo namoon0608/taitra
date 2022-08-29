@@ -30,7 +30,7 @@
             "save":"save",
             "next":"Next",
             "prev":"Prev",
-            "send":"Complete",
+            "send":"Send",
             "step1":"Basic",
             "step2":"Application",
             "step3":"Layout Plan",
@@ -124,5 +124,15 @@
                 "pending":"The layout plan is unfinished, please upload additional file."
             }
         }
+    },
+    "search": {
+        "pass":"Approved",
+        "verified":"Confirmed",
+        "unverify":"Wait for Review",
+        "audit":"Under Review",
+        "toBeModified":"Inform to Modify",
+        "supplement":"Notification patch",
+        "notUploaded":"Not uploaded",
+        "toBeConfirmed":"Wait for Confirmation"
     }
 }

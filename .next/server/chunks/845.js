@@ -78,6 +78,7 @@ module.exports = {
 	"desktopNav": "Nav_desktopNav__r5lEg",
 	"logo": "Nav_logo__vId_1",
 	"navLinkList": "Nav_navLinkList__7HfSl",
+	"active": "Nav_active__8TzL_",
 	"mobileNav": "Nav_mobileNav__esO7i",
 	"mobileDropDown": "Nav_mobileDropDown__2HBZ2",
 	"dropdown": "Nav_dropdown__0f_2x",
@@ -176,7 +177,7 @@ function Hero({ children , info  }) {
             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
                 className: (_styles_Hero_module_scss__WEBPACK_IMPORTED_MODULE_2___default().bgWrap),
                 children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("img", {
-                    src: "/img/16615795476309b11bc685e.jpeg",
+                    src: info.data.banner,
                     alt: "MEGO SHOWS",
                     layout: "fill",
                     objectfit: "cover",
@@ -194,21 +195,10 @@ function Hero({ children , info  }) {
                                 /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("h1", {
                                     children: info.data.event_name
                                 }),
-                                /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("ul", {
-                                    children: [
-                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("li", {
-                                            children: t("info.item1")
-                                        }),
-                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("li", {
-                                            children: t("info.item2")
-                                        }),
-                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("li", {
-                                            children: t("info.item3")
-                                        }),
-                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("li", {
-                                            children: t("info.item4")
-                                        })
-                                    ]
+                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("ul", {
+                                    children: info.data.info.map((item, idx)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("li", {
+                                            children: item
+                                        }, idx))
                                 })
                             ]
                         })
@@ -368,6 +358,7 @@ function Nav(props) {
                                 children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx((next_link__WEBPACK_IMPORTED_MODULE_2___default()), {
                                     href: "/",
                                     children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("a", {
+                                        className: router.pathname.split("/")[1] == "" ? (_styles_Nav_module_scss__WEBPACK_IMPORTED_MODULE_6___default().active) : "",
                                         children: t("nav.applyNote")
                                     })
                                 })
@@ -376,6 +367,7 @@ function Nav(props) {
                                 children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx((next_link__WEBPACK_IMPORTED_MODULE_2___default()), {
                                     href: "/price",
                                     children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("a", {
+                                        className: router.pathname.split("/")[1] == "price" ? (_styles_Nav_module_scss__WEBPACK_IMPORTED_MODULE_6___default().active) : "",
                                         children: t("nav.price")
                                     })
                                 })
@@ -384,6 +376,7 @@ function Nav(props) {
                                 children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx((next_link__WEBPACK_IMPORTED_MODULE_2___default()), {
                                     href: "/apply",
                                     children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("a", {
+                                        className: router.pathname.split("/")[1] == "apply" ? (_styles_Nav_module_scss__WEBPACK_IMPORTED_MODULE_6___default().active) : "",
                                         children: t("nav.apply")
                                     })
                                 })
@@ -392,6 +385,7 @@ function Nav(props) {
                                 children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx((next_link__WEBPACK_IMPORTED_MODULE_2___default()), {
                                     href: "/search",
                                     children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("a", {
+                                        className: router.pathname.split("/")[1] == "search" ? (_styles_Nav_module_scss__WEBPACK_IMPORTED_MODULE_6___default().active) : "",
                                         children: t("nav.search")
                                     })
                                 })
@@ -400,6 +394,7 @@ function Nav(props) {
                                 children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx((next_link__WEBPACK_IMPORTED_MODULE_2___default()), {
                                     href: "/sign-for-completion",
                                     children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("a", {
+                                        className: router.pathname.split("/")[1] == "sign-for-completion" ? (_styles_Nav_module_scss__WEBPACK_IMPORTED_MODULE_6___default().active) : "",
                                         children: t("nav.complete")
                                     })
                                 })
@@ -408,6 +403,7 @@ function Nav(props) {
                                 children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx((next_link__WEBPACK_IMPORTED_MODULE_2___default()), {
                                     href: "/contact",
                                     children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("a", {
+                                        className: router.pathname.split("/")[1] == "contact" ? (_styles_Nav_module_scss__WEBPACK_IMPORTED_MODULE_6___default().active) : "",
                                         children: t("nav.contact")
                                     })
                                 })
@@ -488,6 +484,7 @@ function Nav(props) {
                                                                 children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx((next_link__WEBPACK_IMPORTED_MODULE_2___default()), {
                                                                     href: "/",
                                                                     children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("a", {
+                                                                        className: router.pathname.split("/")[1] == "" ? (_styles_Nav_module_scss__WEBPACK_IMPORTED_MODULE_6___default().active) : "",
                                                                         children: t("nav.applyNote")
                                                                     })
                                                                 })
@@ -496,6 +493,7 @@ function Nav(props) {
                                                                 children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx((next_link__WEBPACK_IMPORTED_MODULE_2___default()), {
                                                                     href: "/price",
                                                                     children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("a", {
+                                                                        className: router.pathname.split("/")[1] == "price" ? (_styles_Nav_module_scss__WEBPACK_IMPORTED_MODULE_6___default().active) : "",
                                                                         children: t("nav.price")
                                                                     })
                                                                 })
@@ -504,6 +502,7 @@ function Nav(props) {
                                                                 children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx((next_link__WEBPACK_IMPORTED_MODULE_2___default()), {
                                                                     href: "/apply",
                                                                     children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("a", {
+                                                                        className: router.pathname.split("/")[1] == "apply" ? (_styles_Nav_module_scss__WEBPACK_IMPORTED_MODULE_6___default().active) : "",
                                                                         children: t("nav.apply")
                                                                     })
                                                                 })
@@ -512,6 +511,7 @@ function Nav(props) {
                                                                 children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx((next_link__WEBPACK_IMPORTED_MODULE_2___default()), {
                                                                     href: "/search",
                                                                     children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("a", {
+                                                                        className: router.pathname.split("/")[1] == "search" ? (_styles_Nav_module_scss__WEBPACK_IMPORTED_MODULE_6___default().active) : "",
                                                                         children: t("nav.search")
                                                                     })
                                                                 })
@@ -520,6 +520,7 @@ function Nav(props) {
                                                                 children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx((next_link__WEBPACK_IMPORTED_MODULE_2___default()), {
                                                                     href: "/sign-for-completion",
                                                                     children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("a", {
+                                                                        className: router.pathname.split("/")[1] == "sign-for-completion" ? (_styles_Nav_module_scss__WEBPACK_IMPORTED_MODULE_6___default().active) : "",
                                                                         children: t("nav.complete")
                                                                     })
                                                                 })
@@ -528,6 +529,7 @@ function Nav(props) {
                                                                 children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx((next_link__WEBPACK_IMPORTED_MODULE_2___default()), {
                                                                     href: "/contact",
                                                                     children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("a", {
+                                                                        className: router.pathname.split("/")[1] == "contact" ? (_styles_Nav_module_scss__WEBPACK_IMPORTED_MODULE_6___default().active) : "",
                                                                         children: t("nav.contact")
                                                                     })
                                                                 })

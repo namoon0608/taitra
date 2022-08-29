@@ -63,7 +63,7 @@ export default function Choose({
                     "Content-Type": "application/x-www-form-urlencoded",
                 },
                 body: new URLSearchParams({
-                    application_form_id: "6305a2e49bdbf001",
+                    application_form_id: dataID,
                     base_option: "N",
                     items: JSON.stringify(items),
                     sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
@@ -133,7 +133,7 @@ export default function Choose({
                         "Content-Type": "application/x-www-form-urlencoded",
                     },
                     body: new URLSearchParams({
-                        application_form_id: "6305a2e49bdbf001",
+                        application_form_id: dataID,
                         base_option: "N",
                         items: JSON.stringify(items),
                         sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",

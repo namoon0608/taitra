@@ -53,17 +53,72 @@ async function getServerSideProps({ locale  }) {
     };
     const infoRes = await fetch(`${process.env.API_BASE_URL}getDiscountInfo`, options);
     const infoData = await infoRes.json();
+    const searchRes = await fetch(`${process.env.API_BASE_URL}getApplyRecord`, options).then((response)=>response.json());
+    console.log(searchRes);
     return {
         props: {
             ...await (0,next_i18next_serverSideTranslations__WEBPACK_IMPORTED_MODULE_5__.serverSideTranslations)(locale, [
                 "common"
             ]),
-            info: infoData
+            info: infoData,
+            searchData: searchRes
         }
     };
 }
+function StatusText(props) {
+    const { t  } = (0,next_i18next__WEBPACK_IMPORTED_MODULE_6__.useTranslation)();
+    const StatusTextMap = {
+        verified: t("search.verified"),
+        unverify: t("search.unverify"),
+        to_be_modified: t("search.toBeModified")
+    };
+    const statusText = StatusTextMap[props.type];
+    return /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
+        children: statusText
+    });
+}
+function StatusTitle(props) {
+    const { t  } = (0,next_i18next__WEBPACK_IMPORTED_MODULE_6__.useTranslation)();
+    const StatusTitleMap = {
+        verified: t("search.verified"),
+        unverify: t("search.unverify"),
+        unupload: t("search.notUploaded"),
+        to_be_modified: t("search.toBeModified")
+    };
+    const statusTitle = StatusTitleMap[props.type];
+    return /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("td", {
+        className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default().state),
+        children: [
+            statusTitle,
+            props.supplement === 1 ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_material_ui_core__WEBPACK_IMPORTED_MODULE_7__.Link, {
+                href: `/search/insufficient/${props.dataId}`,
+                className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default().documents),
+                children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("a", {
+                    children: "補件"
+                })
+            }) : /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {})
+        ]
+    });
+}
 function Search(props) {
     const { t  } = (0,next_i18next__WEBPACK_IMPORTED_MODULE_6__.useTranslation)();
+    const cancelApply = async (e)=>{
+        console.log(e.target.parentElement.closest(".Home_content__WcTpR"));
+        const removeData = e.target.parentElement.closest(".Home_content__WcTpR").getAttribute("data-key");
+        const form = new FormData();
+        form.append("application_form_id", removeData);
+        form.append("sid", "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a");
+        const data = {
+            method: "POST"
+        };
+        data.body = form;
+        await fetch(`${"https://ewsadm.taiwantradeshows.com.tw/api/"}cancelApply`, data).then((response)=>response.json()).then((response)=>{
+            console.log(response);
+            if (response.status === true) {
+                e.target.parentElement.closest(".Home_content__WcTpR").remove();
+            }
+        }).catch((err)=>console.error(err));
+    };
     return /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
         className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default().container),
         children: [
@@ -124,32 +179,33 @@ function Search(props) {
                                         ]
                                     })
                                 }),
-                                /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tbody", {
-                                    children: [
-                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
+                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("tbody", {
+                                    children: props.searchData.data.length !== 0 ? props.searchData.data.map((item)=>/*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
                                             className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default().content),
+                                            "data-key": item.application_form_id,
                                             children: [
                                                 /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "1"
+                                                    children: item.index
                                                 }),
                                                 /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "EW-FD20220001"
+                                                    children: item.application_form_id
                                                 }),
                                                 /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "2022-04-05"
+                                                    children: item.date
                                                 }),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "審核通過"
+                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(StatusText, {
+                                                    type: item.apply_status
                                                 }),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default().state),
-                                                    children: "已確認"
+                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(StatusTitle, {
+                                                    type: item.diagram_status,
+                                                    supplement: item.diagram_upload,
+                                                    dataId: item.application_form_id
                                                 }),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
+                                                item.download_payment !== 0 ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
                                                     className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default().download),
                                                     children: "下載"
-                                                }),
-                                                /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("td", {
+                                                }) : /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {}),
+                                                item.upload_payment !== 0 ? /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("td", {
                                                     className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default().upload),
                                                     children: [
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
@@ -162,214 +218,36 @@ function Search(props) {
                                                             id: "upload"
                                                         })
                                                     ]
-                                                }),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
+                                                }) : /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {}),
+                                                item.view === 1 ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
                                                     children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_material_ui_core__WEBPACK_IMPORTED_MODULE_7__.Link, {
-                                                        href: `/apply/check/${1}`,
+                                                        href: `/search/check/${item.application_form_id}`,
                                                         className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default()["delete"]),
                                                         children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("a", {
                                                             children: "檢示"
                                                         })
                                                     })
-                                                })
-                                            ]
-                                        }),
-                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
-                                            className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default().content),
-                                            children: [
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "2"
-                                                }),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "EW-FD20220001"
-                                                }),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "2022-04-05"
-                                                }),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "通知修改"
-                                                }),
-                                                /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("td", {
-                                                    className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default().state),
-                                                    children: [
-                                                        "未上傳",
-                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_material_ui_core__WEBPACK_IMPORTED_MODULE_7__.Link, {
-                                                            href: `/apply/insufficient/${1}`,
-                                                            className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default().documents),
-                                                            children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("a", {
-                                                                children: "補件"
-                                                            })
-                                                        })
-                                                    ]
-                                                }),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {}),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {}),
-                                                /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("td", {
-                                                    className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default()["delete"]),
-                                                    children: [
-                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_material_ui_core__WEBPACK_IMPORTED_MODULE_7__.Link, {
-                                                            href: `/apply/revise/${1}`,
-                                                            children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("a", {
-                                                                children: "修改"
-                                                            })
-                                                        }),
-                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("span", {
-                                                            children: "取消"
-                                                        })
-                                                    ]
-                                                })
-                                            ]
-                                        }),
-                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
-                                            className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default().content),
-                                            children: [
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "3"
-                                                }),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "EW-FD20220001"
-                                                }),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "2022-04-05"
-                                                }),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "通知修改"
-                                                }),
-                                                /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("td", {
-                                                    className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default().state),
-                                                    children: [
-                                                        "通知補件",
-                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_material_ui_core__WEBPACK_IMPORTED_MODULE_7__.Link, {
-                                                            href: `/apply/insufficient/${1}`,
-                                                            className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default().documents),
-                                                            children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("a", {
-                                                                children: "補件"
-                                                            })
-                                                        })
-                                                    ]
-                                                }),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {}),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {}),
-                                                /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("td", {
-                                                    className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default()["delete"]),
-                                                    children: [
-                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_material_ui_core__WEBPACK_IMPORTED_MODULE_7__.Link, {
-                                                            href: `/apply/revise/${1}`,
-                                                            children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("a", {
-                                                                children: "修改"
-                                                            })
-                                                        }),
-                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("span", {
-                                                            children: "取消"
-                                                        })
-                                                    ]
-                                                })
-                                            ]
-                                        }),
-                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
-                                            className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default().content),
-                                            children: [
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "4"
-                                                }),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "EW-FD20220001"
-                                                }),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "2022-04-05"
-                                                }),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "審核通過"
-                                                }),
-                                                /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("td", {
-                                                    className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default().state),
-                                                    children: [
-                                                        "通知補件",
-                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_material_ui_core__WEBPACK_IMPORTED_MODULE_7__.Link, {
-                                                            href: `/apply/insufficient/${1}`,
-                                                            className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default().documents),
-                                                            children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("a", {
-                                                                children: "補件"
-                                                            })
-                                                        })
-                                                    ]
-                                                }),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default().download),
-                                                    children: "下載"
-                                                }),
-                                                /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("td", {
-                                                    className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default().upload),
-                                                    children: [
-                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
-                                                            htmlFor: "upload2",
-                                                            children: "上傳"
-                                                        }),
-                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
-                                                            type: "file",
-                                                            name: "photo",
-                                                            id: "upload2"
-                                                        })
-                                                    ]
-                                                }),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_material_ui_core__WEBPACK_IMPORTED_MODULE_7__.Link, {
-                                                        href: `/apply/check/${1}`,
+                                                }) : /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+                                                    children: item.modify === 1 && item.cancel === 1 ? /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("td", {
                                                         className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default()["delete"]),
-                                                        children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("a", {
-                                                            children: "檢示"
-                                                        })
-                                                    })
+                                                        children: [
+                                                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_material_ui_core__WEBPACK_IMPORTED_MODULE_7__.Link, {
+                                                                href: `/search/revise/${item.application_form_id}`,
+                                                                children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("a", {
+                                                                    children: "修改"
+                                                                })
+                                                            }),
+                                                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("span", {
+                                                                onClick: cancelApply,
+                                                                children: "取消"
+                                                            })
+                                                        ]
+                                                    }) : /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {})
                                                 })
                                             ]
-                                        }),
-                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
-                                            className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default().content),
-                                            children: [
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "5"
-                                                }),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "EW-FD20220001"
-                                                }),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "2022-04-05"
-                                                }),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "待審核"
-                                                }),
-                                                /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("td", {
-                                                    className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default().state),
-                                                    children: [
-                                                        "待確認",
-                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_material_ui_core__WEBPACK_IMPORTED_MODULE_7__.Link, {
-                                                            href: `/apply/insufficient/${1}`,
-                                                            className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default().documents),
-                                                            children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("a", {
-                                                                children: "補件"
-                                                            })
-                                                        })
-                                                    ]
-                                                }),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {}),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {}),
-                                                /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("td", {
-                                                    className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default()["delete"]),
-                                                    children: [
-                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_material_ui_core__WEBPACK_IMPORTED_MODULE_7__.Link, {
-                                                            href: `/apply/revise/${1}`,
-                                                            children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("a", {
-                                                                children: "修改"
-                                                            })
-                                                        }),
-                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("span", {
-                                                            children: "取消"
-                                                        })
-                                                    ]
-                                                })
-                                            ]
-                                        })
-                                    ]
+                                        }, item.index)) : /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                        children: "查無資訊"
+                                    })
                                 })
                             ]
                         })

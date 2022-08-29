@@ -62,10 +62,7 @@ export default function Home(props) {
                     dangerouslySetInnerHTML={{
                         __html: props.applyInfo.content,
                     }}
-                >
-                    {/* {props.applyInfo.content} */}
-                    {/* <p>{props.applyInfo.content}</p> */}
-                </div>
+                ></div>
                 <Link href={"/apply"}>
                     <a className={styles.homeApply}>{t("apply")}</a>
                 </Link>

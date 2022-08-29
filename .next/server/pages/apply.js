@@ -168,7 +168,7 @@ function Basic({ formStep , nextFormStep , stepOne , company , saveID , dataID ,
                 sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
             })
         };
-        await fetch(`${"http://ewsadm.taiwantradeshows.com.tw/api/"}setApplyForm`, options).then((response)=>response.json()).then((response)=>{
+        await fetch(`${"https://ewsadm.taiwantradeshows.com.tw/api/"}setApplyForm`, options).then((response)=>response.json()).then((response)=>{
             console.log(response);
             alert("success");
         }).catch((err)=>console.error(err));
@@ -202,7 +202,7 @@ function Basic({ formStep , nextFormStep , stepOne , company , saveID , dataID ,
                 sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
             })
         };
-        await fetch(`${"http://ewsadm.taiwantradeshows.com.tw/api/"}setApplyForm`, options).then((response)=>response.json()).then((response)=>{
+        await fetch(`${"https://ewsadm.taiwantradeshows.com.tw/api/"}setApplyForm`, options).then((response)=>response.json()).then((response)=>{
             console.log(response);
             saveID(response.application_form_id);
         }).then(nextFormStep()).catch((err)=>console.error(err));
@@ -692,7 +692,7 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                     sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
                 })
             };
-            await fetch(`${"http://ewsadm.taiwantradeshows.com.tw/api/"}setApplyHydroItems`, options).then((response)=>response.json()).then((response)=>console.log(response)).then(nextFormStep()).catch((err)=>console.error(err));
+            await fetch(`${"https://ewsadm.taiwantradeshows.com.tw/api/"}setApplyHydroItems`, options).then((response)=>response.json()).then((response)=>console.log(response)).then(nextFormStep()).catch((err)=>console.error(err));
         } else {
             const checkBoxsOne = document.querySelectorAll(".Form_aGroup__FN6oc input[type='checkbox']");
             const checkBoxsTwo = document.querySelectorAll(".Form_bGroup__4aN8N input[type='checkbox']");
@@ -720,13 +720,13 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                     "Content-Type": "application/x-www-form-urlencoded"
                 },
                 body: new URLSearchParams({
-                    application_form_id: "6305a2e49bdbf001",
+                    application_form_id: dataID,
                     base_option: "N",
                     items: JSON.stringify(items),
                     sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
                 })
             };
-            await fetch(`${"http://ewsadm.taiwantradeshows.com.tw/api/"}setApplyHydroItems`, options1).then((response)=>response.json()).then((response)=>{
+            await fetch(`${"https://ewsadm.taiwantradeshows.com.tw/api/"}setApplyHydroItems`, options1).then((response)=>response.json()).then((response)=>{
                 console.log(response);
                 alert("success");
             }).catch((err)=>console.error(err));
@@ -749,7 +749,7 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                     sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
                 })
             };
-            await fetch(`${"http://ewsadm.taiwantradeshows.com.tw/api/"}setApplyHydroItems`, options).then((response)=>response.json()).then((response)=>console.log(response)).then(nextFormStep()).catch((err)=>console.error(err));
+            await fetch(`${"https://ewsadm.taiwantradeshows.com.tw/api/"}setApplyHydroItems`, options).then((response)=>response.json()).then((response)=>console.log(response)).then(nextFormStep()).catch((err)=>console.error(err));
         } else {
             const checkBoxsOne = document.querySelectorAll(".Form_aGroup__FN6oc input[type='checkbox']");
             const checkBoxsTwo = document.querySelectorAll(".Form_bGroup__4aN8N input[type='checkbox']");
@@ -782,13 +782,13 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                         "Content-Type": "application/x-www-form-urlencoded"
                     },
                     body: new URLSearchParams({
-                        application_form_id: "6305a2e49bdbf001",
+                        application_form_id: dataID,
                         base_option: "N",
                         items: JSON.stringify(items),
                         sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
                     })
                 };
-                await fetch(`${"http://ewsadm.taiwantradeshows.com.tw/api/"}setApplyHydroItems`, options1).then((response)=>response.json()).then((response)=>console.log(response)).then(nextFormStep()).catch((err)=>console.error(err));
+                await fetch(`${"https://ewsadm.taiwantradeshows.com.tw/api/"}setApplyHydroItems`, options1).then((response)=>response.json()).then((response)=>console.log(response)).then(nextFormStep()).catch((err)=>console.error(err));
             }
         }
     }
@@ -2152,14 +2152,14 @@ function Preview({ formStep , nextFormStep , applicatonId , dataID ,  }) {
             })
         };
         setLoading(true);
-        await fetch(`${"http://ewsadm.taiwantradeshows.com.tw/api/"}getPreview`, options).then((response)=>response.json()).then((response)=>{
+        await fetch(`${"https://ewsadm.taiwantradeshows.com.tw/api/"}getPreview`, options).then((response)=>response.json()).then((response)=>{
             setData(response);
             console.log(response);
             setLoading(false);
         }).catch((err)=>console.error(err));
     }
     (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(()=>{
-    // initProducts();
+        initProducts();
     }, []);
     async function handleSubmit() {
         const options = {
@@ -2173,19 +2173,18 @@ function Preview({ formStep , nextFormStep , applicatonId , dataID ,  }) {
                 sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
             })
         };
-        alert("success");
-        router.push("/");
-    // await fetch(`${process.env.customKey}sumbitApply`, options)
-    //     .then((response) => response.json())
-    //     .then((response) => {
-    //         console.log(response);
-    //         alert("success");
-    //         router.push("/");
-    //     })
-    //     .catch((err) => console.error(err));
+        await fetch(`${"https://ewsadm.taiwantradeshows.com.tw/api/"}sumbitApply`, options).then((response)=>response.json()).then((response)=>{
+            console.log(response);
+            alert("success");
+            router.push("/");
+        }).catch((err)=>console.error(err));
     }
-    // if (isLoading) return <p>Loading...</p>;
-    // if (!data) return <p>No profile data</p>;
+    if (isLoading) return /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
+        children: "Loading..."
+    });
+    if (!data) return /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
+        children: "No profile data"
+    });
     return /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
         className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().form),
         children: [
@@ -2212,7 +2211,7 @@ function Preview({ formStep , nextFormStep , applicatonId , dataID ,  }) {
                                         children: t("applyForm.preview.groupOne.companyName")
                                     }),
                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
-                                        children: "丰彤設計有限公司"
+                                        children: data.proxy.proxy_company_name
                                     })
                                 ]
                             }),
@@ -2223,7 +2222,7 @@ function Preview({ formStep , nextFormStep , applicatonId , dataID ,  }) {
                                         children: t("applyForm.preview.groupOne.taxID")
                                     }),
                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
-                                        children: "12653758"
+                                        children: data.proxy.proxy_tax_id
                                     })
                                 ]
                             }),
@@ -2234,7 +2233,7 @@ function Preview({ formStep , nextFormStep , applicatonId , dataID ,  }) {
                                         children: t("applyForm.preview.groupOne.contactPerson")
                                     }),
                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
-                                        children: "張書源"
+                                        children: data.proxy.proxy_contact_person
                                     })
                                 ]
                             }),
@@ -2245,7 +2244,7 @@ function Preview({ formStep , nextFormStep , applicatonId , dataID ,  }) {
                                         children: t("applyForm.preview.groupOne.phone")
                                     }),
                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
-                                        children: "02-28962689 分機 221"
+                                        children: data.proxy.proxy_phone
                                     })
                                 ]
                             }),
@@ -2256,7 +2255,7 @@ function Preview({ formStep , nextFormStep , applicatonId , dataID ,  }) {
                                         children: "E-mail"
                                     }),
                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
-                                        children: "1fontal1999@gmail.com"
+                                        children: data.proxy.proxy_email
                                     })
                                 ]
                             })
@@ -2275,7 +2274,7 @@ function Preview({ formStep , nextFormStep , applicatonId , dataID ,  }) {
                                         children: t("applyForm.preview.groupTwo.companyName")
                                     }),
                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
-                                        children: "尚立資訊有限公司"
+                                        children: data.invoice.invoice_company
                                     })
                                 ]
                             }),
@@ -2286,18 +2285,7 @@ function Preview({ formStep , nextFormStep , applicatonId , dataID ,  }) {
                                         children: t("applyForm.preview.groupTwo.taxID")
                                     }),
                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
-                                        children: "83465356"
-                                    })
-                                ]
-                            }),
-                            /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().formRow),
-                                children: [
-                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
-                                        children: t("applyForm.preview.groupTwo.invoiceAddress")
-                                    }),
-                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
-                                        children: "台北市南京東路四段1號2樓"
+                                        children: data.invoice.invoice_taxid
                                     })
                                 ]
                             }),
@@ -2306,11 +2294,28 @@ function Preview({ formStep , nextFormStep , applicatonId , dataID ,  }) {
                                 children: [
                                     /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
                                         children: [
+                                            " ",
+                                            t("applyForm.preview.groupTwo.invoiceAddress")
+                                        ]
+                                    }),
+                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
+                                        children: data.invoice.invoice_address
+                                    })
+                                ]
+                            }),
+                            /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().formRow),
+                                children: [
+                                    /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                        children: [
+                                            " ",
                                             t("applyForm.preview.groupTwo.remark"),
                                             "："
                                         ]
                                     }),
-                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {})
+                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
+                                        children: data.invoice.remark
+                                    })
                                 ]
                             })
                         ]
@@ -2318,7 +2323,9 @@ function Preview({ formStep , nextFormStep , applicatonId , dataID ,  }) {
                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("h2", {
                         children: t("applyForm.preview.groupThree.title")
                     }),
-                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                    data.hydro_items.items.length === 0 ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                        children: t("applyForm.preview.groupThree.useDefault")
+                    }) : /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
                         className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().applyItem),
                         children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("table", {
                             children: [
@@ -2346,86 +2353,28 @@ function Preview({ formStep , nextFormStep , applicatonId , dataID ,  }) {
                                 }),
                                 /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tbody", {
                                     children: [
-                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
-                                            className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().content),
-                                            children: [
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "1"
-                                                }),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "用電110V電源箱 - 單相 110V 15A (1,500W)"
-                                                }),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "1"
-                                                }),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "1,950"
-                                                }),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "1,950"
-                                                })
-                                            ]
-                                        }),
-                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
-                                            className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().content),
-                                            children: [
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "2"
-                                                }),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "用電110V電源箱 - 單相 110V 15A (1,500W)"
-                                                }),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "1"
-                                                }),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "1,950"
-                                                }),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "1,950"
-                                                })
-                                            ]
-                                        }),
-                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
-                                            className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().content),
-                                            children: [
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "3"
-                                                }),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "用電110V電源箱 - 單相 110V 15A (1,500W)"
-                                                }),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "1"
-                                                }),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "1,950"
-                                                }),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "1,950"
-                                                })
-                                            ]
-                                        }),
-                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
-                                            className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().content),
-                                            children: [
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "4"
-                                                }),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "用電110V電源箱 - 單相 110V 15A (1,500W)"
-                                                }),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "1"
-                                                }),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "1,950"
-                                                }),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "1,950"
-                                                })
-                                            ]
-                                        }),
+                                        data.hydro_items.items.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+                                                children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
+                                                    className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().content),
+                                                    children: [
+                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
+                                                            children: item.index
+                                                        }),
+                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
+                                                            children: item.name
+                                                        }),
+                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
+                                                            children: item.quantity
+                                                        }),
+                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
+                                                            children: item.price
+                                                        }),
+                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
+                                                            children: item.sum
+                                                        })
+                                                    ]
+                                                }, item.index)
+                                            })),
                                         /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
                                             className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().sum),
                                             children: [
@@ -2435,7 +2384,7 @@ function Preview({ formStep , nextFormStep , applicatonId , dataID ,  }) {
                                                     children: t("applyForm.preview.groupThree.total")
                                                 }),
                                                 /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "20,439"
+                                                    children: data.hydro_items.total_sum
                                                 })
                                             ]
                                         })
@@ -2447,17 +2396,24 @@ function Preview({ formStep , nextFormStep , applicatonId , dataID ,  }) {
                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("h2", {
                         children: t("applyForm.preview.groupFour.title")
                     }),
-                    /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("p", {
+                    data.imageData_file === "" ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                        children: t("applyForm.preview.groupFour.pending")
+                    }) : /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().image),
                         children: [
-                            t("applyForm.preview.groupFour.file"),
-                            " ",
-                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("span", {
-                                children: "JO318水電圖圖.jpg"
+                            /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("p", {
+                                children: [
+                                    t("applyForm.preview.groupFour.file"),
+                                    " ",
+                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("span", {
+                                        children: "JO318水電圖圖.jpg"
+                                    })
+                                ]
+                            }),
+                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("img", {
+                                src: data.imageData_file
                             })
                         ]
-                    }),
-                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("img", {
-                        src: "/img/image14.png"
                     }),
                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("button", {
                         type: "submit",
@@ -2518,7 +2474,7 @@ function Write({ formStep , nextFormStep , stepThree , dataID  }) {
             method: "POST"
         };
         options.body = form;
-        await fetch(`${"http://ewsadm.taiwantradeshows.com.tw/api/"}setApplyDiagram`, options).then((response)=>response.json()).then((response)=>{
+        await fetch(`${"https://ewsadm.taiwantradeshows.com.tw/api/"}setApplyDiagram`, options).then((response)=>response.json()).then((response)=>{
             console.log(response);
             alert("success");
         }).catch((err)=>console.error(err));
@@ -2550,15 +2506,15 @@ function Write({ formStep , nextFormStep , stepThree , dataID  }) {
         if (fileInput.files.length === 0) {
             form.append("imageData", imageSrc);
         } else {
-            const file = fileInput.files[0];
-            form.append("imageData", URL.createObjectURL(file));
-        // form.append("imageData", fileInput.files[0]);
+            // const file = fileInput.files[0];
+            // form.append("imageData", URL.createObjectURL(file));
+            form.append("imageData", fileInput.files[0]);
         }
         const options = {
             method: "POST"
         };
         options.body = form;
-        await fetch(`${"http://ewsadm.taiwantradeshows.com.tw/api/"}setApplyDiagram`, options).then((response)=>response.json()).then((response)=>console.log(response)).then(nextFormStep()).catch((err)=>console.error(err));
+        await fetch(`${"https://ewsadm.taiwantradeshows.com.tw/api/"}setApplyDiagram`, options).then((response)=>response.json()).then((response)=>console.log(response)).then(nextFormStep()).catch((err)=>console.error(err));
     }
     return /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
         className: [

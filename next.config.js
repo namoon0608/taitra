@@ -7,7 +7,7 @@ const nextConfig = {
     swcMinify: true,
     i18n,
     env: {
-        customKey: "http://ewsadm.taiwantradeshows.com.tw/api/",
+        customKey: "https://ewsadm.taiwantradeshows.com.tw/api/",
     },
 };
 

@@ -124,5 +124,15 @@
                 "pending":"水電配置圖尚未完成，待補件上傳"
             }
         }
+    },
+    "search": {
+        "pass":"審核通過",
+        "verified":"已確認",
+        "unverify":"待審核",
+        "audit":"審核中",
+        "toBeModified":"通知修改",
+        "supplement":"通知補件",
+        "notUploaded":"未上傳",
+        "toBeConfirmed":"待確認"
     }
 }

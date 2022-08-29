@@ -21,32 +21,81 @@ export default function Nav(props) {
                 <ul className={styles.navLinkList}>
                     <li>
                         <Link href={"/"}>
-                            <a>{t("nav.applyNote")}</a>
+                            <a
+                                className={
+                                    router.pathname.split("/")[1] == ""
+                                        ? styles.active
+                                        : ""
+                                }
+                            >
+                                {t("nav.applyNote")}
+                            </a>
                         </Link>
                     </li>
                     <li>
                         <Link href={"/price"}>
-                            <a>{t("nav.price")}</a>
+                            <a
+                                className={
+                                    router.pathname.split("/")[1] == "price"
+                                        ? styles.active
+                                        : ""
+                                }
+                            >
+                                {t("nav.price")}
+                            </a>
                         </Link>
                     </li>
                     <li>
                         <Link href={"/apply"}>
-                            <a>{t("nav.apply")}</a>
+                            <a
+                                className={
+                                    router.pathname.split("/")[1] == "apply"
+                                        ? styles.active
+                                        : ""
+                                }
+                            >
+                                {t("nav.apply")}
+                            </a>
                         </Link>
                     </li>
                     <li>
                         <Link href={"/search"}>
-                            <a>{t("nav.search")}</a>
+                            <a
+                                className={
+                                    router.pathname.split("/")[1] == "search"
+                                        ? styles.active
+                                        : ""
+                                }
+                            >
+                                {t("nav.search")}
+                            </a>
                         </Link>
                     </li>
                     <li>
                         <Link href={"/sign-for-completion"}>
-                            <a>{t("nav.complete")}</a>
+                            <a
+                                className={
+                                    router.pathname.split("/")[1] ==
+                                    "sign-for-completion"
+                                        ? styles.active
+                                        : ""
+                                }
+                            >
+                                {t("nav.complete")}
+                            </a>
                         </Link>
                     </li>
                     <li>
                         <Link href={"/contact"}>
-                            <a>{t("nav.contact")}</a>
+                            <a
+                                className={
+                                    router.pathname.split("/")[1] == "contact"
+                                        ? styles.active
+                                        : ""
+                                }
+                            >
+                                {t("nav.contact")}
+                            </a>
                         </Link>
                     </li>
                 </ul>
@@ -107,22 +156,62 @@ export default function Nav(props) {
                                         <div className={styles.mobileLinks}>
                                             <Menu.Item>
                                                 <Link href={"/"}>
-                                                    <a>{t("nav.applyNote")}</a>
+                                                    <a
+                                                        className={
+                                                            router.pathname.split(
+                                                                "/"
+                                                            )[1] == ""
+                                                                ? styles.active
+                                                                : ""
+                                                        }
+                                                    >
+                                                        {t("nav.applyNote")}
+                                                    </a>
                                                 </Link>
                                             </Menu.Item>
                                             <Menu.Item>
                                                 <Link href={"/price"}>
-                                                    <a>{t("nav.price")}</a>
+                                                    <a
+                                                        className={
+                                                            router.pathname.split(
+                                                                "/"
+                                                            )[1] == "price"
+                                                                ? styles.active
+                                                                : ""
+                                                        }
+                                                    >
+                                                        {t("nav.price")}
+                                                    </a>
                                                 </Link>
                                             </Menu.Item>
                                             <Menu.Item>
                                                 <Link href={"/apply"}>
-                                                    <a>{t("nav.apply")}</a>
+                                                    <a
+                                                        className={
+                                                            router.pathname.split(
+                                                                "/"
+                                                            )[1] == "apply"
+                                                                ? styles.active
+                                                                : ""
+                                                        }
+                                                    >
+                                                        {t("nav.apply")}
+                                                    </a>
                                                 </Link>
                                             </Menu.Item>
                                             <Menu.Item>
                                                 <Link href={"/search"}>
-                                                    <a>{t("nav.search")}</a>
+                                                    <a
+                                                        className={
+                                                            router.pathname.split(
+                                                                "/"
+                                                            )[1] == "search"
+                                                                ? styles.active
+                                                                : ""
+                                                        }
+                                                    >
+                                                        {t("nav.search")}
+                                                    </a>
                                                 </Link>
                                             </Menu.Item>
                                             <Menu.Item>
@@ -131,12 +220,33 @@ export default function Nav(props) {
                                                         "/sign-for-completion"
                                                     }
                                                 >
-                                                    <a>{t("nav.complete")}</a>
+                                                    <a
+                                                        className={
+                                                            router.pathname.split(
+                                                                "/"
+                                                            )[1] ==
+                                                            "sign-for-completion"
+                                                                ? styles.active
+                                                                : ""
+                                                        }
+                                                    >
+                                                        {t("nav.complete")}
+                                                    </a>
                                                 </Link>
                                             </Menu.Item>
                                             <Menu.Item>
                                                 <Link href={"/contact"}>
-                                                    <a>{t("nav.contact")}</a>
+                                                    <a
+                                                        className={
+                                                            router.pathname.split(
+                                                                "/"
+                                                            )[1] == "contact"
+                                                                ? styles.active
+                                                                : ""
+                                                        }
+                                                    >
+                                                        {t("nav.contact")}
+                                                    </a>
                                                 </Link>
                                             </Menu.Item>
                                         </div>
