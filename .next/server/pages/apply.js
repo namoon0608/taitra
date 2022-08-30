@@ -31,6 +31,7 @@ module.exports = {
 	"write": "Form_write__zhFbU",
 	"temporary": "Form_temporary__yT_1v",
 	"upload": "Form_upload__pLMwj",
+	"popupToWrite": "Form_popupToWrite__wp0Cp",
 	"formComplete": "Form_formComplete__asvg1",
 	"formCompleteInvoce": "Form_formCompleteInvoce__BiS7h",
 	"card": "Form_card__pIrGB",
@@ -2452,7 +2453,7 @@ function Preview({ formStep , nextFormStep , applicatonId , dataID ,  }) {
 
 function Write({ formStep , nextFormStep , stepThree , dataID  }) {
     const { t  } = (0,next_i18next__WEBPACK_IMPORTED_MODULE_3__.useTranslation)();
-    const { 0: imageSrc , 1: setImageSrc  } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(stepThree.imageData);
+    const { 0: imageSrc , 1: setImageSrc  } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)("https://ewsadm.taiwantradeshows.com.tw/" + stepThree.imageData);
     const { 0: uploadData , 1: setUploadData  } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)();
     const { 0: goNext , 1: setGoNext  } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(true);
     const { 0: show , 1: setShow  } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
@@ -2465,18 +2466,33 @@ function Write({ formStep , nextFormStep , stepThree , dataID  }) {
     const close = ()=>{
         setShow(false);
     };
+    function dataURLtoFile(dataurl, filename) {
+        let arr = dataurl.split(","), mime = arr[0].match(/:(.*?);/)[1], bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+        while(n--){
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+        return new File([
+            u8arr
+        ], filename, {
+            type: mime
+        });
+    }
     const temporary = async ()=>{
+        let file = dataURLtoFile(imageSrc, "png");
         const form = new FormData();
         form.append("application_form_id", dataID);
         form.append("sid", "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a");
-        form.append("imageData", imageSrc);
+        form.append("imageData", file);
+        console.log(file);
         const options = {
             method: "POST"
         };
         options.body = form;
         await fetch(`${"https://ewsadm.taiwantradeshows.com.tw/api/"}setApplyDiagram`, options).then((response)=>response.json()).then((response)=>{
             console.log(response);
-            alert("success");
+            if (response.status === true) {
+                alert(response.msg);
+            }
         }).catch((err)=>console.error(err));
     };
     function handleOnChange(changeEvent) {
@@ -2572,6 +2588,7 @@ function Write({ formStep , nextFormStep , stepThree , dataID  }) {
                         children: t("applyForm.stepThree.groupTwo.title")
                     }),
                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("a", {
+                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().popupToWrite),
                         href: "https://anbon.vip/twtc_diagram/",
                         onClick: ()=>setShow(true),
                         target: "iframe_a",

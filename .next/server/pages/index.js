@@ -21,14 +21,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Components_Nav__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(4269);
 /* harmony import */ var _Components_Footer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(558);
 /* harmony import */ var _Components_Hero__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(3806);
-/* harmony import */ var _styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(3110);
-/* harmony import */ var _styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8__);
+/* harmony import */ var _styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(3110);
+/* harmony import */ var _styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_9__);
 /* harmony import */ var next_i18next_serverSideTranslations__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(5460);
 /* harmony import */ var next_i18next_serverSideTranslations__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(next_i18next_serverSideTranslations__WEBPACK_IMPORTED_MODULE_5__);
 /* harmony import */ var next_i18next__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(1377);
 /* harmony import */ var next_i18next__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(next_i18next__WEBPACK_IMPORTED_MODULE_6__);
 /* harmony import */ var next_link__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(1664);
 /* harmony import */ var next_link__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(next_link__WEBPACK_IMPORTED_MODULE_7__);
+/* harmony import */ var cookies_next__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(8982);
+/* harmony import */ var cookies_next__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(cookies_next__WEBPACK_IMPORTED_MODULE_8__);
 var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([_Components_Nav__WEBPACK_IMPORTED_MODULE_2__]);
 _Components_Nav__WEBPACK_IMPORTED_MODULE_2__ = (__webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__)[0];
 
@@ -40,7 +42,25 @@ _Components_Nav__WEBPACK_IMPORTED_MODULE_2__ = (__webpack_async_dependencies__.t
 
 
 
-async function getServerSideProps({ locale  }) {
+
+async function getServerSideProps({ locale , query , req , res  }) {
+    if ((0,cookies_next__WEBPACK_IMPORTED_MODULE_8__.getCookie)("sid", {
+        req,
+        res
+    }) === undefined || (0,cookies_next__WEBPACK_IMPORTED_MODULE_8__.getCookie)("sid", {
+        req,
+        res
+    }) === "") {
+        (0,cookies_next__WEBPACK_IMPORTED_MODULE_8__.setCookie)("sid", query.sid, {
+            req,
+            res,
+            maxAge: 60 * 6 * 24
+        });
+    }
+    console.log((0,cookies_next__WEBPACK_IMPORTED_MODULE_8__.getCookie)("sid", {
+        req,
+        res
+    }));
     const options = {
         method: "POST",
         headers: {
@@ -52,8 +72,7 @@ async function getServerSideProps({ locale  }) {
             sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
         })
     };
-    const res = await fetch(`${process.env.API_BASE_URL}getDiscountInfo`, options);
-    const infoData = await res.json();
+    const infoData = await fetch(`${process.env.API_BASE_URL}getDiscountInfo`, options).then((response)=>response.json());
     const applyRes = await fetch(`${process.env.API_BASE_URL}getApplyInfo`, options);
     const applyInfo = await applyRes.json();
     return {
@@ -69,7 +88,7 @@ async function getServerSideProps({ locale  }) {
 function Home(props) {
     const { t  } = (0,next_i18next__WEBPACK_IMPORTED_MODULE_6__.useTranslation)();
     return /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-        className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default().container),
+        className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_9___default().container),
         children: [
             /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)((next_head__WEBPACK_IMPORTED_MODULE_1___default()), {
                 children: [
@@ -94,7 +113,7 @@ function Home(props) {
                         children: t("home.title")
                     }),
                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                        className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default().homeContent),
+                        className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_9___default().homeContent),
                         dangerouslySetInnerHTML: {
                             __html: props.applyInfo.content
                         }
@@ -102,7 +121,7 @@ function Home(props) {
                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx((next_link__WEBPACK_IMPORTED_MODULE_7___default()), {
                         href: "/apply",
                         children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("a", {
-                            className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default().homeApply),
+                            className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_9___default().homeApply),
                             children: t("apply")
                         })
                     })
@@ -115,6 +134,13 @@ function Home(props) {
 
 __webpack_async_result__();
 } catch(e) { __webpack_async_result__(e); } });
+
+/***/ }),
+
+/***/ 8982:
+/***/ ((module) => {
+
+module.exports = require("cookies-next");
 
 /***/ }),
 

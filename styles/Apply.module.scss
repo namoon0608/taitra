@@ -17,7 +17,7 @@
         color: #e80000;
         height: 108px;
         max-height: 108px;
-        overflow-y: scroll;
+        overflow-y: auto;
     }
 
     //檢示水電申請內容
@@ -43,7 +43,7 @@
             }
             p {
                 padding-left: 20px;
-                font-size: 24px;
+                // font-size: 24px;
                 font-weight: 400;
                 font-feature-settings: "pnum" on, "lnum" on;
                 color: #333333;
@@ -83,7 +83,7 @@
             }
             p {
                 padding-left: 20px;
-                font-size: 24px;
+                // font-size: 24px;
                 font-weight: 400;
                 font-feature-settings: "pnum" on, "lnum" on;
                 color: #333333;
@@ -208,6 +208,14 @@
     }
     img {
         width: 100%;
+    }
+    .popupToWrite {
+        border: 1px solid #b1b1b1;
+        border-radius: 15px;
+        padding: 15px 30px;
+        text-align: center;
+        width: fit-content;
+        display: block;
     }
 
     //水電申請修改

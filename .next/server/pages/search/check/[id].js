@@ -11,7 +11,7 @@ exports.modules = {
 __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __webpack_async_result__) => { try {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ Search),
+/* harmony export */   "default": () => (/* binding */ Check),
 /* harmony export */   "getServerSideProps": () => (/* binding */ getServerSideProps)
 /* harmony export */ });
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(997);
@@ -37,7 +37,7 @@ _Components_Nav__WEBPACK_IMPORTED_MODULE_2__ = (__webpack_async_dependencies__.t
 
 
 
-async function getServerSideProps({ locale  }) {
+async function getServerSideProps({ locale , query  }) {
     const options = {
         method: "POST",
         headers: {
@@ -50,16 +50,19 @@ async function getServerSideProps({ locale  }) {
     };
     const infoRes = await fetch(`${process.env.API_BASE_URL}getDiscountInfo`, options);
     const infoData = await infoRes.json();
+    options.body.append("application_form_id", `${query.id}`);
+    const viewData = await fetch(`${process.env.API_BASE_URL}viewApply`, options).then((response)=>response.json());
     return {
         props: {
             ...await (0,next_i18next_serverSideTranslations__WEBPACK_IMPORTED_MODULE_5__.serverSideTranslations)(locale, [
                 "common"
             ]),
-            info: infoData
+            info: infoData,
+            data: viewData
         }
     };
 }
-function Search(props) {
+function Check(props) {
     const { t  } = (0,next_i18next__WEBPACK_IMPORTED_MODULE_6__.useTranslation)();
     return /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
         className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_7___default().container),
@@ -84,20 +87,20 @@ function Search(props) {
                 info: props.info,
                 children: [
                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("h3", {
-                        children: "檢示水電申請內容"
+                        children: t("search.check")
                     }),
                     /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
                         className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_7___default().checkForm),
                         children: [
                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("h2", {
-                                children: "大會水電公司審核意見"
+                                children: t("search.option")
                             }),
                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
                                 className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_7___default().opinionBox),
-                                children: "未標示電箱位置"
+                                children: props.data.comment.hydro_comment
                             }),
                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("h2", {
-                                children: "代理或裝潢公司基本資料"
+                                children: t("applyForm.stepOne.groupTwo.title")
                             }),
                             /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
                                 className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_7___default().formComplete),
@@ -106,10 +109,10 @@ function Search(props) {
                                         className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_7___default().formRow),
                                         children: [
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
-                                                children: "公司名稱"
+                                                children: t("applyForm.stepOne.groupTwo.companyName")
                                             }),
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
-                                                children: "丰彤設計有限公司"
+                                                children: props.data.proxy.proxy_company_name
                                             })
                                         ]
                                     }),
@@ -117,10 +120,10 @@ function Search(props) {
                                         className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_7___default().formRow),
                                         children: [
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
-                                                children: "統一編號"
+                                                children: t("applyForm.stepOne.groupTwo.taxID")
                                             }),
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
-                                                children: "12653758"
+                                                children: props.data.proxy.proxy_tax_id
                                             })
                                         ]
                                     }),
@@ -128,10 +131,10 @@ function Search(props) {
                                         className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_7___default().formRow),
                                         children: [
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
-                                                children: "聯絡人"
+                                                children: t("applyForm.stepOne.groupTwo.contactPerson")
                                             }),
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
-                                                children: "張書源"
+                                                children: props.data.proxy.proxy_contact_person
                                             })
                                         ]
                                     }),
@@ -139,10 +142,10 @@ function Search(props) {
                                         className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_7___default().formRow),
                                         children: [
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
-                                                children: "聯絡電話"
+                                                children: t("applyForm.stepOne.groupTwo.phone")
                                             }),
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
-                                                children: "02-28962689 分機 221"
+                                                children: props.data.proxy.proxy_phone
                                             })
                                         ]
                                     }),
@@ -153,14 +156,14 @@ function Search(props) {
                                                 children: "E-mail"
                                             }),
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
-                                                children: "1fontal1999@gmail.com"
+                                                children: props.data.proxy.proxy_email
                                             })
                                         ]
                                     })
                                 ]
                             }),
                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("h2", {
-                                children: "開立發票資訊"
+                                children: t("applyForm.stepOne.groupThree.title")
                             }),
                             /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
                                 className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_7___default().formCompleteInvoce),
@@ -169,10 +172,10 @@ function Search(props) {
                                         className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_7___default().formRow),
                                         children: [
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
-                                                children: "公司名稱"
+                                                children: t("applyForm.stepOne.groupTwo.companyName")
                                             }),
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
-                                                children: "尚立資訊有限公司"
+                                                children: props.data.invoice.invoice_comapny
                                             })
                                         ]
                                     }),
@@ -180,10 +183,10 @@ function Search(props) {
                                         className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_7___default().formRow),
                                         children: [
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
-                                                children: "統一編號"
+                                                children: t("applyForm.stepOne.groupTwo.taxID")
                                             }),
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
-                                                children: "83465356"
+                                                children: props.data.invoice.invoice_taxid
                                             })
                                         ]
                                     }),
@@ -191,26 +194,31 @@ function Search(props) {
                                         className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_7___default().formRow),
                                         children: [
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
-                                                children: "發票寄送地址"
+                                                children: t("applyForm.stepOne.groupThree.invoiceAddress")
                                             }),
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
-                                                children: "台北市南京東路四段1號2樓"
+                                                children: props.data.invoice.invoice_address
                                             })
                                         ]
                                     }),
                                     /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
                                         className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_7___default().formRow),
                                         children: [
-                                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
-                                                children: "備註："
+                                            /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                children: [
+                                                    t("applyForm.stepOne.groupThree.remark"),
+                                                    "："
+                                                ]
                                             }),
-                                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {})
+                                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
+                                                children: props.data.invoice.remark
+                                            })
                                         ]
                                     })
                                 ]
                             }),
                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("h2", {
-                                children: "水電追加申請項目"
+                                children: t("applyForm.stepTwo.title")
                             }),
                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
                                 className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_7___default().applyItem),
@@ -221,19 +229,19 @@ function Search(props) {
                                                 className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_7___default().title),
                                                 children: [
                                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("th", {
-                                                        children: "項次"
+                                                        children: t("applyForm.preview.groupThree.no")
                                                     }),
                                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("th", {
-                                                        children: "申請項目"
+                                                        children: t("applyForm.preview.groupThree.item")
                                                     }),
                                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("th", {
-                                                        children: "數量"
+                                                        children: t("applyForm.preview.groupThree.quantity")
                                                     }),
                                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("th", {
-                                                        children: "單價"
+                                                        children: t("applyForm.preview.groupThree.unitPrice")
                                                     }),
                                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("th", {
-                                                        children: "複價"
+                                                        children: t("applyForm.preview.groupThree.itemCost")
                                                     })
                                                 ]
                                             })
@@ -326,7 +334,7 @@ function Search(props) {
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
                                                             className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_7___default().sumTitle),
                                                             colSpan: 4,
-                                                            children: "合計總金額"
+                                                            children: t("applyForm.preview.groupThree.total")
                                                         }),
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
                                                             children: "20,439"
@@ -339,21 +347,22 @@ function Search(props) {
                                 })
                             }),
                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("h2", {
-                                children: "水電配置圖"
+                                children: t("applyForm.preview.groupFour.title")
                             }),
                             /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
                                 className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_7___default().image),
                                 children: [
                                     /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("p", {
                                         children: [
-                                            "檔案 ",
+                                            t("applyForm.preview.groupFour.file"),
+                                            " ",
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("span", {
                                                 children: "JO318水電圖圖.jpg"
                                             })
                                         ]
                                     }),
                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("img", {
-                                        src: "/img/image14.png"
+                                        src: "https://ewsadm.taiwantradeshows.com.tw/" + props.data.diagram_img
                                     })
                                 ]
                             })

@@ -5,7 +5,7 @@
         "price": "價目表",
         "apply": "申請",
         "search": "查詢",
-        "complete": "簽收完工",
+        "complete": "完工簽收",
         "contact": "聯絡"
     },
     "info":{
@@ -85,7 +85,7 @@
                 "uploadFile":"請選擇檔案上傳"
             },
             "groupTwo":{
-                "title":"或以下方工具繪製水電配置圖",
+                "title":"或線上繪製水電配置圖",
                 "clickPopup":"繪製水電配置圖請點我"
             },
             "groupThree":{
@@ -126,6 +126,12 @@
         }
     },
     "search": {
+        "needToSupplement":"補件",
+        "view":"檢示",
+        "modify":"修改",
+        "beCancel":"取消",
+        "download":"下載",
+        "upload":"上傳",
         "pass":"審核通過",
         "verified":"已確認",
         "unverify":"待審核",
@@ -133,6 +139,11 @@
         "toBeModified":"通知修改",
         "supplement":"通知補件",
         "notUploaded":"未上傳",
-        "toBeConfirmed":"待確認"
+        "toBeConfirmed":"待確認",
+        "cancel":"已取消",
+        "check": "檢示水電申請內容",
+        "revise":"水電申請修改",
+        "insufficient":"補件上傳水電配置圖說",
+        "option":"大會水電公司審核意見"
     }
 }

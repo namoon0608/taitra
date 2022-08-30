@@ -1,3 +1,5 @@
+import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import Head from "next/head";
 import Nav from "../../../Components/Nav";
 import Footer from "../../../Components/Footer";
@@ -5,14 +7,18 @@ import Hero from "../../../Components/Hero";
 import styles from "../../../styles/Apply.module.scss";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useTranslation } from "next-i18next";
+import Popup from "../../../Components/Popup/Popup";
 
-export async function getServerSideProps({ locale }) {
+export async function getServerSideProps({ locale, query }) {
     const options = {
         method: "POST",
         headers: {
             "Content-Type": "application/x-www-form-urlencoded",
         },
-        body: new URLSearchParams({ lang: locale, show_id: "FD" }),
+        body: new URLSearchParams({
+            lang: locale,
+            sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
+        }),
     };
     const infoRes = await fetch(
         `${process.env.API_BASE_URL}getDiscountInfo`,
@@ -20,16 +26,87 @@ export async function getServerSideProps({ locale }) {
     );
     const infoData = await infoRes.json();
 
+    options.body.append("application_form_id", `${query.id}`);
+
+    const reviseData = await fetch(
+        `${process.env.API_BASE_URL}getSecondModifyData`,
+        options
+    ).then((response) => response.json());
+    console.log(reviseData);
+
     return {
         props: {
             ...(await serverSideTranslations(locale, ["common"])),
             info: infoData,
+            data: reviseData,
         },
     };
 }
 
-export default function Search(props) {
+export default function Insufficient(props) {
     const { t } = useTranslation();
+    const [imageSrc, setImageSrc] = useState(null);
+    const [uploadData, setUploadData] = useState();
+    const [show, setShow] = useState(false);
+    const router = useRouter();
+
+    const close = () => {
+        setShow(false);
+    };
+
+    function handleOnChange(changeEvent) {
+        const reader = new FileReader();
+
+        reader.onload = function (onLoadEvent) {
+            setImageSrc(onLoadEvent.target.result);
+            setUploadData(undefined);
+        };
+
+        if (changeEvent.target.files !== null) {
+            reader.readAsDataURL(changeEvent.target.files[0]);
+        }
+    }
+    const cancelSupplement = () => {
+        router.push("/search");
+    };
+
+    async function handleSubmit(event) {
+        event.preventDefault();
+        const formData = event.currentTarget;
+        const fileInput = Array.from(formData.elements).find(
+            ({ name }) => name === "photo"
+        );
+        const form = new FormData();
+        form.append("application_form_id", router.query.id);
+        form.append(
+            "sid",
+            "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
+        );
+        if (fileInput.files.length === 0) {
+            form.append("imageData", imageSrc);
+        } else {
+            form.append("imageData", fileInput.files[0]);
+        }
+
+        const options = {
+            method: "POST",
+        };
+
+        options.body = form;
+
+        await fetch(`${process.env.customKey}secoundUploadDiagram`, options)
+            .then((response) => response.json())
+            .then((response) => {
+                console.log(response);
+                if (response.status === false) {
+                    alert(response.msg);
+                } else if (response.status === true) {
+                    router.push("/search");
+                }
+            })
+            .catch((err) => console.error(err));
+    }
+
     return (
         <div className={styles.container}>
             <Head>
@@ -43,27 +120,86 @@ export default function Search(props) {
 
             <Nav />
             <Hero info={props.info}>
-                <h3>補件上傳水電配置圖說</h3>
-                <div className={styles.checkForm}>
-                    <h2>大會水電公司審核意見</h2>
-                    <p className={styles.opinionBox}>未標示電箱位置</p>
-                    <h2>請上傳水電配置圖</h2>
+                <h3>{t("search.insufficient")}</h3>
+                <form
+                    className={styles.checkForm}
+                    onChange={handleOnChange}
+                    onSubmit={handleSubmit}
+                >
+                    <h2>{t("search.option")}</h2>
+                    <p
+                        className={styles.opinionBox}
+                        dangerouslySetInnerHTML={{
+                            __html: props.data.comment.replace(
+                                /(?:\r\n|\r|\n)/g,
+                                "<br>"
+                            ),
+                        }}
+                    ></p>
+                    <h2>{t("applyForm.stepThree.groupOne.title")}</h2>
                     <div className={styles.upload}>
-                        <label htmlFor="upload-photo">請選擇檔案上傳</label>
-                        <input type="file" name="photo" id="upload-photo" />
+                        <label htmlFor="upload-photo">
+                            {t("applyForm.stepThree.groupOne.uploadFile")}
+                        </label>
+                        <input
+                            type="file"
+                            name="photo"
+                            id="upload-photo"
+                            accept="image/*"
+                        />
                     </div>
-                    <h2>或以下方工具繪製水電配置圖</h2>
-                    <img src="/img/image7.png" />
-                    <h2>水電配置圖範例</h2>
+                    <img
+                        id="blah"
+                        src={imageSrc}
+                        className={styles.uploadImg}
+                    />
+                    <h2>{t("applyForm.stepThree.groupTwo.title")}</h2>
+                    <a
+                        className={styles.popupToWrite}
+                        href="https://anbon.vip/twtc_diagram/"
+                        onClick={() => setShow(true)}
+                        target="iframe_a"
+                    >
+                        {t("applyForm.stepThree.groupTwo.clickPopup")}
+                    </a>
+                    <h2>{t("applyForm.stepThree.groupThree.title")}</h2>
                     <div className={styles.write}>
-                        <p>＃請標示鄰攤位及走道，方便識別攤位方位。</p>
+                        <p>＃ {t("applyForm.stepThree.groupThree.content")}</p>
                         <img src="/img/image21.png" />
                     </div>
-                </div>
-                <div className={styles.btns}>
-                    <button className={styles.cancel}>取消</button>
-                    <button className={styles.complete}>完成</button>
-                </div>
+                    <div className={styles.btns}>
+                        <button
+                            type="button"
+                            className={styles.cancel}
+                            onClick={cancelSupplement}
+                        >
+                            取消
+                        </button>
+                        <button type="submit" className={styles.complete}>
+                            完成
+                        </button>
+                    </div>
+                </form>
+
+                {show ? (
+                    <Popup close={close}>
+                        <div
+                            onClick={(e) => {
+                                // do not close modal if anything inside modal content is clicked
+                                e.stopPropagation();
+                            }}
+                            style={{ width: "90%", height: "90%" }}
+                        >
+                            <iframe
+                                src="demo_iframe.htm"
+                                name="iframe_a"
+                                height="100%"
+                                width="100%"
+                                title="Iframe Example"
+                            ></iframe>
+                        </div>
+                    </Popup>
+                ) : null}
             </Hero>
             <Footer />
         </div>

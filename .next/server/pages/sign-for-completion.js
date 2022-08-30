@@ -65,8 +65,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Components_Nav__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(4269);
 /* harmony import */ var _Components_Footer__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(558);
 /* harmony import */ var _Components_Hero__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(3806);
-/* harmony import */ var _styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(3110);
-/* harmony import */ var _styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_10__);
+/* harmony import */ var _styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(3110);
+/* harmony import */ var _styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_11___default = /*#__PURE__*/__webpack_require__.n(_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_11__);
 /* harmony import */ var next_i18next_serverSideTranslations__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(5460);
 /* harmony import */ var next_i18next_serverSideTranslations__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(next_i18next_serverSideTranslations__WEBPACK_IMPORTED_MODULE_6__);
 /* harmony import */ var next_i18next__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(1377);
@@ -74,8 +74,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react_signature_canvas__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(8784);
 /* harmony import */ var react_signature_canvas__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(react_signature_canvas__WEBPACK_IMPORTED_MODULE_8__);
 /* harmony import */ var _Components_Popup_Popup__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(9929);
+/* harmony import */ var next_router__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(1853);
+/* harmony import */ var next_router__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(next_router__WEBPACK_IMPORTED_MODULE_10__);
 var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([_Components_Nav__WEBPACK_IMPORTED_MODULE_3__]);
 _Components_Nav__WEBPACK_IMPORTED_MODULE_3__ = (__webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__)[0];
+
 
 
 
@@ -100,12 +103,14 @@ async function getServerSideProps({ locale  }) {
     };
     const infoRes = await fetch(`${process.env.API_BASE_URL}getDiscountInfo`, options);
     const infoData = await infoRes.json();
+    const completeData = await fetch(`${process.env.API_BASE_URL}getDoneProjectData`, options).then((response)=>response.json());
     return {
         props: {
             ...await (0,next_i18next_serverSideTranslations__WEBPACK_IMPORTED_MODULE_6__.serverSideTranslations)(locale, [
                 "common"
             ]),
-            info: infoData
+            info: infoData,
+            completeData: completeData
         }
     };
 }
@@ -113,6 +118,7 @@ function Sign(props) {
     const { t  } = (0,next_i18next__WEBPACK_IMPORTED_MODULE_7__.useTranslation)();
     const { 0: show , 1: setShow  } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
     const { 0: imageURL , 1: setImageURL  } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
+    const router = (0,next_router__WEBPACK_IMPORTED_MODULE_10__.useRouter)();
     const close = ()=>{
         setShow(false);
     };
@@ -122,8 +128,48 @@ function Sign(props) {
         setImageURL(sigCanvas.current.getTrimmedCanvas().toDataURL("image/png"));
         setShow(false);
     };
+    function dataURLtoBlob(dataurl) {
+        var arr = dataurl.split(","), mime = arr[0].match(/:(.*?);/)[1], bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+        while(n--){
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+        return new Blob([
+            u8arr
+        ], {
+            type: mime
+        });
+    }
+    function blobToFile(theBlob, fileName) {
+        theBlob.lastModifiedDate = new Date();
+        theBlob.name = fileName;
+        return theBlob;
+    }
+    const handleSubmit = async ()=>{
+        let applicationList = [];
+        props.completeData.data.forEach((item)=>{
+            applicationList.push(item.application_form_id);
+        });
+        console.log(applicationList);
+        var blob = dataURLtoBlob(imageURL);
+        var file = blobToFile(blob, "test");
+        console.log(imageURL);
+        if (imageURL !== null) {
+            for(let i = 0; i < applicationList.length; i++){
+                const form = new FormData();
+                form.append("application_form_id", applicationList[i]);
+                form.append("imageData", imageURL);
+                form.append("sid", "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a");
+                const options = {
+                    method: "POST"
+                };
+                options.body = form;
+                await fetch(`${"https://ewsadm.taiwantradeshows.com.tw/api/"}setDoneProjectSign`, options).then((response)=>response.json()).then((response)=>console.log(response)).catch((err)=>console.error(err));
+            }
+            router.push("/");
+        }
+    };
     return /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-        className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_10___default().container),
+        className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_11___default().container),
         children: [
             /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)((next_head__WEBPACK_IMPORTED_MODULE_2___default()), {
                 children: [
@@ -147,152 +193,134 @@ function Sign(props) {
                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("h3", {
                         children: "完工簽收"
                     }),
-                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                        className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_10___default().signItem),
-                        children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("table", {
+                    props.completeData.status === false ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                        children: props.completeData.msg
+                    }) : /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+                        children: props.completeData.data.length === 0 ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                            children: "查無資料"
+                        }) : /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
                             children: [
-                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("thead", {
-                                    children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
-                                        className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_10___default().title),
+                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                    className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_11___default().signItem),
+                                    children: props.completeData.data.map((data, idx)=>/*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+                                            children: [
+                                                /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("p", {
+                                                    children: [
+                                                        "訂單：",
+                                                        data.application_form_id
+                                                    ]
+                                                }, idx + 1),
+                                                /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("table", {
+                                                    children: [
+                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("thead", {
+                                                            children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
+                                                                className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_11___default().title),
+                                                                children: [
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("th", {
+                                                                        children: "項次"
+                                                                    }),
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("th", {
+                                                                        children: "申請項目"
+                                                                    }),
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("th", {
+                                                                        children: "數量"
+                                                                    })
+                                                                ]
+                                                            })
+                                                        }),
+                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("tbody", {
+                                                            children: data.hydro_items.items.map((item, idx)=>/*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
+                                                                    className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_11___default().content),
+                                                                    children: [
+                                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
+                                                                            children: "1"
+                                                                        }),
+                                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
+                                                                            children: "用電110V電源箱 - 單相 110V 15A (1,500W)"
+                                                                        }),
+                                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
+                                                                            children: "1"
+                                                                        })
+                                                                    ]
+                                                                }, idx + 1))
+                                                        })
+                                                    ]
+                                                }, data.application_form_id),
+                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("hr", {
+                                                    style: {
+                                                        margin: "10px 0 15px 0"
+                                                    }
+                                                })
+                                            ]
+                                        }))
+                                }),
+                                /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                                    className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_11___default().sign),
+                                    children: [
+                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("button", {
+                                            className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_11___default().signBtn),
+                                            onClick: ()=>setShow(true),
+                                            children: [
+                                                "驗收簽名",
+                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("img", {
+                                                    src: "/img/Vector.svg",
+                                                    width: 25,
+                                                    height: 21
+                                                })
+                                            ]
+                                        }),
+                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                            className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_11___default().signImg),
+                                            children: imageURL ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("img", {
+                                                src: imageURL
+                                            }) : null
+                                        })
+                                    ]
+                                }),
+                                show ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_Components_Popup_Popup__WEBPACK_IMPORTED_MODULE_9__/* ["default"] */ .Z, {
+                                    close: close,
+                                    children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                                        className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_11___default().signature),
+                                        onClick: (e)=>{
+                                            // do not close modal if anything inside modal content is clicked
+                                            e.stopPropagation();
+                                        },
                                         children: [
-                                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("th", {
-                                                children: "項次"
+                                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx((react_signature_canvas__WEBPACK_IMPORTED_MODULE_8___default()), {
+                                                ref: sigCanvas,
+                                                canvasProps: {
+                                                    className: "signatureCanvas"
+                                                }
                                             }),
-                                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("th", {
-                                                children: "申請項目"
+                                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("hr", {}),
+                                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
+                                                children: "請於上方簽名"
                                             }),
-                                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("th", {
-                                                children: "數量"
+                                            /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                                                className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_11___default().signatureBtns),
+                                                children: [
+                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("button", {
+                                                        className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_11___default().buttons),
+                                                        onClick: clear,
+                                                        children: "清除重簽"
+                                                    }),
+                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("button", {
+                                                        className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_11___default().buttons),
+                                                        onClick: save,
+                                                        children: "確認"
+                                                    })
+                                                ]
                                             })
                                         ]
                                     })
-                                }),
-                                /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tbody", {
-                                    children: [
-                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
-                                            className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_10___default().content),
-                                            children: [
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "1"
-                                                }),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "用電110V電源箱 - 單相 110V 15A (1,500W)"
-                                                }),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "1"
-                                                })
-                                            ]
-                                        }),
-                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
-                                            className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_10___default().content),
-                                            children: [
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "2"
-                                                }),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "用電110V電源箱 - 單相 110V 15A (1,500W)"
-                                                }),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "1"
-                                                })
-                                            ]
-                                        }),
-                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
-                                            className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_10___default().content),
-                                            children: [
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "3"
-                                                }),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "用電110V電源箱 - 單相 110V 15A (1,500W)"
-                                                }),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "1"
-                                                })
-                                            ]
-                                        }),
-                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
-                                            className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_10___default().content),
-                                            children: [
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "4"
-                                                }),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "用電110V電源箱 - 單相 110V 15A (1,500W)"
-                                                }),
-                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    children: "1"
-                                                })
-                                            ]
-                                        })
-                                    ]
+                                }) : null,
+                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("button", {
+                                    className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_11___default().signCheck),
+                                    onClick: handleSubmit,
+                                    children: "確認"
                                 })
                             ]
                         })
-                    }),
-                    /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                        className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_10___default().sign),
-                        children: [
-                            /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("button", {
-                                className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_10___default().signBtn),
-                                onClick: ()=>setShow(true),
-                                children: [
-                                    "驗收簽名",
-                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("img", {
-                                        src: "/img/Vector.svg",
-                                        width: 25,
-                                        height: 21
-                                    })
-                                ]
-                            }),
-                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                                className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_10___default().signImg),
-                                children: imageURL ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("img", {
-                                    src: imageURL
-                                }) : null
-                            })
-                        ]
-                    }),
-                    show ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_Components_Popup_Popup__WEBPACK_IMPORTED_MODULE_9__/* ["default"] */ .Z, {
-                        close: close,
-                        children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                            className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_10___default().signature),
-                            onClick: (e)=>{
-                                // do not close modal if anything inside modal content is clicked
-                                e.stopPropagation();
-                            },
-                            children: [
-                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx((react_signature_canvas__WEBPACK_IMPORTED_MODULE_8___default()), {
-                                    ref: sigCanvas,
-                                    canvasProps: {
-                                        className: "signatureCanvas"
-                                    }
-                                }),
-                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("hr", {}),
-                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
-                                    children: "請於上方簽名"
-                                }),
-                                /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                    className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_10___default().signatureBtns),
-                                    children: [
-                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("button", {
-                                            className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_10___default().buttons),
-                                            onClick: clear,
-                                            children: "清除重簽"
-                                        }),
-                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("button", {
-                                            className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_10___default().buttons),
-                                            onClick: save,
-                                            children: "確認"
-                                        })
-                                    ]
-                                })
-                            ]
-                        })
-                    }) : null,
-                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("button", {
-                        className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_10___default().signCheck),
-                        children: "確認"
                     })
                 ]
             }),

@@ -43,7 +43,7 @@ export default function Price(props) {
     let rows = [];
     let rowIndex = 0;
     for (let [i, item] of priceList.items.entries()) {
-        rowIndex = Math.floor(i / 30);
+        rowIndex = Math.floor(i / 34);
         if (!rows[rowIndex]) {
             rows[rowIndex] = [];
         }
@@ -51,7 +51,7 @@ export default function Price(props) {
     }
     const getList = (data) => {
         let lists = [];
-        for (let i = 0; i < 30; i++) {
+        for (let i = 0; i < 34; i++) {
             if (data[i] === undefined) {
                 lists.push(
                     <tr key={data[i]}>
@@ -88,7 +88,7 @@ export default function Price(props) {
 
             <Nav />
             <Hero info={props.info}>
-                <h3>價目表</h3>
+                <h3>{t("priceList.title")}</h3>
                 <div
                     className={
                         rows.length > 1
@@ -103,12 +103,12 @@ export default function Price(props) {
                             <table key={index}>
                                 <thead>
                                     <tr>
-                                        <th>項次</th>
-                                        <th>用電項目</th>
+                                        <th>{t("priceList.no")}</th>
+                                        <th>{t("priceList.itemNo")}</th>
                                         <th className={styles.itemName}>
-                                            項目名稱
+                                            {t("priceList.item")}
                                         </th>
-                                        <th>定價(含稅)</th>
+                                        <th>{t("priceList.price")}</th>
                                     </tr>
                                 </thead>
                                 <tbody>{getList(row)}</tbody>

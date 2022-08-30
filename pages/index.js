@@ -6,8 +6,18 @@ import styles from "../styles/Home.module.scss";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useTranslation } from "next-i18next";
 import Link from "next/link";
+import { setCookie, getCookie } from "cookies-next";
 
-export async function getServerSideProps({ locale }) {
+export async function getServerSideProps({ locale, query, req, res }) {
+    if (
+        getCookie("sid", { req, res }) === undefined ||
+        getCookie("sid", { req, res }) === ""
+    ) {
+        setCookie("sid", query.sid, { req, res, maxAge: 60 * 6 * 24 });
+    }
+
+    console.log(getCookie("sid", { req, res }));
+
     const options = {
         method: "POST",
         headers: {
@@ -19,11 +29,10 @@ export async function getServerSideProps({ locale }) {
             sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
         }),
     };
-    const res = await fetch(
+    const infoData = await fetch(
         `${process.env.API_BASE_URL}getDiscountInfo`,
         options
-    );
-    const infoData = await res.json();
+    ).then((response) => response.json());
 
     const applyRes = await fetch(
         `${process.env.API_BASE_URL}getApplyInfo`,

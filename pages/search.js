@@ -42,14 +42,16 @@ export async function getServerSideProps({ locale }) {
 function StatusText(props) {
     const { t } = useTranslation();
     const StatusTextMap = {
+        complete: t("search.pass"),
         verified: t("search.verified"),
         unverify: t("search.unverify"),
         to_be_modified: t("search.toBeModified"),
+        cancel: t("search.cancel"),
     };
 
     const statusText = StatusTextMap[props.type];
 
-    return <td>{statusText}</td>;
+    return <td type={props.type}>{statusText}</td>;
 }
 
 function StatusTitle(props) {
@@ -59,18 +61,19 @@ function StatusTitle(props) {
         unverify: t("search.unverify"),
         unupload: t("search.notUploaded"),
         to_be_modified: t("search.toBeModified"),
+        cancel: t("search.cancel"),
     };
 
     const statusTitle = StatusTitleMap[props.type];
     return (
-        <td className={styles.state}>
+        <td className={styles.state} type={props.type}>
             {statusTitle}
             {props.supplement === 1 ? (
                 <Link
                     href={`/search/insufficient/${props.dataId}`}
                     className={styles.documents}
                 >
-                    <a>補件</a>
+                    <a>{t("search.needToSupplement")}</a>
                 </Link>
             ) : (
                 <></>
@@ -160,7 +163,7 @@ export default function Search(props) {
                                         ></StatusTitle>
                                         {item.download_payment !== 0 ? (
                                             <td className={styles.download}>
-                                                下載
+                                                {t("search.download")}
                                             </td>
                                         ) : (
                                             <td></td>
@@ -168,7 +171,7 @@ export default function Search(props) {
                                         {item.upload_payment !== 0 ? (
                                             <td className={styles.upload}>
                                                 <label htmlFor="upload">
-                                                    上傳
+                                                    {t("search.upload")}
                                                 </label>
                                                 <input
                                                     type="file"
@@ -185,7 +188,7 @@ export default function Search(props) {
                                                     href={`/search/check/${item.application_form_id}`}
                                                     className={styles.delete}
                                                 >
-                                                    <a>檢示</a>
+                                                    <a>{t("search.view")}</a>
                                                 </Link>
                                             </td>
                                         ) : (
@@ -200,14 +203,20 @@ export default function Search(props) {
                                                         <Link
                                                             href={`/search/revise/${item.application_form_id}`}
                                                         >
-                                                            <a>修改</a>
+                                                            <a>
+                                                                {t(
+                                                                    "search.modify"
+                                                                )}
+                                                            </a>
                                                         </Link>
                                                         <span
                                                             onClick={
                                                                 cancelApply
                                                             }
                                                         >
-                                                            取消
+                                                            {t(
+                                                                "search.beCancel"
+                                                            )}
                                                         </span>
                                                     </td>
                                                 ) : (

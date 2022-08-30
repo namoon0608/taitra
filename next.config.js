@@ -1,6 +1,5 @@
 /** @type {import('next').NextConfig} */
 const { i18n } = require("./next-i18next.config");
-const API_URL = "http://ewsadm.taiwantradeshows.com.tw/api/";
 
 const nextConfig = {
     reactStrictMode: true,
@@ -8,6 +7,7 @@ const nextConfig = {
     i18n,
     env: {
         customKey: "https://ewsadm.taiwantradeshows.com.tw/api/",
+        imgKey: "https://ewsadm.taiwantradeshows.com.tw/",
     },
 };
 

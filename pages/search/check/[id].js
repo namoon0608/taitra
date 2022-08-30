@@ -6,7 +6,7 @@ import styles from "../../../styles/Apply.module.scss";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useTranslation } from "next-i18next";
 
-export async function getServerSideProps({ locale }) {
+export async function getServerSideProps({ locale, query }) {
     const options = {
         method: "POST",
         headers: {
@@ -17,21 +17,30 @@ export async function getServerSideProps({ locale }) {
             sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
         }),
     };
+
     const infoRes = await fetch(
         `${process.env.API_BASE_URL}getDiscountInfo`,
         options
     );
     const infoData = await infoRes.json();
 
+    options.body.append("application_form_id", `${query.id}`);
+
+    const viewData = await fetch(
+        `${process.env.API_BASE_URL}viewApply`,
+        options
+    ).then((response) => response.json());
+
     return {
         props: {
             ...(await serverSideTranslations(locale, ["common"])),
             info: infoData,
+            data: viewData,
         },
     };
 }
 
-export default function Search(props) {
+export default function Check(props) {
     const { t } = useTranslation();
     return (
         <div className={styles.container}>
@@ -46,62 +55,98 @@ export default function Search(props) {
 
             <Nav />
             <Hero info={props.info}>
-                <h3>檢示水電申請內容</h3>
+                <h3>{t("search.check")}</h3>
                 <div className={styles.checkForm}>
-                    <h2>大會水電公司審核意見</h2>
-                    <p className={styles.opinionBox}>未標示電箱位置</p>
-                    <h2>代理或裝潢公司基本資料</h2>
+                    <h2>{t("search.option")}</h2>
+                    <p className={styles.opinionBox}>
+                        {props.data.comment.hydro_comment}
+                    </p>
+                    <h2>{t("applyForm.stepOne.groupTwo.title")}</h2>
                     <div className={styles.formComplete}>
                         <div className={styles.formRow}>
-                            <label>公司名稱</label>
-                            <p>丰彤設計有限公司</p>
+                            <label>
+                                {t("applyForm.stepOne.groupTwo.companyName")}
+                            </label>
+                            <p>{props.data.proxy.proxy_company_name}</p>
                         </div>
                         <div className={styles.formRow}>
-                            <label>統一編號</label>
-                            <p>12653758</p>
+                            <label>
+                                {t("applyForm.stepOne.groupTwo.taxID")}
+                            </label>
+                            <p>{props.data.proxy.proxy_tax_id}</p>
                         </div>
                         <div className={styles.formRow}>
-                            <label>聯絡人</label>
-                            <p>張書源</p>
+                            <label>
+                                {t("applyForm.stepOne.groupTwo.contactPerson")}
+                            </label>
+                            <p>{props.data.proxy.proxy_contact_person}</p>
                         </div>
                         <div className={styles.formRow}>
-                            <label>聯絡電話</label>
-                            <p>02-28962689 分機 221</p>
+                            <label>
+                                {t("applyForm.stepOne.groupTwo.phone")}
+                            </label>
+                            <p>{props.data.proxy.proxy_phone}</p>
                         </div>
                         <div className={styles.formRow}>
                             <label>E-mail</label>
-                            <p>1fontal1999@gmail.com</p>
+                            <p>{props.data.proxy.proxy_email}</p>
                         </div>
                     </div>
-                    <h2>開立發票資訊</h2>
+                    <h2>{t("applyForm.stepOne.groupThree.title")}</h2>
                     <div className={styles.formCompleteInvoce}>
                         <div className={styles.formRow}>
-                            <label>公司名稱</label>
-                            <p>尚立資訊有限公司</p>
+                            <label>
+                                {t("applyForm.stepOne.groupTwo.companyName")}
+                            </label>
+                            <p>{props.data.invoice.invoice_comapny}</p>
                         </div>
                         <div className={styles.formRow}>
-                            <label>統一編號</label>
-                            <p>83465356</p>
+                            <label>
+                                {t("applyForm.stepOne.groupTwo.taxID")}
+                            </label>
+                            <p>{props.data.invoice.invoice_taxid}</p>
                         </div>
                         <div className={styles.formRow}>
-                            <label>發票寄送地址</label>
-                            <p>台北市南京東路四段1號2樓</p>
+                            <label>
+                                {t(
+                                    "applyForm.stepOne.groupThree.invoiceAddress"
+                                )}
+                            </label>
+                            <p>{props.data.invoice.invoice_address}</p>
                         </div>
                         <div className={styles.formRow}>
-                            <label>備註：</label>
-                            <p></p>
+                            <label>
+                                {t("applyForm.stepOne.groupThree.remark")}：
+                            </label>
+                            <p>{props.data.invoice.remark}</p>
                         </div>
                     </div>
-                    <h2>水電追加申請項目</h2>
+                    <h2>{t("applyForm.stepTwo.title")}</h2>
                     <div className={styles.applyItem}>
                         <table>
                             <thead>
                                 <tr className={styles.title}>
-                                    <th>項次</th>
-                                    <th>申請項目</th>
-                                    <th>數量</th>
-                                    <th>單價</th>
-                                    <th>複價</th>
+                                    <th>
+                                        {t("applyForm.preview.groupThree.no")}
+                                    </th>
+                                    <th>
+                                        {t("applyForm.preview.groupThree.item")}
+                                    </th>
+                                    <th>
+                                        {t(
+                                            "applyForm.preview.groupThree.quantity"
+                                        )}
+                                    </th>
+                                    <th>
+                                        {t(
+                                            "applyForm.preview.groupThree.unitPrice"
+                                        )}
+                                    </th>
+                                    <th>
+                                        {t(
+                                            "applyForm.preview.groupThree.itemCost"
+                                        )}
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -143,19 +188,24 @@ export default function Search(props) {
                                 </tr>
                                 <tr className={styles.sum}>
                                     <td className={styles.sumTitle} colSpan={4}>
-                                        合計總金額
+                                        {t(
+                                            "applyForm.preview.groupThree.total"
+                                        )}
                                     </td>
                                     <td>20,439</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-                    <h2>水電配置圖</h2>
+                    <h2>{t("applyForm.preview.groupFour.title")}</h2>
                     <div className={styles.image}>
                         <p>
-                            檔案 <span>JO318水電圖圖.jpg</span>
+                            {t("applyForm.preview.groupFour.file")}{" "}
+                            <span>JO318水電圖圖.jpg</span>
                         </p>
-                        <img src="/img/image14.png" />
+                        <img
+                            src={process.env.imgKey + props.data.diagram_img}
+                        />
                     </div>
                 </div>
             </Hero>

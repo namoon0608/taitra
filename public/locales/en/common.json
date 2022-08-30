@@ -85,7 +85,7 @@
                 "uploadFile":"Please choose file to upload"
             },
             "groupTwo":{
-                "title":"or use the tool below to create your water and electricity layout plan",
+                "title":"or online to create your water and electricity layout plan",
                 "clickPopup":"Please click me to draw utility configuration"
             },
             "groupThree":{
@@ -126,6 +126,12 @@
         }
     },
     "search": {
+        "needToSupplement":"Supplement",
+        "view":"View",
+        "modify":"Modify",
+        "beCancel":"Cancel",
+        "download":"Download",
+        "upload":"Upload",
         "pass":"Approved",
         "verified":"Confirmed",
         "unverify":"Wait for Review",
@@ -133,6 +139,11 @@
         "toBeModified":"Inform to Modify",
         "supplement":"Notification patch",
         "notUploaded":"Not uploaded",
-        "toBeConfirmed":"Wait for Confirmation"
+        "toBeConfirmed":"Wait for Confirmation",
+        "cancel":"Cancel",
+        "check": "Preview Application Contents",
+        "revise":"Modify Your Application",
+        "insufficient":"Upload Additional Layout Plan",
+        "option":"Suggestion & Commands of Official Contractor"
     }
 }

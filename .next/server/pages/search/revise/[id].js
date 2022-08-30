@@ -53,7 +53,7 @@ function Popup({ children , close  }) {
 __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __webpack_async_result__) => { try {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ Search),
+/* harmony export */   "default": () => (/* binding */ Revise),
 /* harmony export */   "getServerSideProps": () => (/* binding */ getServerSideProps)
 /* harmony export */ });
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(997);
@@ -90,7 +90,7 @@ _Components_Nav__WEBPACK_IMPORTED_MODULE_3__ = (__webpack_async_dependencies__.t
 
 
 
-async function getServerSideProps({ locale  }) {
+async function getServerSideProps({ locale , query  }) {
     const options = {
         method: "POST",
         headers: {
@@ -98,21 +98,24 @@ async function getServerSideProps({ locale  }) {
         },
         body: new URLSearchParams({
             lang: locale,
-            show_id: "FD"
+            sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
         })
     };
     const infoRes = await fetch(`${process.env.API_BASE_URL}getDiscountInfo`, options);
     const infoData = await infoRes.json();
+    options.body.append("application_form_id", `${query.id}`);
+    const reviseData = await fetch(`${process.env.API_BASE_URL}getSecondModifyData`, options).then((response)=>response.json());
     return {
         props: {
             ...await (0,next_i18next_serverSideTranslations__WEBPACK_IMPORTED_MODULE_6__.serverSideTranslations)(locale, [
                 "common"
             ]),
-            info: infoData
+            info: infoData,
+            data: reviseData
         }
     };
 }
-function Search(props) {
+function Revise(props) {
     const { t  } = (0,next_i18next__WEBPACK_IMPORTED_MODULE_7__.useTranslation)();
     const { 0: show , 1: setShow  } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
     const close = ()=>{
@@ -158,16 +161,19 @@ function Search(props) {
                 info: props.info,
                 children: [
                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("h3", {
-                        children: "水電申請修改"
+                        children: t("search.revise")
                     }),
                     /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
                         className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_11___default().checkForm),
                         children: [
                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("h2", {
-                                children: "大會水電公司審核意見"
+                                children: t("search.option")
                             }),
                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
-                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_11___default().opinionBox)
+                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_11___default().opinionBox),
+                                dangerouslySetInnerHTML: {
+                                    __html: props.data.comment.replace(/(?:\r\n|\r|\n)/g, "<br>")
+                                }
                             }),
                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("h2", {
                                 children: "代理或裝潢公司基本資料"
@@ -184,7 +190,7 @@ function Search(props) {
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
                                                 name: "company",
                                                 type: "text",
-                                                defaultValue: "丰彤設計有限公司"
+                                                defaultValue: props.data.proxy.proxy_company_name
                                             })
                                         ]
                                     }),
@@ -197,7 +203,7 @@ function Search(props) {
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
                                                 name: "uniformNum",
                                                 type: "text",
-                                                defaultValue: "12653758"
+                                                defaultValue: props.data.proxy.proxy_tax_id
                                             })
                                         ]
                                     }),
@@ -210,7 +216,7 @@ function Search(props) {
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
                                                 name: "contactPerson",
                                                 type: "text",
-                                                defaultValue: "張書源"
+                                                defaultValue: props.data.proxy.proxy_contact_person
                                             })
                                         ]
                                     }),
@@ -223,7 +229,7 @@ function Search(props) {
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
                                                 name: "email",
                                                 type: "email",
-                                                defaultValue: "1fontal1999@gmail.com"
+                                                defaultValue: props.data.proxy.proxy_email
                                             })
                                         ]
                                     })
@@ -244,7 +250,7 @@ function Search(props) {
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
                                                 name: "company",
                                                 type: "text",
-                                                defaultValue: "尚立資訊有限公司"
+                                                defaultValue: props.data.invoice.invoice_comapny
                                             })
                                         ]
                                     }),
@@ -257,7 +263,7 @@ function Search(props) {
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
                                                 name: "uniformNum",
                                                 type: "text",
-                                                defaultValue: "83465356"
+                                                defaultValue: props.data.invoice.invoice_taxid
                                             })
                                         ]
                                     }),

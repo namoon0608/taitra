@@ -68,12 +68,15 @@ async function getServerSideProps({ locale  }) {
 function StatusText(props) {
     const { t  } = (0,next_i18next__WEBPACK_IMPORTED_MODULE_6__.useTranslation)();
     const StatusTextMap = {
+        complete: t("search.pass"),
         verified: t("search.verified"),
         unverify: t("search.unverify"),
-        to_be_modified: t("search.toBeModified")
+        to_be_modified: t("search.toBeModified"),
+        cancel: t("search.cancel")
     };
     const statusText = StatusTextMap[props.type];
     return /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
+        type: props.type,
         children: statusText
     });
 }
@@ -83,18 +86,20 @@ function StatusTitle(props) {
         verified: t("search.verified"),
         unverify: t("search.unverify"),
         unupload: t("search.notUploaded"),
-        to_be_modified: t("search.toBeModified")
+        to_be_modified: t("search.toBeModified"),
+        cancel: t("search.cancel")
     };
     const statusTitle = StatusTitleMap[props.type];
     return /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("td", {
         className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default().state),
+        type: props.type,
         children: [
             statusTitle,
             props.supplement === 1 ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_material_ui_core__WEBPACK_IMPORTED_MODULE_7__.Link, {
                 href: `/search/insufficient/${props.dataId}`,
                 className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default().documents),
                 children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("a", {
-                    children: "補件"
+                    children: t("search.needToSupplement")
                 })
             }) : /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {})
         ]
@@ -203,14 +208,14 @@ function Search(props) {
                                                 }),
                                                 item.download_payment !== 0 ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
                                                     className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default().download),
-                                                    children: "下載"
+                                                    children: t("search.download")
                                                 }) : /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {}),
                                                 item.upload_payment !== 0 ? /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("td", {
                                                     className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default().upload),
                                                     children: [
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
                                                             htmlFor: "upload",
-                                                            children: "上傳"
+                                                            children: t("search.upload")
                                                         }),
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
                                                             type: "file",
@@ -224,7 +229,7 @@ function Search(props) {
                                                         href: `/search/check/${item.application_form_id}`,
                                                         className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default()["delete"]),
                                                         children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("a", {
-                                                            children: "檢示"
+                                                            children: t("search.view")
                                                         })
                                                     })
                                                 }) : /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
@@ -234,12 +239,12 @@ function Search(props) {
                                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_material_ui_core__WEBPACK_IMPORTED_MODULE_7__.Link, {
                                                                 href: `/search/revise/${item.application_form_id}`,
                                                                 children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("a", {
-                                                                    children: "修改"
+                                                                    children: t("search.modify")
                                                                 })
                                                             }),
                                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("span", {
                                                                 onClick: cancelApply,
-                                                                children: "取消"
+                                                                children: t("search.beCancel")
                                                             })
                                                         ]
                                                     }) : /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {})

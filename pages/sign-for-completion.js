@@ -8,6 +8,7 @@ import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useTranslation } from "next-i18next";
 import SignaturePad from "react-signature-canvas";
 import Popup from "../Components/Popup/Popup";
+import { useRouter } from "next/router";
 
 export async function getServerSideProps({ locale }) {
     const options = {
@@ -26,10 +27,16 @@ export async function getServerSideProps({ locale }) {
     );
     const infoData = await infoRes.json();
 
+    const completeData = await fetch(
+        `${process.env.API_BASE_URL}getDoneProjectData`,
+        options
+    ).then((response) => response.json());
+
     return {
         props: {
             ...(await serverSideTranslations(locale, ["common"])),
             info: infoData,
+            completeData: completeData,
         },
     };
 }
@@ -38,6 +45,7 @@ export default function Sign(props) {
     const { t } = useTranslation();
     const [show, setShow] = useState(false);
     const [imageURL, setImageURL] = useState(null);
+    const router = useRouter();
 
     const close = () => {
         setShow(false);
@@ -49,6 +57,61 @@ export default function Sign(props) {
             sigCanvas.current.getTrimmedCanvas().toDataURL("image/png")
         );
         setShow(false);
+    };
+    function dataURLtoBlob(dataurl) {
+        var arr = dataurl.split(","),
+            mime = arr[0].match(/:(.*?);/)[1],
+            bstr = atob(arr[1]),
+            n = bstr.length,
+            u8arr = new Uint8Array(n);
+        while (n--) {
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+        return new Blob([u8arr], { type: mime });
+    }
+
+    function blobToFile(theBlob, fileName) {
+        theBlob.lastModifiedDate = new Date();
+        theBlob.name = fileName;
+        return theBlob;
+    }
+
+    const handleSubmit = async () => {
+        let applicationList = [];
+        props.completeData.data.forEach((item) => {
+            applicationList.push(item.application_form_id);
+        });
+        console.log(applicationList);
+        var blob = dataURLtoBlob(imageURL);
+        var file = blobToFile(blob, "test");
+        console.log(imageURL);
+
+        if (imageURL !== null) {
+            for (let i = 0; i < applicationList.length; i++) {
+                const form = new FormData();
+                form.append("application_form_id", applicationList[i]);
+                form.append("imageData", imageURL);
+                form.append(
+                    "sid",
+                    "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
+                );
+
+                const options = {
+                    method: "POST",
+                };
+
+                options.body = form;
+
+                await fetch(
+                    `${process.env.customKey}setDoneProjectSign`,
+                    options
+                )
+                    .then((response) => response.json())
+                    .then((response) => console.log(response))
+                    .catch((err) => console.error(err));
+            }
+            router.push("/");
+        }
     };
 
     return (
@@ -65,87 +128,136 @@ export default function Sign(props) {
             <Nav />
             <Hero info={props.info}>
                 <h3>完工簽收</h3>
-                <div className={styles.signItem}>
-                    <table>
-                        <thead>
-                            <tr className={styles.title}>
-                                <th>項次</th>
-                                <th>申請項目</th>
-                                <th>數量</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr className={styles.content}>
-                                <td>1</td>
-                                <td>用電110V電源箱 - 單相 110V 15A (1,500W)</td>
-                                <td>1</td>
-                            </tr>
-                            <tr className={styles.content}>
-                                <td>2</td>
-                                <td>用電110V電源箱 - 單相 110V 15A (1,500W)</td>
-                                <td>1</td>
-                            </tr>
-                            <tr className={styles.content}>
-                                <td>3</td>
-                                <td>用電110V電源箱 - 單相 110V 15A (1,500W)</td>
-                                <td>1</td>
-                            </tr>
-                            <tr className={styles.content}>
-                                <td>4</td>
-                                <td>用電110V電源箱 - 單相 110V 15A (1,500W)</td>
-                                <td>1</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div className={styles.sign}>
-                    <button
-                        className={styles.signBtn}
-                        onClick={() => setShow(true)}
-                    >
-                        驗收簽名
-                        <img src="/img/Vector.svg" width={25} height={21} />
-                    </button>
-                    <div className={styles.signImg}>
-                        {imageURL ? <img src={imageURL} /> : null}
-                    </div>
-                </div>
-                {show ? (
-                    <Popup close={close}>
-                        <div
-                            className={styles.signature}
-                            onClick={(e) => {
-                                // do not close modal if anything inside modal content is clicked
-                                e.stopPropagation();
-                            }}
-                        >
-                            <SignaturePad
-                                ref={sigCanvas}
-                                canvasProps={{
-                                    className: "signatureCanvas",
-                                }}
-                            ></SignaturePad>
-                            <hr />
-                            <p>請於上方簽名</p>
-                            <div className={styles.signatureBtns}>
+                {props.completeData.status === false ? (
+                    <div>{props.completeData.msg}</div>
+                ) : (
+                    <>
+                        {props.completeData.data.length === 0 ? (
+                            <div>查無資料</div>
+                        ) : (
+                            <>
+                                <div className={styles.signItem}>
+                                    {props.completeData.data.map(
+                                        (data, idx) => (
+                                            <>
+                                                <p key={idx + 1}>
+                                                    訂單：
+                                                    {data.application_form_id}
+                                                </p>
+                                                <table
+                                                    key={
+                                                        data.application_form_id
+                                                    }
+                                                >
+                                                    <thead>
+                                                        <tr
+                                                            className={
+                                                                styles.title
+                                                            }
+                                                        >
+                                                            <th>項次</th>
+                                                            <th>申請項目</th>
+                                                            <th>數量</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {data.hydro_items.items.map(
+                                                            (item, idx) => (
+                                                                <tr
+                                                                    className={
+                                                                        styles.content
+                                                                    }
+                                                                    key={
+                                                                        idx + 1
+                                                                    }
+                                                                >
+                                                                    <td>1</td>
+                                                                    <td>
+                                                                        用電110V電源箱
+                                                                        - 單相
+                                                                        110V 15A
+                                                                        (1,500W)
+                                                                    </td>
+                                                                    <td>1</td>
+                                                                </tr>
+                                                            )
+                                                        )}
+                                                    </tbody>
+                                                </table>
+                                                <hr
+                                                    style={{
+                                                        margin: "10px 0 15px 0",
+                                                    }}
+                                                />
+                                            </>
+                                        )
+                                    )}
+                                </div>
+                                <div className={styles.sign}>
+                                    <button
+                                        className={styles.signBtn}
+                                        onClick={() => setShow(true)}
+                                    >
+                                        驗收簽名
+                                        <img
+                                            src="/img/Vector.svg"
+                                            width={25}
+                                            height={21}
+                                        />
+                                    </button>
+                                    <div className={styles.signImg}>
+                                        {imageURL ? (
+                                            <img src={imageURL} />
+                                        ) : null}
+                                    </div>
+                                </div>
+                                {show ? (
+                                    <Popup close={close}>
+                                        <div
+                                            className={styles.signature}
+                                            onClick={(e) => {
+                                                // do not close modal if anything inside modal content is clicked
+                                                e.stopPropagation();
+                                            }}
+                                        >
+                                            <SignaturePad
+                                                ref={sigCanvas}
+                                                canvasProps={{
+                                                    className:
+                                                        "signatureCanvas",
+                                                }}
+                                            ></SignaturePad>
+                                            <hr />
+                                            <p>請於上方簽名</p>
+                                            <div
+                                                className={styles.signatureBtns}
+                                            >
+                                                <button
+                                                    className={styles.buttons}
+                                                    onClick={clear}
+                                                >
+                                                    清除重簽
+                                                </button>
+                                                <button
+                                                    className={styles.buttons}
+                                                    onClick={save}
+                                                >
+                                                    確認
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </Popup>
+                                ) : null}
                                 <button
-                                    className={styles.buttons}
-                                    onClick={clear}
-                                >
-                                    清除重簽
-                                </button>
-                                <button
-                                    className={styles.buttons}
-                                    onClick={save}
+                                    className={styles.signCheck}
+                                    onClick={handleSubmit}
                                 >
                                     確認
                                 </button>
-                            </div>
-                        </div>
-                    </Popup>
-                ) : null}
-
-                <button className={styles.signCheck}>確認</button>
+                            </>
+                        )}
+                    </>
+                )}
             </Hero>
             <Footer />
         </div>

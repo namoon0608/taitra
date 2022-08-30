@@ -10,13 +10,16 @@ import Popup from "../../../Components/Popup/Popup";
 import SlideToggle from "react-slide-toggle";
 import { StylesContext } from "@material-ui/styles";
 
-export async function getServerSideProps({ locale }) {
+export async function getServerSideProps({ locale, query }) {
     const options = {
         method: "POST",
         headers: {
             "Content-Type": "application/x-www-form-urlencoded",
         },
-        body: new URLSearchParams({ lang: locale, show_id: "FD" }),
+        body: new URLSearchParams({
+            lang: locale,
+            sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
+        }),
     };
     const infoRes = await fetch(
         `${process.env.API_BASE_URL}getDiscountInfo`,
@@ -24,15 +27,23 @@ export async function getServerSideProps({ locale }) {
     );
     const infoData = await infoRes.json();
 
+    options.body.append("application_form_id", `${query.id}`);
+
+    const reviseData = await fetch(
+        `${process.env.API_BASE_URL}getSecondModifyData`,
+        options
+    ).then((response) => response.json());
+
     return {
         props: {
             ...(await serverSideTranslations(locale, ["common"])),
             info: infoData,
+            data: reviseData,
         },
     };
 }
 
-export default function Search(props) {
+export default function Revise(props) {
     const { t } = useTranslation();
     const [show, setShow] = useState(false);
 
@@ -76,10 +87,18 @@ export default function Search(props) {
 
             <Nav />
             <Hero info={props.info}>
-                <h3>水電申請修改</h3>
+                <h3>{t("search.revise")}</h3>
                 <div className={styles.checkForm}>
-                    <h2>大會水電公司審核意見</h2>
-                    <p className={styles.opinionBox}></p>
+                    <h2>{t("search.option")}</h2>
+                    <p
+                        className={styles.opinionBox}
+                        dangerouslySetInnerHTML={{
+                            __html: props.data.comment.replace(
+                                /(?:\r\n|\r|\n)/g,
+                                "<br>"
+                            ),
+                        }}
+                    ></p>
                     <h2>代理或裝潢公司基本資料</h2>
                     <div className={styles.form}>
                         <div className={styles.formRow}>
@@ -87,7 +106,9 @@ export default function Search(props) {
                             <input
                                 name="company"
                                 type="text"
-                                defaultValue={"丰彤設計有限公司"}
+                                defaultValue={
+                                    props.data.proxy.proxy_company_name
+                                }
                             />
                         </div>
                         <div className={styles.formRow}>
@@ -95,7 +116,7 @@ export default function Search(props) {
                             <input
                                 name="uniformNum"
                                 type="text"
-                                defaultValue={"12653758"}
+                                defaultValue={props.data.proxy.proxy_tax_id}
                             />
                         </div>
                         <div className={styles.formRow}>
@@ -103,7 +124,9 @@ export default function Search(props) {
                             <input
                                 name="contactPerson"
                                 type="text"
-                                defaultValue={"張書源"}
+                                defaultValue={
+                                    props.data.proxy.proxy_contact_person
+                                }
                             />
                         </div>
                         <div className={styles.formRow}>
@@ -111,7 +134,7 @@ export default function Search(props) {
                             <input
                                 name="email"
                                 type="email"
-                                defaultValue={"1fontal1999@gmail.com"}
+                                defaultValue={props.data.proxy.proxy_email}
                             />
                         </div>
                     </div>
@@ -122,7 +145,9 @@ export default function Search(props) {
                             <input
                                 name="company"
                                 type="text"
-                                defaultValue={"尚立資訊有限公司"}
+                                defaultValue={
+                                    props.data.invoice.invoice_comapny
+                                }
                             />
                         </div>
                         <div className={styles.formRow}>
@@ -130,7 +155,7 @@ export default function Search(props) {
                             <input
                                 name="uniformNum"
                                 type="text"
-                                defaultValue={"83465356"}
+                                defaultValue={props.data.invoice.invoice_taxid}
                             />
                         </div>
                         <div className={styles.formRow}>

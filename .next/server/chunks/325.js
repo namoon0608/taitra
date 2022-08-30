@@ -20,6 +20,7 @@ module.exports = {
 	"image": "Apply_image__GR0Ak",
 	"upload": "Apply_upload__yIWnV",
 	"write": "Apply_write__ijvCW",
+	"popupToWrite": "Apply_popupToWrite__KPApM",
 	"form": "Apply_form__HD4c5",
 	"prepare": "Apply_prepare__d3z_L",
 	"reviseTitle": "Apply_reviseTitle__VAyyT",

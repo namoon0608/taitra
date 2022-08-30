@@ -68,7 +68,7 @@ function Price(props) {
     let rows = [];
     let rowIndex = 0;
     for (let [i, item] of priceList.items.entries()){
-        rowIndex = Math.floor(i / 30);
+        rowIndex = Math.floor(i / 34);
         if (!rows[rowIndex]) {
             rows[rowIndex] = [];
         }
@@ -76,7 +76,7 @@ function Price(props) {
     }
     const getList = (data)=>{
         let lists = [];
-        for(let i = 0; i < 30; i++){
+        for(let i = 0; i < 34; i++){
             if (data[i] === undefined) {
                 lists.push(/*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
                     children: [
@@ -139,7 +139,7 @@ function Price(props) {
                 info: props.info,
                 children: [
                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("h3", {
-                        children: "價目表"
+                        children: t("priceList.title")
                     }),
                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
                         className: rows.length > 1 ? (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_7___default().priceContain) : (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_7___default().priceOneContain),
@@ -151,17 +151,17 @@ function Price(props) {
                                         children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
                                             children: [
                                                 /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("th", {
-                                                    children: "項次"
+                                                    children: t("priceList.no")
                                                 }),
                                                 /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("th", {
-                                                    children: "用電項目"
+                                                    children: t("priceList.itemNo")
                                                 }),
                                                 /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("th", {
                                                     className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_7___default().itemName),
-                                                    children: "項目名稱"
+                                                    children: t("priceList.item")
                                                 }),
                                                 /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("th", {
-                                                    children: "定價(含稅)"
+                                                    children: t("priceList.price")
                                                 })
                                             ]
                                         })

@@ -5,7 +5,9 @@ import { useTranslation } from "next-i18next";
 
 export default function Write({ formStep, nextFormStep, stepThree, dataID }) {
     const { t } = useTranslation();
-    const [imageSrc, setImageSrc] = useState(stepThree.imageData);
+    const [imageSrc, setImageSrc] = useState(
+        process.env.imgKey + stepThree.imageData
+    );
     const [uploadData, setUploadData] = useState();
     const [goNext, setGoNext] = useState(true);
     const [show, setShow] = useState(false);
@@ -21,14 +23,28 @@ export default function Write({ formStep, nextFormStep, stepThree, dataID }) {
         setShow(false);
     };
 
+    function dataURLtoFile(dataurl, filename) {
+        let arr = dataurl.split(","),
+            mime = arr[0].match(/:(.*?);/)[1],
+            bstr = atob(arr[1]),
+            n = bstr.length,
+            u8arr = new Uint8Array(n);
+        while (n--) {
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+        return new File([u8arr], filename, { type: mime });
+    }
+
     const temporary = async () => {
+        let file = dataURLtoFile(imageSrc, "png");
         const form = new FormData();
         form.append("application_form_id", dataID);
         form.append(
             "sid",
             "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
         );
-        form.append("imageData", imageSrc);
+        form.append("imageData", file);
+        console.log(file);
 
         const options = {
             method: "POST",
@@ -40,7 +56,9 @@ export default function Write({ formStep, nextFormStep, stepThree, dataID }) {
             .then((response) => response.json())
             .then((response) => {
                 console.log(response);
-                alert("success");
+                if (response.status === true) {
+                    alert(response.msg);
+                }
             })
             .catch((err) => console.error(err));
     };
@@ -136,6 +154,7 @@ export default function Write({ formStep, nextFormStep, stepThree, dataID }) {
 
                 <h2>{t("applyForm.stepThree.groupTwo.title")}</h2>
                 <a
+                    className={styles.popupToWrite}
                     href="https://anbon.vip/twtc_diagram/"
                     onClick={() => setShow(true)}
                     target="iframe_a"
