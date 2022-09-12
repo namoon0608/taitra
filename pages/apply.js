@@ -103,8 +103,11 @@ export default function Apply(props) {
     const { t } = useTranslation();
     const [formStep, setFormStep] = useState(0);
     const [savadata, setSavaData] = useState(props.company.savadata);
+    const [useDefaultChecked, setUseDefaultChecked] = useState(false);
 
     const saveID = (item) => setSavaData(item);
+
+    const jumpOverStepTwo = (item) => setUseDefaultChecked(item);
 
     const nextFormStep = () => setFormStep((currentStep) => currentStep + 1);
 
@@ -124,7 +127,11 @@ export default function Apply(props) {
 
             <Nav />
             <Hero info={props.info}>
-                <FormCard currentStep={formStep} prevFormStep={prevFormStep}>
+                <FormCard
+                    currentStep={formStep}
+                    prevFormStep={prevFormStep}
+                    useDefaultChecked={useDefaultChecked}
+                >
                     {formStep >= 0 && (
                         <Basic
                             formStep={formStep}
@@ -133,6 +140,7 @@ export default function Apply(props) {
                             company={props.company}
                             saveID={saveID}
                             dataID={savadata}
+                            jump={jumpOverStepTwo}
                         />
                     )}
                     {formStep >= 1 && (

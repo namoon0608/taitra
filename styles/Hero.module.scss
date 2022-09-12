@@ -72,6 +72,7 @@
                     }
                 }
                 ul {
+                    list-style: none;
                     color: #ffffff;
                     font-family: "Roboto", sans-serif;
                     font-weight: 500;
@@ -93,9 +94,9 @@
                     @include mobile_M() {
                         padding-left: 35px;
                     }
-                    li {
-                        list-style-image: url("../public/img/Rectangle131.svg");
-                    }
+                    // li {
+                    //     list-style-image: url("../public/img/Rectangle131.svg");
+                    // }
                 }
             }
         }

@@ -1,23 +1,29 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import styles from "../../styles/Form.module.scss";
 import Popup from "../Popup/Popup";
 import { useTranslation } from "next-i18next";
 
 export default function Write({ formStep, nextFormStep, stepThree, dataID }) {
     const { t } = useTranslation();
-    const [imageSrc, setImageSrc] = useState(
-        process.env.imgKey + stepThree.imageData
-    );
+    const [imageSrc, setImageSrc] = useState(stepThree.imageData);
     const [uploadData, setUploadData] = useState();
     const [goNext, setGoNext] = useState(true);
     const [show, setShow] = useState(false);
+    const IFrameRef = useRef(null);
+    const [recievedMessage, setRecievedMessage] = useState("");
 
     useEffect(() => {
-        console.log(imageSrc);
-        if (imageSrc !== undefined) {
+        console.log(stepThree.status);
+        if (stepThree.status !== false) {
             setGoNext(false);
         }
     }, []);
+
+    // useEffect(() => {
+    //     window.addEventListener("message", function (e) {
+    //         console.log(e);
+    //     });
+    // }, []);
 
     const close = () => {
         setShow(false);
@@ -34,6 +40,18 @@ export default function Write({ formStep, nextFormStep, stepThree, dataID }) {
         }
         return new File([u8arr], filename, { type: mime });
     }
+
+    const handleWritePlan = () => {
+        setShow(true);
+        setTimeout(() => {
+            console.log(IFrameRef);
+            if (!IFrameRef.current) return;
+            IFrameRef.current.contentWindow.postMessage(
+                "Hello son",
+                "http://localhost:3001/"
+            );
+        }, 100);
+    };
 
     const temporary = async () => {
         let file = dataURLtoFile(imageSrc, "png");
@@ -150,18 +168,42 @@ export default function Write({ formStep, nextFormStep, stepThree, dataID }) {
                         accept="image/*"
                     />
                 </div>
-                <img id="blah" src={imageSrc} className={styles.uploadImg} />
+                {imageSrc !== undefined ? (
+                    <>
+                        {imageSrc.slice(0, 4) === "data" ? (
+                            <img
+                                id="blah"
+                                src={imageSrc}
+                                className={styles.uploadImg}
+                            />
+                        ) : (
+                            <img
+                                id="blah"
+                                src={process.env.imgKey + imageSrc}
+                                className={styles.uploadImg}
+                            />
+                        )}
+                    </>
+                ) : (
+                    <img
+                        id="blah"
+                        src={imageSrc}
+                        className={styles.uploadImg}
+                    />
+                )}
 
                 <h2>{t("applyForm.stepThree.groupTwo.title")}</h2>
                 <a
                     className={styles.popupToWrite}
-                    href="https://anbon.vip/twtc_diagram/"
-                    onClick={() => setShow(true)}
+                    // href="https://anbon.vip/twtc_diagram/"
+                    // onClick={() => setShow(true)}
+                    href="http://localhost:3001/"
+                    onClick={handleWritePlan}
                     target="iframe_a"
                 >
                     {t("applyForm.stepThree.groupTwo.clickPopup")}
                 </a>
-                {/* <img src="/img/image7.png" /> */}
+
                 <h2>{t("applyForm.stepThree.groupThree.title")}</h2>
                 <div className={styles.write}>
                     <p>＃{t("applyForm.stepThree.groupThree.content")}</p>
@@ -189,7 +231,9 @@ export default function Write({ formStep, nextFormStep, stepThree, dataID }) {
                         style={{ width: "90%", height: "90%" }}
                     >
                         <iframe
+                            ref={IFrameRef}
                             src="demo_iframe.htm"
+                            id="iframe1"
                             name="iframe_a"
                             height="100%"
                             width="100%"

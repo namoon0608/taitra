@@ -126,7 +126,7 @@ export default function Preview({
                     </div>
                 </div>
                 <h2>{t("applyForm.preview.groupThree.title")}</h2>
-                {data.hydro_items.items.length === 0 ? (
+                {data.hydro_items.base_option === "Y" ? (
                     <div>{t("applyForm.preview.groupThree.useDefault")}</div>
                 ) : (
                     <div className={styles.applyItem}>
@@ -190,9 +190,9 @@ export default function Preview({
                     <div className={styles.image}>
                         <p>
                             {t("applyForm.preview.groupFour.file")}{" "}
-                            <span>JO318水電圖圖.jpg</span>
+                            <span>{data.imageData_filename}</span>
                         </p>
-                        <img src={data.imageData_file} />
+                        <img src={process.env.imgKey + data.imageData_file} />
                     </div>
                 )}
                 <button type="submit" className={styles.complete}>

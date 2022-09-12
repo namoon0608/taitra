@@ -10,23 +10,24 @@ export default function Basic({
     company,
     saveID,
     dataID,
+    jump,
 }) {
     const { t } = useTranslation();
 
     const temporary = async () => {
+        const useDefault = document.getElementById("chooseDefault");
         let company = document.getElementById("company").value;
         let uniformNum = document.getElementById("uniformNum").value;
         let contactPerson = document.getElementById("contactPerson").value;
         let email = document.getElementById("email").value;
         let phone = document.getElementById("phone").value;
-        let invoice = "";
-        let address = document.getElementById("address").value;
         let remark = document.getElementById("remark").value;
-        const radios = document.querySelectorAll('input[name="drone"]');
-        for (let radio of radios) {
-            if (radio.checked) {
-                invoice = radio.value;
-            }
+
+        let baseOption = "";
+        if (useDefault.checked) {
+            baseOption = "Y";
+        } else {
+            baseOption = "N";
         }
 
         const options = {
@@ -36,14 +37,13 @@ export default function Basic({
                 "Content-Type": "application/x-www-form-urlencoded",
             },
             body: new URLSearchParams({
-                application_form_id: "",
+                application_form_id: dataID,
                 proxy_company_name: company,
                 proxy_tax_id: uniformNum,
                 proxy_contact_person: contactPerson,
                 proxy_email: email,
                 proxy_phone: phone,
-                invoice: invoice,
-                invoice_address: address,
+                base_option: baseOption,
                 remark: remark,
                 sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
             }),
@@ -59,15 +59,17 @@ export default function Basic({
 
     async function handleSubmit(data) {
         console.log(data);
+        const useDefault = document.getElementById("chooseDefault");
         let remark = document.getElementById("remark").value;
-        let invoice = "";
-        const radios = document.querySelectorAll('input[name="drone"]');
-        for (let radio of radios) {
-            if (radio.checked) {
-                invoice = radio.value;
-            }
-        }
 
+        let baseOption = "";
+        if (useDefault.checked) {
+            baseOption = "Y";
+            jump(true);
+        } else {
+            baseOption = "N";
+            jump(false);
+        }
         const options = {
             method: "POST",
             headers: {
@@ -81,20 +83,32 @@ export default function Basic({
                 proxy_contact_person: data.contactPerson,
                 proxy_email: data.email,
                 proxy_phone: data.phone,
-                invoice: invoice,
-                invoice_address: data.address,
+                base_option: baseOption,
                 remark: remark,
                 sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
             }),
         };
-        await fetch(`${process.env.customKey}setApplyForm`, options)
-            .then((response) => response.json())
-            .then((response) => {
-                console.log(response);
-                saveID(response.application_form_id);
-            })
-            .then(nextFormStep())
-            .catch((err) => console.error(err));
+        console.log(options);
+        if (baseOption === "N") {
+            await fetch(`${process.env.customKey}setApplyForm`, options)
+                .then((response) => response.json())
+                .then((response) => {
+                    console.log(response);
+                    saveID(response.application_form_id);
+                })
+                .then(nextFormStep())
+                .catch((err) => console.error(err));
+        } else if (baseOption === "Y") {
+            await fetch(`${process.env.customKey}setApplyForm`, options)
+                .then((response) => response.json())
+                .then((response) => {
+                    console.log(response);
+                    saveID(response.application_form_id);
+                })
+                .then(nextFormStep())
+                .then(nextFormStep())
+                .catch((err) => console.error(err));
+        }
     }
 
     return (
@@ -228,9 +242,19 @@ export default function Basic({
                             />
                         </div>
                     </div>
-                    <h2>{t("applyForm.stepOne.groupThree.title")}</h2>
+                    <div className={styles.applyDefault}>
+                        <input
+                            type="checkbox"
+                            id="chooseDefault"
+                            value="useDefault"
+                        />
+                        <label htmlFor="chooseDefault">
+                            {t("applyForm.stepTwo.useDefault")}
+                        </label>
+                    </div>
+                    {/* <h2>{t("applyForm.stepOne.groupThree.title")}</h2> */}
                     <div className={styles.form}>
-                        <div className={styles.addressGroup}>
+                        {/* <div className={styles.addressGroup}>
                             <div>
                                 <label htmlFor="company_address">
                                     {t(
@@ -257,8 +281,8 @@ export default function Basic({
                                     />
                                 </label>
                             </div>
-                        </div>
-                        <div
+                        </div> */}
+                        {/* <div
                             className={[styles.formRow, styles.address].join(
                                 " "
                             )}
@@ -274,7 +298,7 @@ export default function Basic({
                                 )}
                                 id="address"
                             />
-                        </div>
+                        </div> */}
                         <div
                             className={[styles.formRow, styles.prepare].join(
                                 " "
@@ -360,9 +384,33 @@ export default function Basic({
                             />
                         </div>
                     </div>
-                    <h2>{t("applyForm.stepOne.groupThree.title")}</h2>
+                    {/* <h2>{t("applyForm.stepOne.groupThree.title")}</h2> */}
+                    {stepOne.data.base_option === "Y" ? (
+                        <div className={styles.applyDefault}>
+                            <input
+                                type="checkbox"
+                                id="chooseDefault"
+                                value="useDefault"
+                                defaultChecked
+                            />
+                            <label htmlFor="chooseDefault">
+                                {t("applyForm.stepTwo.useDefault")}
+                            </label>
+                        </div>
+                    ) : (
+                        <div className={styles.applyDefault}>
+                            <input
+                                type="checkbox"
+                                id="chooseDefault"
+                                value="useDefault"
+                            />
+                            <label htmlFor="chooseDefault">
+                                {t("applyForm.stepTwo.useDefault")}
+                            </label>
+                        </div>
+                    )}
                     <div className={styles.form}>
-                        {stepOne.data.invoice_title === "1" ? (
+                        {/* {stepOne.data.invoice_title === "1" ? (
                             <div className={styles.addressGroup}>
                                 <div>
                                     <label htmlFor="company_address">
@@ -441,7 +489,7 @@ export default function Basic({
                                 id="address"
                                 defaultValue={stepOne.data.invoice_address}
                             />
-                        </div>
+                        </div> */}
                         <div
                             className={[styles.formRow, styles.prepare].join(
                                 " "

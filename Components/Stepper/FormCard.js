@@ -1,8 +1,23 @@
 import styles from "../../styles/Form.module.scss";
 import { useTranslation } from "next-i18next";
 
-export default function FormCard({ children, currentStep, prevFormStep }) {
+export default function FormCard({
+    children,
+    currentStep,
+    prevFormStep,
+    useDefaultChecked,
+}) {
     const { t } = useTranslation();
+
+    const handlePrev = () => {
+        // console.log(useDefaultChecked);
+        if (useDefaultChecked && currentStep === 2) {
+            prevFormStep();
+            prevFormStep();
+        } else {
+            prevFormStep();
+        }
+    };
 
     return (
         <div className="">
@@ -11,7 +26,7 @@ export default function FormCard({ children, currentStep, prevFormStep }) {
                     {currentStep > 0 && (
                         <button
                             className={styles.back}
-                            onClick={prevFormStep}
+                            onClick={handlePrev}
                             type="button"
                         >
                             {t("applyForm.stepper.prev")}

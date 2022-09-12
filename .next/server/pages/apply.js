@@ -65,90 +65,42 @@ module.exports = {
 
 /***/ }),
 
-/***/ 7504:
+/***/ 6984:
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-
-// EXPORTS
-__webpack_require__.d(__webpack_exports__, {
-  "Z": () => (/* binding */ Basic)
-});
-
-// EXTERNAL MODULE: external "react/jsx-runtime"
-var jsx_runtime_ = __webpack_require__(997);
-// EXTERNAL MODULE: ./styles/Form.module.scss
-var Form_module = __webpack_require__(3929);
-var Form_module_default = /*#__PURE__*/__webpack_require__.n(Form_module);
-// EXTERNAL MODULE: external "@unform/web"
-var web_ = __webpack_require__(3732);
-// EXTERNAL MODULE: external "react"
-var external_react_ = __webpack_require__(6689);
-;// CONCATENATED MODULE: external "@unform/core"
-const core_namespaceObject = require("@unform/core");
-;// CONCATENATED MODULE: ./Components/Input Fields/Input.js
-
-
-
-function Input({ name , label , ...rest }) {
-    const inputRef = (0,external_react_.useRef)(null);
-    const { fieldName , defaultValue ="" , registerField , error ,  } = (0,core_namespaceObject.useField)(name);
-    (0,external_react_.useEffect)(()=>{
-        registerField({
-            name: fieldName,
-            ref: inputRef.current,
-            path: "value"
-        });
-    }, [
-        fieldName,
-        registerField
-    ]);
-    return /*#__PURE__*/ (0,jsx_runtime_.jsxs)(jsx_runtime_.Fragment, {
-        children: [
-            label && /*#__PURE__*/ jsx_runtime_.jsx("label", {
-                htmlFor: fieldName,
-                children: label
-            }),
-            /*#__PURE__*/ jsx_runtime_.jsx("input", {
-                ref: inputRef,
-                id: fieldName,
-                defaultValue: defaultValue,
-                ...rest
-            }),
-            error && /*#__PURE__*/ jsx_runtime_.jsx("span", {
-                style: {
-                    color: "#f00"
-                },
-                children: error
-            })
-        ]
-    });
-};
-
-// EXTERNAL MODULE: external "next-i18next"
-var external_next_i18next_ = __webpack_require__(1377);
-;// CONCATENATED MODULE: ./Components/Forms/Basic.js
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Z": () => (/* binding */ Basic)
+/* harmony export */ });
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(997);
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(3929);
+/* harmony import */ var _styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _unform_web__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3732);
+/* harmony import */ var _unform_web__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_unform_web__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _Input_Fields_Input__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(1144);
+/* harmony import */ var next_i18next__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(1377);
+/* harmony import */ var next_i18next__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(next_i18next__WEBPACK_IMPORTED_MODULE_3__);
 
 
 
 
 
-function Basic({ formStep , nextFormStep , stepOne , company , saveID , dataID ,  }) {
-    const { t  } = (0,external_next_i18next_.useTranslation)();
+function Basic({ formStep , nextFormStep , stepOne , company , saveID , dataID , jump ,  }) {
+    const { t  } = (0,next_i18next__WEBPACK_IMPORTED_MODULE_3__.useTranslation)();
     const temporary = async ()=>{
+        const useDefault = document.getElementById("chooseDefault");
         let company = document.getElementById("company").value;
         let uniformNum = document.getElementById("uniformNum").value;
         let contactPerson = document.getElementById("contactPerson").value;
         let email = document.getElementById("email").value;
         let phone = document.getElementById("phone").value;
-        let invoice = "";
-        let address = document.getElementById("address").value;
         let remark = document.getElementById("remark").value;
-        const radios = document.querySelectorAll('input[name="drone"]');
-        for (let radio of radios){
-            if (radio.checked) {
-                invoice = radio.value;
-            }
+        let baseOption = "";
+        if (useDefault.checked) {
+            baseOption = "Y";
+        } else {
+            baseOption = "N";
         }
         const options = {
             method: "POST",
@@ -157,14 +109,13 @@ function Basic({ formStep , nextFormStep , stepOne , company , saveID , dataID ,
                 "Content-Type": "application/x-www-form-urlencoded"
             },
             body: new URLSearchParams({
-                application_form_id: "",
+                application_form_id: dataID,
                 proxy_company_name: company,
                 proxy_tax_id: uniformNum,
                 proxy_contact_person: contactPerson,
                 proxy_email: email,
                 proxy_phone: phone,
-                invoice: invoice,
-                invoice_address: address,
+                base_option: baseOption,
                 remark: remark,
                 sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
             })
@@ -176,13 +127,15 @@ function Basic({ formStep , nextFormStep , stepOne , company , saveID , dataID ,
     };
     async function handleSubmit(data) {
         console.log(data);
+        const useDefault = document.getElementById("chooseDefault");
         let remark = document.getElementById("remark").value;
-        let invoice = "";
-        const radios = document.querySelectorAll('input[name="drone"]');
-        for (let radio of radios){
-            if (radio.checked) {
-                invoice = radio.value;
-            }
+        let baseOption = "";
+        if (useDefault.checked) {
+            baseOption = "Y";
+            jump(true);
+        } else {
+            baseOption = "N";
+            jump(false);
         }
         const options = {
             method: "POST",
@@ -197,149 +150,156 @@ function Basic({ formStep , nextFormStep , stepOne , company , saveID , dataID ,
                 proxy_contact_person: data.contactPerson,
                 proxy_email: data.email,
                 proxy_phone: data.phone,
-                invoice: invoice,
-                invoice_address: data.address,
+                base_option: baseOption,
                 remark: remark,
                 sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
             })
         };
-        await fetch(`${"https://ewsadm.taiwantradeshows.com.tw/api/"}setApplyForm`, options).then((response)=>response.json()).then((response)=>{
-            console.log(response);
-            saveID(response.application_form_id);
-        }).then(nextFormStep()).catch((err)=>console.error(err));
+        console.log(options);
+        if (baseOption === "N") {
+            await fetch(`${"https://ewsadm.taiwantradeshows.com.tw/api/"}setApplyForm`, options).then((response)=>response.json()).then((response)=>{
+                console.log(response);
+                saveID(response.application_form_id);
+            }).then(nextFormStep()).catch((err)=>console.error(err));
+        } else if (baseOption === "Y") {
+            await fetch(`${"https://ewsadm.taiwantradeshows.com.tw/api/"}setApplyForm`, options).then((response)=>response.json()).then((response)=>{
+                console.log(response);
+                saveID(response.application_form_id);
+            }).then(nextFormStep()).then(nextFormStep()).catch((err)=>console.error(err));
+        }
     }
-    return /*#__PURE__*/ (0,jsx_runtime_.jsxs)("div", {
+    return /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
         className: [
-            (Form_module_default()).form,
-            formStep === 0 ? (Form_module_default()).showForm : (Form_module_default()).hideForm, 
+            (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().form),
+            formStep === 0 ? (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().showForm) : (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().hideForm), 
         ].join(" "),
         children: [
-            /*#__PURE__*/ jsx_runtime_.jsx("button", {
-                className: (Form_module_default()).temporary,
+            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("button", {
+                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().temporary),
                 onClick: temporary,
                 children: t("applyForm.stepper.save")
             }),
-            /*#__PURE__*/ jsx_runtime_.jsx("h2", {
+            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("h2", {
                 children: t("applyForm.stepOne.groupOne.title")
             }),
-            /*#__PURE__*/ (0,jsx_runtime_.jsxs)("div", {
-                className: (Form_module_default()).companyGroupOne,
+            /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().companyGroupOne),
                 children: [
-                    /*#__PURE__*/ (0,jsx_runtime_.jsxs)("div", {
+                    /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
                         children: [
-                            /*#__PURE__*/ jsx_runtime_.jsx("p", {
-                                className: (Form_module_default()).title,
+                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
+                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().title),
                                 children: t("applyForm.stepOne.groupOne.companyName")
                             }),
-                            /*#__PURE__*/ jsx_runtime_.jsx("p", {
-                                className: (Form_module_default()).content,
+                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
+                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().content),
                                 children: company.company.company_name
                             })
                         ]
                     }),
-                    /*#__PURE__*/ (0,jsx_runtime_.jsxs)("div", {
+                    /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
                         children: [
-                            /*#__PURE__*/ jsx_runtime_.jsx("p", {
-                                className: (Form_module_default()).title,
+                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
+                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().title),
                                 children: t("applyForm.stepOne.groupOne.boothNo")
                             }),
-                            /*#__PURE__*/ jsx_runtime_.jsx("p", {
-                                className: (Form_module_default()).content,
+                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
+                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().content),
                                 children: company.company.booth_no
                             })
                         ]
                     }),
-                    /*#__PURE__*/ (0,jsx_runtime_.jsxs)("div", {
+                    /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
                         children: [
-                            /*#__PURE__*/ jsx_runtime_.jsx("p", {
-                                className: (Form_module_default()).title,
+                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
+                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().title),
                                 children: t("applyForm.stepOne.groupOne.quantityOfBooths")
                             }),
-                            /*#__PURE__*/ jsx_runtime_.jsx("p", {
-                                className: (Form_module_default()).content,
+                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
+                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().content),
                                 children: company.company.booth_cnt
                             })
                         ]
                     }),
-                    /*#__PURE__*/ (0,jsx_runtime_.jsxs)("div", {
+                    /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
                         children: [
-                            /*#__PURE__*/ jsx_runtime_.jsx("p", {
-                                className: (Form_module_default()).title,
+                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
+                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().title),
                                 children: t("applyForm.stepOne.groupOne.contactPerson")
                             }),
-                            /*#__PURE__*/ jsx_runtime_.jsx("p", {
-                                className: (Form_module_default()).content,
+                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
+                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().content),
                                 children: company.company.contact_person
                             })
                         ]
                     }),
-                    /*#__PURE__*/ (0,jsx_runtime_.jsxs)("div", {
+                    /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
                         children: [
-                            /*#__PURE__*/ jsx_runtime_.jsx("p", {
-                                className: (Form_module_default()).title,
+                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
+                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().title),
                                 children: t("applyForm.stepOne.groupOne.phone")
                             }),
-                            /*#__PURE__*/ jsx_runtime_.jsx("p", {
-                                className: (Form_module_default()).content,
+                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
+                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().content),
                                 children: company.company.com_tel
                             })
                         ]
                     }),
-                    /*#__PURE__*/ (0,jsx_runtime_.jsxs)("div", {
+                    /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
                         children: [
-                            /*#__PURE__*/ jsx_runtime_.jsx("p", {
-                                className: (Form_module_default()).title,
+                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
+                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().title),
                                 children: t("applyForm.stepOne.groupOne.taxID")
                             }),
-                            /*#__PURE__*/ jsx_runtime_.jsx("p", {
-                                className: (Form_module_default()).content,
+                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
+                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().content),
                                 children: company.company.tax_id
                             })
                         ]
                     })
                 ]
             }),
-            /*#__PURE__*/ (0,jsx_runtime_.jsxs)("div", {
-                className: (Form_module_default()).companyGroupTwo,
+            /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().companyGroupTwo),
                 children: [
-                    /*#__PURE__*/ (0,jsx_runtime_.jsxs)("div", {
+                    /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
                         children: [
-                            /*#__PURE__*/ jsx_runtime_.jsx("p", {
-                                className: (Form_module_default()).title,
+                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
+                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().title),
                                 children: "E-mail"
                             }),
-                            /*#__PURE__*/ jsx_runtime_.jsx("p", {
-                                className: (Form_module_default()).content,
+                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
+                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().content),
                                 children: company.company.email
                             })
                         ]
                     }),
-                    /*#__PURE__*/ (0,jsx_runtime_.jsxs)("div", {
+                    /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
                         children: [
-                            /*#__PURE__*/ jsx_runtime_.jsx("p", {
-                                className: (Form_module_default()).title,
+                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
+                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().title),
                                 children: t("applyForm.stepOne.groupOne.address")
                             }),
-                            /*#__PURE__*/ jsx_runtime_.jsx("p", {
-                                className: (Form_module_default()).content,
+                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
+                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().content),
                                 children: company.company.address
                             })
                         ]
                     })
                 ]
             }),
-            stepOne.status === false ? /*#__PURE__*/ (0,jsx_runtime_.jsxs)(web_.Form, {
+            stepOne.status === false ? /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_unform_web__WEBPACK_IMPORTED_MODULE_1__.Form, {
                 onSubmit: handleSubmit,
                 children: [
-                    /*#__PURE__*/ jsx_runtime_.jsx("h2", {
+                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("h2", {
                         children: t("applyForm.stepOne.groupTwo.title")
                     }),
-                    /*#__PURE__*/ (0,jsx_runtime_.jsxs)("div", {
-                        className: (Form_module_default()).form,
+                    /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().form),
                         children: [
-                            /*#__PURE__*/ jsx_runtime_.jsx("div", {
-                                className: (Form_module_default()).formRow,
-                                children: /*#__PURE__*/ jsx_runtime_.jsx(Input, {
+                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().formRow),
+                                children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_Input_Fields_Input__WEBPACK_IMPORTED_MODULE_2__/* ["default"] */ .Z, {
                                     name: "company",
                                     label: t("applyForm.stepOne.groupTwo.companyName"),
                                     type: "text",
@@ -347,9 +307,9 @@ function Basic({ formStep , nextFormStep , stepOne , company , saveID , dataID ,
                                     id: "company"
                                 })
                             }),
-                            /*#__PURE__*/ jsx_runtime_.jsx("div", {
-                                className: (Form_module_default()).formRow,
-                                children: /*#__PURE__*/ jsx_runtime_.jsx(Input, {
+                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().formRow),
+                                children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_Input_Fields_Input__WEBPACK_IMPORTED_MODULE_2__/* ["default"] */ .Z, {
                                     name: "uniformNum",
                                     label: t("applyForm.stepOne.groupTwo.taxID"),
                                     type: "text",
@@ -357,9 +317,9 @@ function Basic({ formStep , nextFormStep , stepOne , company , saveID , dataID ,
                                     id: "uniformNum"
                                 })
                             }),
-                            /*#__PURE__*/ jsx_runtime_.jsx("div", {
-                                className: (Form_module_default()).formRow,
-                                children: /*#__PURE__*/ jsx_runtime_.jsx(Input, {
+                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().formRow),
+                                children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_Input_Fields_Input__WEBPACK_IMPORTED_MODULE_2__/* ["default"] */ .Z, {
                                     name: "contactPerson",
                                     label: t("applyForm.stepOne.groupTwo.contactPerson"),
                                     type: "text",
@@ -367,9 +327,9 @@ function Basic({ formStep , nextFormStep , stepOne , company , saveID , dataID ,
                                     id: "contactPerson"
                                 })
                             }),
-                            /*#__PURE__*/ jsx_runtime_.jsx("div", {
-                                className: (Form_module_default()).formRow,
-                                children: /*#__PURE__*/ jsx_runtime_.jsx(Input, {
+                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().formRow),
+                                children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_Input_Fields_Input__WEBPACK_IMPORTED_MODULE_2__/* ["default"] */ .Z, {
                                     name: "email",
                                     label: "E-mail",
                                     type: "email",
@@ -377,9 +337,9 @@ function Basic({ formStep , nextFormStep , stepOne , company , saveID , dataID ,
                                     id: "email"
                                 })
                             }),
-                            /*#__PURE__*/ jsx_runtime_.jsx("div", {
-                                className: (Form_module_default()).formRow,
-                                children: /*#__PURE__*/ jsx_runtime_.jsx(Input, {
+                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().formRow),
+                                children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_Input_Fields_Input__WEBPACK_IMPORTED_MODULE_2__/* ["default"] */ .Z, {
                                     name: "phone",
                                     label: t("applyForm.stepOne.groupTwo.phone"),
                                     type: "tel",
@@ -389,93 +349,56 @@ function Basic({ formStep , nextFormStep , stepOne , company , saveID , dataID ,
                             })
                         ]
                     }),
-                    /*#__PURE__*/ jsx_runtime_.jsx("h2", {
-                        children: t("applyForm.stepOne.groupThree.title")
-                    }),
-                    /*#__PURE__*/ (0,jsx_runtime_.jsxs)("div", {
-                        className: (Form_module_default()).form,
+                    /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().applyDefault),
                         children: [
-                            /*#__PURE__*/ (0,jsx_runtime_.jsxs)("div", {
-                                className: (Form_module_default()).addressGroup,
-                                children: [
-                                    /*#__PURE__*/ jsx_runtime_.jsx("div", {
-                                        children: /*#__PURE__*/ (0,jsx_runtime_.jsxs)("label", {
-                                            htmlFor: "company_address",
-                                            children: [
-                                                t("applyForm.stepOne.groupThree.asTheExhibitor"),
-                                                /*#__PURE__*/ jsx_runtime_.jsx("input", {
-                                                    type: "radio",
-                                                    id: "company_address",
-                                                    name: "drone",
-                                                    value: "1"
-                                                })
-                                            ]
-                                        })
-                                    }),
-                                    /*#__PURE__*/ jsx_runtime_.jsx("div", {
-                                        children: /*#__PURE__*/ (0,jsx_runtime_.jsxs)("label", {
-                                            htmlFor: "agent_address",
-                                            children: [
-                                                t("applyForm.stepOne.groupThree.asTheAgent"),
-                                                /*#__PURE__*/ jsx_runtime_.jsx("input", {
-                                                    type: "radio",
-                                                    id: "agent_address",
-                                                    name: "drone",
-                                                    value: "2"
-                                                })
-                                            ]
-                                        })
-                                    })
-                                ]
+                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                type: "checkbox",
+                                id: "chooseDefault",
+                                value: "useDefault"
                             }),
-                            /*#__PURE__*/ jsx_runtime_.jsx("div", {
-                                className: [
-                                    (Form_module_default()).formRow,
-                                    (Form_module_default()).address
-                                ].join(" "),
-                                children: /*#__PURE__*/ jsx_runtime_.jsx(Input, {
-                                    name: "address",
-                                    label: t("applyForm.stepOne.groupThree.invoiceAddress"),
-                                    type: "text",
-                                    placeholder: t("applyForm.stepOne.groupThree.invoicePlaceHolder"),
-                                    id: "address"
-                                })
-                            }),
-                            /*#__PURE__*/ (0,jsx_runtime_.jsxs)("div", {
-                                className: [
-                                    (Form_module_default()).formRow,
-                                    (Form_module_default()).prepare
-                                ].join(" "),
-                                children: [
-                                    /*#__PURE__*/ jsx_runtime_.jsx("label", {
-                                        htmlFor: "prepare",
-                                        children: t("applyForm.stepOne.groupThree.remark")
-                                    }),
-                                    /*#__PURE__*/ jsx_runtime_.jsx("textarea", {
-                                        id: "remark"
-                                    })
-                                ]
+                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
+                                htmlFor: "chooseDefault",
+                                children: t("applyForm.stepTwo.useDefault")
                             })
                         ]
                     }),
-                    /*#__PURE__*/ jsx_runtime_.jsx("button", {
+                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().form),
+                        children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                            className: [
+                                (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().formRow),
+                                (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().prepare)
+                            ].join(" "),
+                            children: [
+                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
+                                    htmlFor: "prepare",
+                                    children: t("applyForm.stepOne.groupThree.remark")
+                                }),
+                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("textarea", {
+                                    id: "remark"
+                                })
+                            ]
+                        })
+                    }),
+                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("button", {
                         type: "submit",
-                        className: (Form_module_default()).firstNext,
+                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().firstNext),
                         children: t("applyForm.stepper.next")
                     })
                 ]
-            }) : /*#__PURE__*/ (0,jsx_runtime_.jsxs)(web_.Form, {
+            }) : /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_unform_web__WEBPACK_IMPORTED_MODULE_1__.Form, {
                 onSubmit: handleSubmit,
                 children: [
-                    /*#__PURE__*/ jsx_runtime_.jsx("h2", {
+                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("h2", {
                         children: t("applyForm.stepOne.groupTwo.title")
                     }),
-                    /*#__PURE__*/ (0,jsx_runtime_.jsxs)("div", {
-                        className: (Form_module_default()).form,
+                    /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().form),
                         children: [
-                            /*#__PURE__*/ jsx_runtime_.jsx("div", {
-                                className: (Form_module_default()).formRow,
-                                children: /*#__PURE__*/ jsx_runtime_.jsx(Input, {
+                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().formRow),
+                                children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_Input_Fields_Input__WEBPACK_IMPORTED_MODULE_2__/* ["default"] */ .Z, {
                                     name: "company",
                                     label: t("applyForm.stepOne.groupTwo.companyName"),
                                     type: "text",
@@ -484,9 +407,9 @@ function Basic({ formStep , nextFormStep , stepOne , company , saveID , dataID ,
                                     defaultValue: stepOne.data.proxy_company_name
                                 })
                             }),
-                            /*#__PURE__*/ jsx_runtime_.jsx("div", {
-                                className: (Form_module_default()).formRow,
-                                children: /*#__PURE__*/ jsx_runtime_.jsx(Input, {
+                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().formRow),
+                                children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_Input_Fields_Input__WEBPACK_IMPORTED_MODULE_2__/* ["default"] */ .Z, {
                                     name: "uniformNum",
                                     label: t("applyForm.stepOne.groupTwo.taxID"),
                                     type: "text",
@@ -495,9 +418,9 @@ function Basic({ formStep , nextFormStep , stepOne , company , saveID , dataID ,
                                     defaultValue: stepOne.data.proxy_tax_id
                                 })
                             }),
-                            /*#__PURE__*/ jsx_runtime_.jsx("div", {
-                                className: (Form_module_default()).formRow,
-                                children: /*#__PURE__*/ jsx_runtime_.jsx(Input, {
+                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().formRow),
+                                children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_Input_Fields_Input__WEBPACK_IMPORTED_MODULE_2__/* ["default"] */ .Z, {
                                     name: "contactPerson",
                                     label: t("applyForm.stepOne.groupTwo.contactPerson"),
                                     type: "text",
@@ -506,9 +429,9 @@ function Basic({ formStep , nextFormStep , stepOne , company , saveID , dataID ,
                                     defaultValue: stepOne.data.proxy_contact_person
                                 })
                             }),
-                            /*#__PURE__*/ jsx_runtime_.jsx("div", {
-                                className: (Form_module_default()).formRow,
-                                children: /*#__PURE__*/ jsx_runtime_.jsx(Input, {
+                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().formRow),
+                                children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_Input_Fields_Input__WEBPACK_IMPORTED_MODULE_2__/* ["default"] */ .Z, {
                                     name: "email",
                                     label: "E-mail",
                                     type: "email",
@@ -517,9 +440,9 @@ function Basic({ formStep , nextFormStep , stepOne , company , saveID , dataID ,
                                     defaultValue: stepOne.data.proxy_email
                                 })
                             }),
-                            /*#__PURE__*/ jsx_runtime_.jsx("div", {
-                                className: (Form_module_default()).formRow,
-                                children: /*#__PURE__*/ jsx_runtime_.jsx(Input, {
+                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().formRow),
+                                children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_Input_Fields_Input__WEBPACK_IMPORTED_MODULE_2__/* ["default"] */ .Z, {
                                     name: "phone",
                                     label: t("applyForm.stepOne.groupTwo.phone"),
                                     type: "tel",
@@ -530,114 +453,56 @@ function Basic({ formStep , nextFormStep , stepOne , company , saveID , dataID ,
                             })
                         ]
                     }),
-                    /*#__PURE__*/ jsx_runtime_.jsx("h2", {
-                        children: t("applyForm.stepOne.groupThree.title")
-                    }),
-                    /*#__PURE__*/ (0,jsx_runtime_.jsxs)("div", {
-                        className: (Form_module_default()).form,
+                    stepOne.data.base_option === "Y" ? /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().applyDefault),
                         children: [
-                            stepOne.data.invoice_title === "1" ? /*#__PURE__*/ (0,jsx_runtime_.jsxs)("div", {
-                                className: (Form_module_default()).addressGroup,
-                                children: [
-                                    /*#__PURE__*/ jsx_runtime_.jsx("div", {
-                                        children: /*#__PURE__*/ (0,jsx_runtime_.jsxs)("label", {
-                                            htmlFor: "company_address",
-                                            children: [
-                                                t("applyForm.stepOne.groupThree.asTheExhibitor"),
-                                                /*#__PURE__*/ jsx_runtime_.jsx("input", {
-                                                    type: "radio",
-                                                    id: "company_address",
-                                                    name: "drone",
-                                                    value: "1",
-                                                    defaultChecked: true
-                                                })
-                                            ]
-                                        })
-                                    }),
-                                    /*#__PURE__*/ jsx_runtime_.jsx("div", {
-                                        children: /*#__PURE__*/ (0,jsx_runtime_.jsxs)("label", {
-                                            htmlFor: "agent_address",
-                                            children: [
-                                                t("applyForm.stepOne.groupThree.asTheAgent"),
-                                                /*#__PURE__*/ jsx_runtime_.jsx("input", {
-                                                    type: "radio",
-                                                    id: "agent_address",
-                                                    name: "drone",
-                                                    value: "2"
-                                                })
-                                            ]
-                                        })
-                                    })
-                                ]
-                            }) : /*#__PURE__*/ (0,jsx_runtime_.jsxs)("div", {
-                                className: (Form_module_default()).addressGroup,
-                                children: [
-                                    /*#__PURE__*/ jsx_runtime_.jsx("div", {
-                                        children: /*#__PURE__*/ (0,jsx_runtime_.jsxs)("label", {
-                                            htmlFor: "company_address",
-                                            children: [
-                                                t("applyForm.stepOne.groupThree.asTheExhibitor"),
-                                                /*#__PURE__*/ jsx_runtime_.jsx("input", {
-                                                    type: "radio",
-                                                    id: "company_address",
-                                                    name: "drone",
-                                                    value: "1"
-                                                })
-                                            ]
-                                        })
-                                    }),
-                                    /*#__PURE__*/ jsx_runtime_.jsx("div", {
-                                        children: /*#__PURE__*/ (0,jsx_runtime_.jsxs)("label", {
-                                            htmlFor: "agent_address",
-                                            children: [
-                                                t("applyForm.stepOne.groupThree.asTheAgent"),
-                                                /*#__PURE__*/ jsx_runtime_.jsx("input", {
-                                                    type: "radio",
-                                                    id: "agent_address",
-                                                    name: "drone",
-                                                    value: "2",
-                                                    defaultChecked: true
-                                                })
-                                            ]
-                                        })
-                                    })
-                                ]
+                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                type: "checkbox",
+                                id: "chooseDefault",
+                                value: "useDefault",
+                                defaultChecked: true
                             }),
-                            /*#__PURE__*/ jsx_runtime_.jsx("div", {
-                                className: [
-                                    (Form_module_default()).formRow,
-                                    (Form_module_default()).address
-                                ].join(" "),
-                                children: /*#__PURE__*/ jsx_runtime_.jsx(Input, {
-                                    name: "address",
-                                    label: t("applyForm.stepOne.groupThree.invoiceAddress"),
-                                    type: "text",
-                                    placeholder: t("applyForm.stepOne.groupThree.invoicePlaceHolder"),
-                                    id: "address",
-                                    defaultValue: stepOne.data.invoice_address
-                                })
+                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
+                                htmlFor: "chooseDefault",
+                                children: t("applyForm.stepTwo.useDefault")
+                            })
+                        ]
+                    }) : /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().applyDefault),
+                        children: [
+                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                type: "checkbox",
+                                id: "chooseDefault",
+                                value: "useDefault"
                             }),
-                            /*#__PURE__*/ (0,jsx_runtime_.jsxs)("div", {
-                                className: [
-                                    (Form_module_default()).formRow,
-                                    (Form_module_default()).prepare
-                                ].join(" "),
-                                children: [
-                                    /*#__PURE__*/ jsx_runtime_.jsx("label", {
-                                        htmlFor: "prepare",
-                                        children: t("applyForm.stepOne.groupThree.remark")
-                                    }),
-                                    /*#__PURE__*/ jsx_runtime_.jsx("textarea", {
-                                        id: "remark",
-                                        defaultValue: stepOne.data.remark
-                                    })
-                                ]
+                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
+                                htmlFor: "chooseDefault",
+                                children: t("applyForm.stepTwo.useDefault")
                             })
                         ]
                     }),
-                    /*#__PURE__*/ jsx_runtime_.jsx("button", {
+                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().form),
+                        children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                            className: [
+                                (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().formRow),
+                                (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().prepare)
+                            ].join(" "),
+                            children: [
+                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
+                                    htmlFor: "prepare",
+                                    children: t("applyForm.stepOne.groupThree.remark")
+                                }),
+                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("textarea", {
+                                    id: "remark",
+                                    defaultValue: stepOne.data.remark
+                                })
+                            ]
+                        })
+                    }),
+                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("button", {
                         type: "submit",
-                        className: (Form_module_default()).firstNext,
+                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().firstNext),
                         children: t("applyForm.stepper.next")
                     })
                 ]
@@ -660,14 +525,16 @@ function Basic({ formStep , nextFormStep , stepOne , company , saveID , dataID ,
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(6689);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(3929);
-/* harmony import */ var _styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(3929);
+/* harmony import */ var _styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6__);
 /* harmony import */ var _unform_web__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(3732);
 /* harmony import */ var _unform_web__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_unform_web__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var react_slide_toggle__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(1635);
 /* harmony import */ var react_slide_toggle__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(react_slide_toggle__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var next_i18next__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(1377);
 /* harmony import */ var next_i18next__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(next_i18next__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _Input_Fields_Input__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(1144);
+
 
 
 
@@ -677,173 +544,148 @@ function Basic({ formStep , nextFormStep , stepOne , company , saveID , dataID ,
 function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
     const { t  } = (0,next_i18next__WEBPACK_IMPORTED_MODULE_4__.useTranslation)();
     const temporary = async ()=>{
-        const useDefault = document.getElementById("chooseDefault");
-        let items = [];
-        if (useDefault.checked) {
-            const options = {
-                method: "POST",
-                headers: {
-                    // cookie: "ci_session=9lejfn4cgisk4havru3sjg4s9e8aiqho",
-                    "Content-Type": "application/x-www-form-urlencoded"
-                },
-                body: new URLSearchParams({
-                    application_form_id: dataID,
-                    base_option: "Y",
-                    items: [],
-                    sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
-                })
-            };
-            await fetch(`${"https://ewsadm.taiwantradeshows.com.tw/api/"}setApplyHydroItems`, options).then((response)=>response.json()).then((response)=>console.log(response)).then(nextFormStep()).catch((err)=>console.error(err));
-        } else {
-            const checkBoxsOne = document.querySelectorAll(".Form_aGroup__FN6oc input[type='checkbox']");
-            const checkBoxsTwo = document.querySelectorAll(".Form_bGroup__4aN8N input[type='checkbox']");
-            for (let check of checkBoxsOne){
-                if (check.checked) {
-                    items.push({
-                        item_id: check.value,
-                        quantity: "1"
-                    });
-                }
+        let invoice = "";
+        const radios = document.querySelectorAll('input[name="drone"]');
+        for (let radio of radios){
+            if (radio.checked) {
+                invoice = radio.value;
             }
-            for (let check1 of checkBoxsTwo){
-                if (check1.checked) {
-                    let num = check1.nextSibling.nextSibling.childNodes[1];
-                    items.push({
-                        item_id: check1.value,
-                        quantity: num.value
-                    });
-                }
-            }
-            const options1 = {
-                method: "POST",
-                headers: {
-                    // cookie: "ci_session=9lejfn4cgisk4havru3sjg4s9e8aiqho",
-                    "Content-Type": "application/x-www-form-urlencoded"
-                },
-                body: new URLSearchParams({
-                    application_form_id: dataID,
-                    base_option: "N",
-                    items: JSON.stringify(items),
-                    sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
-                })
-            };
-            await fetch(`${"https://ewsadm.taiwantradeshows.com.tw/api/"}setApplyHydroItems`, options1).then((response)=>response.json()).then((response)=>{
-                console.log(response);
-                alert("success");
-            }).catch((err)=>console.error(err));
         }
+        let address = document.getElementById("address").value;
+        let items = [];
+        const checkBoxsOne = document.querySelectorAll(".Form_aGroup__FN6oc input[type='checkbox']");
+        const checkBoxsTwo = document.querySelectorAll(".Form_bGroup__4aN8N input[type='checkbox']");
+        for (let check of checkBoxsOne){
+            if (check.checked) {
+                items.push({
+                    item_id: check.value,
+                    quantity: "1"
+                });
+            }
+        }
+        for (let check1 of checkBoxsTwo){
+            if (check1.checked) {
+                let num = check1.nextSibling.nextSibling.childNodes[1];
+                items.push({
+                    item_id: check1.value,
+                    quantity: num.value
+                });
+            }
+        }
+        const options = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: new URLSearchParams({
+                application_form_id: dataID,
+                invoice: invoice,
+                invoice_address: address,
+                items: JSON.stringify(items),
+                sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
+            })
+        };
+        await fetch(`${"https://ewsadm.taiwantradeshows.com.tw/api/"}setApplyHydroItems`, options).then((response)=>response.json()).then((response)=>{
+            console.log(response);
+            alert("success");
+        }).catch((err)=>console.error(err));
     };
-    async function handleSubmit() {
-        const useDefault = document.getElementById("chooseDefault");
-        let items = [];
-        if (useDefault.checked) {
-            const options = {
-                method: "POST",
-                headers: {
-                    // cookie: "ci_session=9lejfn4cgisk4havru3sjg4s9e8aiqho",
-                    "Content-Type": "application/x-www-form-urlencoded"
-                },
-                body: new URLSearchParams({
-                    application_form_id: dataID,
-                    base_option: "Y",
-                    items: [],
-                    sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
-                })
-            };
-            await fetch(`${"https://ewsadm.taiwantradeshows.com.tw/api/"}setApplyHydroItems`, options).then((response)=>response.json()).then((response)=>console.log(response)).then(nextFormStep()).catch((err)=>console.error(err));
-        } else {
-            const checkBoxsOne = document.querySelectorAll(".Form_aGroup__FN6oc input[type='checkbox']");
-            const checkBoxsTwo = document.querySelectorAll(".Form_bGroup__4aN8N input[type='checkbox']");
-            for (let check of checkBoxsOne){
-                if (check.checked) {
-                    items.push({
-                        item_id: check.value,
-                        quantity: "1"
-                    });
-                }
-            }
-            for (let check1 of checkBoxsTwo){
-                if (check1.checked) {
-                    let num = check1.nextSibling.nextSibling.childNodes[1];
-                    if (num.value === "0" || num.value === "") {
-                        alert("請填入數量");
-                    } else {
-                        items.push({
-                            item_id: check1.value,
-                            quantity: num.value
-                        });
-                    }
-                }
-            }
-            if (items.length !== 0) {
-                const options1 = {
-                    method: "POST",
-                    headers: {
-                        // cookie: "ci_session=9lejfn4cgisk4havru3sjg4s9e8aiqho",
-                        "Content-Type": "application/x-www-form-urlencoded"
-                    },
-                    body: new URLSearchParams({
-                        application_form_id: dataID,
-                        base_option: "N",
-                        items: JSON.stringify(items),
-                        sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
-                    })
-                };
-                await fetch(`${"https://ewsadm.taiwantradeshows.com.tw/api/"}setApplyHydroItems`, options1).then((response)=>response.json()).then((response)=>console.log(response)).then(nextFormStep()).catch((err)=>console.error(err));
+    async function handleSubmit(data) {
+        console.log(data);
+        let invoice = "";
+        const radios = document.querySelectorAll('input[name="drone"]');
+        for (let radio of radios){
+            if (radio.checked) {
+                invoice = radio.value;
             }
         }
+        let items = [];
+        const checkBoxsOne = document.querySelectorAll(".Form_aGroup__FN6oc input[type='checkbox']");
+        const checkBoxsTwo = document.querySelectorAll(".Form_bGroup__4aN8N input[type='checkbox']");
+        for (let check of checkBoxsOne){
+            if (check.checked) {
+                items.push({
+                    item_id: check.value,
+                    quantity: "1"
+                });
+            }
+        }
+        for (let check1 of checkBoxsTwo){
+            if (check1.checked) {
+                let num = check1.nextSibling.nextSibling.childNodes[1];
+                items.push({
+                    item_id: check1.value,
+                    quantity: num.value
+                });
+            }
+        }
+        const options = {
+            method: "POST",
+            headers: {
+                // cookie: "ci_session=9lejfn4cgisk4havru3sjg4s9e8aiqho",
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: new URLSearchParams({
+                application_form_id: dataID,
+                items: JSON.stringify(items),
+                invoice: invoice,
+                invoice_address: data.address,
+                sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
+            })
+        };
+        await fetch(`${"https://ewsadm.taiwantradeshows.com.tw/api/"}setApplyHydroItems`, options).then((response)=>response.json()).then((response)=>console.log(response)).then(nextFormStep()).catch((err)=>console.error(err));
     }
     const active = (e)=>{
-        const useDefault = document.getElementById("chooseDefault");
-        useDefault.checked = false;
         if (e.target.checked) {
-            e.target.parentNode.className = (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().checkedActive);
+            e.target.parentNode.className = (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().checkedActive);
         } else {
             e.target.parentNode.className = "";
         }
     };
     const enableNextTextBox = (e)=>{
-        const useDefault = document.getElementById("chooseDefault");
-        useDefault.checked = false;
         if (e.target.checked) {
             e.target.nextSibling.nextSibling.childNodes[1].removeAttribute("disabled");
-            e.target.parentNode.className = (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().checkedActive);
+            e.target.parentNode.className = (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().checkedActive);
         } else {
             e.target.nextSibling.nextSibling.childNodes[1].setAttribute("disabled", "");
             e.target.nextSibling.nextSibling.childNodes[1].value = 0;
             e.target.parentNode.className = "";
         }
     };
-    const handleDefault = (e)=>{
-        const checkBoxsOne = document.querySelectorAll(".Form_aGroup__FN6oc input[type='checkbox']");
-        const checkBoxsTwo = document.querySelectorAll(".Form_bGroup__4aN8N input");
-        if (e.target.checked) {
-            for (let check of checkBoxsOne){
-                if (check.checked) {
-                    check.checked = false;
-                    check.parentNode.className = "";
-                }
-            }
-            for (let check1 of checkBoxsTwo){
-                if (check1.checked) {
-                    check1.checked = false;
-                    check1.parentNode.className = "";
-                }
-                if (check1.type === "number") {
-                    check1.value = 0;
-                    check1.setAttribute("disabled", "");
-                }
-            }
-        }
-    };
+    // const handleDefault = (e) => {
+    //     const checkBoxsOne = document.querySelectorAll(
+    //         ".Form_aGroup__FN6oc input[type='checkbox']"
+    //     );
+    //     const checkBoxsTwo = document.querySelectorAll(
+    //         ".Form_bGroup__4aN8N input"
+    //     );
+    //     if (e.target.checked) {
+    //         for (let check of checkBoxsOne) {
+    //             if (check.checked) {
+    //                 check.checked = false;
+    //                 check.parentNode.className = "";
+    //             }
+    //         }
+    //         for (let check of checkBoxsTwo) {
+    //             if (check.checked) {
+    //                 check.checked = false;
+    //                 check.parentNode.className = "";
+    //             }
+    //             if (check.type === "number") {
+    //                 check.value = 0;
+    //                 check.setAttribute("disabled", "");
+    //             }
+    //         }
+    //     }
+    // };
     return /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
         className: [
-            (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().form),
-            formStep === 1 ? (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().showForm) : (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().hideForm), 
+            (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().form),
+            formStep === 1 ? (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().showForm) : (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().hideForm), 
         ].join(" "),
         children: [
             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("button", {
-                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().temporary),
+                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().temporary),
                 onClick: temporary,
                 children: t("applyForm.stepper.save")
             }),
@@ -854,37 +696,21 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                         children: t("applyForm.stepTwo.title")
                     }),
                     /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().applyDefault),
-                        children: [
-                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
-                                type: "checkbox",
-                                id: "chooseDefault",
-                                value: "useDefault",
-                                onChange: handleDefault,
-                                defaultChecked: true
-                            }),
-                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
-                                htmlFor: "chooseDefault",
-                                children: t("applyForm.stepTwo.useDefault")
-                            })
-                        ]
-                    }),
-                    /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().applyCheckBox),
+                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().applyCheckBox),
                         children: [
                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx((react_slide_toggle__WEBPACK_IMPORTED_MODULE_3___default()), {
                                 duration: 1000,
                                 collapsed: true,
                                 whenReversedUseBackwardEase: false,
                                 render: ({ toggle , setCollapsibleElement , toggleState ,  })=>/*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().card),
+                                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().card),
                                         children: [
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
                                                 className: "card-header",
                                                 children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
                                                     className: [
-                                                        (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().dropDown),
-                                                        toggleState === "COLLAPSED" ? (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().dropDown) : (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().active), 
+                                                        (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().dropDown),
+                                                        toggleState === "COLLAPSED" ? (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().dropDown) : (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().active), 
                                                     ].join(" "),
                                                     onClick: toggle,
                                                     children: [
@@ -918,16 +744,16 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                                                 })
                                             }),
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().cardBody),
+                                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().cardBody),
                                                 ref: setCollapsibleElement,
                                                 children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                                    className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().dropDownContent),
+                                                    className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().dropDownContent),
                                                     children: [
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
                                                             children: t("applyForm.stepTwo.itemA")
                                                         }),
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                                                            className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().aGroup),
+                                                            className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().aGroup),
                                                             children: priceData.items[0].data.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
                                                                     children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
                                                                         htmlFor: item.item_id,
@@ -947,7 +773,7 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                                                                                 ]
                                                                             })
                                                                         ]
-                                                                    })
+                                                                    }, item.item_id)
                                                                 }))
                                                         })
                                                     ]
@@ -961,14 +787,14 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                                 collapsed: true,
                                 whenReversedUseBackwardEase: false,
                                 render: ({ toggle , setCollapsibleElement , toggleState ,  })=>/*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().card),
+                                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().card),
                                         children: [
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
                                                 className: "card-header",
                                                 children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
                                                     className: [
-                                                        (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().dropDown),
-                                                        toggleState === "COLLAPSED" ? (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().dropDown) : (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().active), 
+                                                        (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().dropDown),
+                                                        toggleState === "COLLAPSED" ? (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().dropDown) : (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().active), 
                                                     ].join(" "),
                                                     onClick: toggle,
                                                     children: [
@@ -1002,16 +828,16 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                                                 })
                                             }),
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().cardBody),
+                                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().cardBody),
                                                 ref: setCollapsibleElement,
                                                 children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                                    className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().dropDownContent),
+                                                    className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().dropDownContent),
                                                     children: [
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
                                                             children: t("applyForm.stepTwo.itemBCD")
                                                         }),
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                                                            className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().bGroup),
+                                                            className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().bGroup),
                                                             children: priceData.items[1].data.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
                                                                     children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
                                                                         htmlFor: item.item_id,
@@ -1024,7 +850,7 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                                                                             }),
                                                                             item.name,
                                                                             /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                                                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().num),
+                                                                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().num),
                                                                                 children: [
                                                                                     t("applyForm.stepTwo.quantity"),
                                                                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
@@ -1044,7 +870,7 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                                                                                 ]
                                                                             })
                                                                         ]
-                                                                    })
+                                                                    }, item.item_id)
                                                                 }))
                                                         })
                                                     ]
@@ -1058,14 +884,14 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                                 collapsed: true,
                                 whenReversedUseBackwardEase: false,
                                 render: ({ toggle , setCollapsibleElement , toggleState ,  })=>/*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().card),
+                                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().card),
                                         children: [
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
                                                 className: "card-header",
                                                 children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
                                                     className: [
-                                                        (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().dropDown),
-                                                        toggleState === "COLLAPSED" ? (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().dropDown) : (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().active), 
+                                                        (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().dropDown),
+                                                        toggleState === "COLLAPSED" ? (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().dropDown) : (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().active), 
                                                     ].join(" "),
                                                     onClick: toggle,
                                                     children: [
@@ -1099,16 +925,16 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                                                 })
                                             }),
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().cardBody),
+                                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().cardBody),
                                                 ref: setCollapsibleElement,
                                                 children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                                    className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().dropDownContent),
+                                                    className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().dropDownContent),
                                                     children: [
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
                                                             children: t("applyForm.stepTwo.itemBCD")
                                                         }),
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                                                            className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().bGroup),
+                                                            className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().bGroup),
                                                             children: priceData.items[2].data.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
                                                                     children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
                                                                         htmlFor: item.item_id,
@@ -1121,7 +947,7 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                                                                             }),
                                                                             item.name,
                                                                             /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                                                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().num),
+                                                                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().num),
                                                                                 children: [
                                                                                     t("applyForm.stepTwo.quantity"),
                                                                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
@@ -1141,7 +967,7 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                                                                                 ]
                                                                             })
                                                                         ]
-                                                                    })
+                                                                    }, item.item_id)
                                                                 }))
                                                         })
                                                     ]
@@ -1155,18 +981,18 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                                 collapsed: true,
                                 whenReversedUseBackwardEase: false,
                                 render: ({ toggle , setCollapsibleElement , toggleState ,  })=>/*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().card),
+                                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().card),
                                         children: [
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
                                                 className: "card-header",
                                                 children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
                                                     className: [
-                                                        (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().dropDown),
-                                                        toggleState === "COLLAPSED" ? (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().dropDown) : (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().active), 
+                                                        (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().dropDown),
+                                                        toggleState === "COLLAPSED" ? (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().dropDown) : (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().active), 
                                                     ].join(" "),
                                                     onClick: toggle,
                                                     children: [
-                                                        "D. 24小時用電",
+                                                        "D. 用電440V電源箱",
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("span", {
                                                             children: toggleState === "EXPANDED" || toggleState === "EXPANDING" ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("svg", {
                                                                 width: "16",
@@ -1196,16 +1022,79 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                                                 })
                                             }),
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().cardBody),
+                                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().cardBody),
                                                 ref: setCollapsibleElement,
                                                 children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                                    className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().dropDownContent),
+                                                    className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().dropDownContent),
                                                     children: [
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
                                                             children: t("applyForm.stepTwo.itemBCD")
                                                         }),
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                                                            className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().bGroup),
+                                                            className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().bGroup)
+                                                        })
+                                                    ]
+                                                })
+                                            })
+                                        ]
+                                    })
+                            }),
+                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx((react_slide_toggle__WEBPACK_IMPORTED_MODULE_3___default()), {
+                                duration: 1000,
+                                collapsed: true,
+                                whenReversedUseBackwardEase: false,
+                                render: ({ toggle , setCollapsibleElement , toggleState ,  })=>/*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().card),
+                                        children: [
+                                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                                className: "card-header",
+                                                children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                    className: [
+                                                        (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().dropDown),
+                                                        toggleState === "COLLAPSED" ? (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().dropDown) : (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().active), 
+                                                    ].join(" "),
+                                                    onClick: toggle,
+                                                    children: [
+                                                        "E. 24小時用電",
+                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("span", {
+                                                            children: toggleState === "EXPANDED" || toggleState === "EXPANDING" ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("svg", {
+                                                                width: "16",
+                                                                height: "10",
+                                                                viewBox: "0 0 16 10",
+                                                                fill: "none",
+                                                                xmlns: "http://www.w3.org/2000/svg",
+                                                                children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("path", {
+                                                                    d: "M1 9L8 2L15 9",
+                                                                    stroke: "white",
+                                                                    strokeWidth: "2"
+                                                                })
+                                                            }) : /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("svg", {
+                                                                width: "16",
+                                                                height: "10",
+                                                                viewBox: "0 0 16 10",
+                                                                fill: "none",
+                                                                xmlns: "http://www.w3.org/2000/svg",
+                                                                children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("path", {
+                                                                    d: "M15 1L8 8L1 1",
+                                                                    stroke: "white",
+                                                                    strokeWidth: "2"
+                                                                })
+                                                            })
+                                                        })
+                                                    ]
+                                                })
+                                            }),
+                                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().cardBody),
+                                                ref: setCollapsibleElement,
+                                                children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                                                    className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().dropDownContent),
+                                                    children: [
+                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
+                                                            children: t("applyForm.stepTwo.itemBCD")
+                                                        }),
+                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                                            className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().bGroup),
                                                             children: priceData.items[3].data.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
                                                                     children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
                                                                         htmlFor: item.item_id,
@@ -1218,7 +1107,7 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                                                                             }),
                                                                             item.name,
                                                                             /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                                                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().num),
+                                                                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().num),
                                                                                 children: [
                                                                                     t("applyForm.stepTwo.quantity"),
                                                                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
@@ -1238,7 +1127,7 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                                                                                 ]
                                                                             })
                                                                         ]
-                                                                    })
+                                                                    }, item.item_id)
                                                                 }))
                                                         })
                                                     ]
@@ -1252,18 +1141,18 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                                 collapsed: true,
                                 whenReversedUseBackwardEase: false,
                                 render: ({ toggle , setCollapsibleElement , toggleState ,  })=>/*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().card),
+                                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().card),
                                         children: [
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
                                                 className: "card-header",
                                                 children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
                                                     className: [
-                                                        (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().dropDown),
-                                                        toggleState === "COLLAPSED" ? (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().dropDown) : (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().active), 
+                                                        (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().dropDown),
+                                                        toggleState === "COLLAPSED" ? (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().dropDown) : (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().active), 
                                                     ].join(" "),
                                                     onClick: toggle,
                                                     children: [
-                                                        "E. 給排水管",
+                                                        "F. 給排水管",
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("span", {
                                                             children: toggleState === "EXPANDED" || toggleState === "EXPANDING" ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("svg", {
                                                                 width: "16",
@@ -1293,16 +1182,16 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                                                 })
                                             }),
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().cardBody),
+                                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().cardBody),
                                                 ref: setCollapsibleElement,
                                                 children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                                    className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().dropDownContent),
+                                                    className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().dropDownContent),
                                                     children: [
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
                                                             children: t("applyForm.stepTwo.itemE")
                                                         }),
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                                                            className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().bGroup),
+                                                            className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().bGroup),
                                                             children: priceData.items[4].data.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
                                                                     children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
                                                                         htmlFor: item.item_id,
@@ -1315,7 +1204,7 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                                                                             }),
                                                                             item.name,
                                                                             /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                                                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().num),
+                                                                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().num),
                                                                                 children: [
                                                                                     t("applyForm.stepTwo.quantity"),
                                                                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
@@ -1335,7 +1224,7 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                                                                                 ]
                                                                             })
                                                                         ]
-                                                                    })
+                                                                    }, item.item_id)
                                                                 }))
                                                         })
                                                     ]
@@ -1349,18 +1238,18 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                                 collapsed: true,
                                 whenReversedUseBackwardEase: false,
                                 render: ({ toggle , setCollapsibleElement , toggleState ,  })=>/*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().card),
+                                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().card),
                                         children: [
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
                                                 className: "card-header",
                                                 children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
                                                     className: [
-                                                        (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().dropDown),
-                                                        toggleState === "COLLAPSED" ? (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().dropDown) : (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().active), 
+                                                        (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().dropDown),
+                                                        toggleState === "COLLAPSED" ? (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().dropDown) : (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().active), 
                                                     ].join(" "),
                                                     onClick: toggle,
                                                     children: [
-                                                        "F. 壓縮空氣",
+                                                        "G. 壓縮空氣",
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("span", {
                                                             children: toggleState === "EXPANDED" || toggleState === "EXPANDING" ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("svg", {
                                                                 width: "16",
@@ -1390,16 +1279,16 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                                                 })
                                             }),
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().cardBody),
+                                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().cardBody),
                                                 ref: setCollapsibleElement,
                                                 children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                                    className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().dropDownContent),
+                                                    className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().dropDownContent),
                                                     children: [
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
                                                             children: t("applyForm.stepTwo.itemF")
                                                         }),
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                                                            className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().bGroup),
+                                                            className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().bGroup),
                                                             children: priceData.items[5].data.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
                                                                     children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
                                                                         htmlFor: item.item_id,
@@ -1412,7 +1301,7 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                                                                             }),
                                                                             item.name,
                                                                             /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                                                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().num),
+                                                                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().num),
                                                                                 children: [
                                                                                     t("applyForm.stepTwo.quantity"),
                                                                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
@@ -1432,7 +1321,7 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                                                                                 ]
                                                                             })
                                                                         ]
-                                                                    })
+                                                                    }, item.item_id)
                                                                 }))
                                                         })
                                                     ]
@@ -1443,9 +1332,63 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                             })
                         ]
                     }),
+                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("h2", {
+                        children: t("applyForm.stepOne.groupThree.title")
+                    }),
+                    /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().form),
+                        children: [
+                            /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().addressGroup),
+                                children: [
+                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                        children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                            htmlFor: "company_address",
+                                            children: [
+                                                t("applyForm.stepOne.groupThree.asTheExhibitor"),
+                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                    type: "radio",
+                                                    id: "company_address",
+                                                    name: "drone",
+                                                    value: "1"
+                                                })
+                                            ]
+                                        })
+                                    }),
+                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                        children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                            htmlFor: "agent_address",
+                                            children: [
+                                                t("applyForm.stepOne.groupThree.asTheAgent"),
+                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                    type: "radio",
+                                                    id: "agent_address",
+                                                    name: "drone",
+                                                    value: "2"
+                                                })
+                                            ]
+                                        })
+                                    })
+                                ]
+                            }),
+                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                className: [
+                                    (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().formRow),
+                                    (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().address)
+                                ].join(" "),
+                                children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_Input_Fields_Input__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .Z, {
+                                    name: "address",
+                                    label: t("applyForm.stepOne.groupThree.invoiceAddress"),
+                                    type: "text",
+                                    placeholder: t("applyForm.stepOne.groupThree.invoicePlaceHolder"),
+                                    id: "address"
+                                })
+                            })
+                        ]
+                    }),
                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("button", {
                         type: "submit",
-                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().next),
+                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().next),
                         children: t("applyForm.stepper.next")
                     })
                 ]
@@ -1456,36 +1399,21 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                         children: t("applyForm.stepTwo.title")
                     }),
                     /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().applyDefault),
-                        children: [
-                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
-                                type: "checkbox",
-                                id: "chooseDefault",
-                                value: "useDefault",
-                                onChange: handleDefault
-                            }),
-                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
-                                htmlFor: "chooseDefault",
-                                children: t("applyForm.stepTwo.useDefault")
-                            })
-                        ]
-                    }),
-                    /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().applyCheckBox),
+                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().applyCheckBox),
                         children: [
                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx((react_slide_toggle__WEBPACK_IMPORTED_MODULE_3___default()), {
                                 duration: 1000,
                                 collapsed: true,
                                 whenReversedUseBackwardEase: false,
                                 render: ({ toggle , setCollapsibleElement , toggleState ,  })=>/*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().card),
+                                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().card),
                                         children: [
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
                                                 className: "card-header",
                                                 children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
                                                     className: [
-                                                        (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().dropDown),
-                                                        toggleState === "COLLAPSED" ? (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().dropDown) : (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().active), 
+                                                        (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().dropDown),
+                                                        toggleState === "COLLAPSED" ? (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().dropDown) : (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().active), 
                                                     ].join(" "),
                                                     onClick: toggle,
                                                     children: [
@@ -1519,31 +1447,25 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                                                 })
                                             }),
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().cardBody),
+                                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().cardBody),
                                                 ref: setCollapsibleElement,
                                                 children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                                    className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().dropDownContent),
+                                                    className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().dropDownContent),
                                                     children: [
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
-                                                            children: t("applyForm.stepTwo.itemA").replace("/\r\n|\r|\n/", "<br />")
+                                                            children: t("applyForm.stepTwo.itemA")
                                                         }),
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                                                            className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().aGroup),
-                                                            children: stepTwo.items[0].data.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
-                                                                    children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                            className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().aGroup),
+                                                            children: priceData.items[0].data.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+                                                                    children: item.chk === "N" ? /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
                                                                         htmlFor: item.item_id,
                                                                         children: [
-                                                                            item.chk === "N" ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
                                                                                 type: "checkbox",
                                                                                 id: item.item_id,
                                                                                 value: item.item_id,
                                                                                 onChange: active
-                                                                            }) : /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
-                                                                                type: "checkbox",
-                                                                                id: item.item_id,
-                                                                                value: item.item_id,
-                                                                                onChange: active,
-                                                                                defaultChecked: true
                                                                             }),
                                                                             item.name,
                                                                             /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("span", {
@@ -1554,7 +1476,26 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                                                                                 ]
                                                                             })
                                                                         ]
-                                                                    })
+                                                                    }, item.item_id) : /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                        htmlFor: item.item_id,
+                                                                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().checkedActive),
+                                                                        children: [
+                                                                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                                                type: "checkbox",
+                                                                                id: item.item_id,
+                                                                                value: item.item_id,
+                                                                                onChange: active
+                                                                            }),
+                                                                            item.name,
+                                                                            /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("span", {
+                                                                                children: [
+                                                                                    "$",
+                                                                                    " ",
+                                                                                    item.prcie
+                                                                                ]
+                                                                            })
+                                                                        ]
+                                                                    }, item.item_id)
                                                                 }))
                                                         })
                                                     ]
@@ -1568,14 +1509,14 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                                 collapsed: true,
                                 whenReversedUseBackwardEase: false,
                                 render: ({ toggle , setCollapsibleElement , toggleState ,  })=>/*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().card),
+                                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().card),
                                         children: [
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
                                                 className: "card-header",
                                                 children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
                                                     className: [
-                                                        (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().dropDown),
-                                                        toggleState === "COLLAPSED" ? (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().dropDown) : (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().active), 
+                                                        (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().dropDown),
+                                                        toggleState === "COLLAPSED" ? (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().dropDown) : (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().active), 
                                                     ].join(" "),
                                                     onClick: toggle,
                                                     children: [
@@ -1609,44 +1550,35 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                                                 })
                                             }),
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().cardBody),
+                                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().cardBody),
                                                 ref: setCollapsibleElement,
                                                 children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                                    className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().dropDownContent),
+                                                    className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().dropDownContent),
                                                     children: [
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
                                                             children: t("applyForm.stepTwo.itemBCD")
                                                         }),
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                                                            className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().bGroup),
-                                                            children: stepTwo.items[1].data.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+                                                            className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().bGroup),
+                                                            children: priceData.items[1].data.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
                                                                     children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
                                                                         htmlFor: item.item_id,
                                                                         children: [
-                                                                            item.chk === "N" ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
                                                                                 type: "checkbox",
                                                                                 id: item.item_id,
                                                                                 value: item.item_id,
                                                                                 onChange: enableNextTextBox
-                                                                            }) : /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
-                                                                                type: "checkbox",
-                                                                                id: item.item_id,
-                                                                                value: item.item_id,
-                                                                                onChange: enableNextTextBox,
-                                                                                defaultChecked: true
                                                                             }),
                                                                             item.name,
                                                                             /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                                                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().num),
+                                                                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().num),
                                                                                 children: [
                                                                                     t("applyForm.stepTwo.quantity"),
-                                                                                    item.quantity === "" ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
                                                                                         type: "number",
                                                                                         min: "0",
                                                                                         disabled: true
-                                                                                    }) : /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
-                                                                                        type: "number",
-                                                                                        min: item.quantity.toString()
                                                                                     })
                                                                                 ]
                                                                             }),
@@ -1660,7 +1592,7 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                                                                                 ]
                                                                             })
                                                                         ]
-                                                                    })
+                                                                    }, item.item_id)
                                                                 }))
                                                         })
                                                     ]
@@ -1674,14 +1606,14 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                                 collapsed: true,
                                 whenReversedUseBackwardEase: false,
                                 render: ({ toggle , setCollapsibleElement , toggleState ,  })=>/*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().card),
+                                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().card),
                                         children: [
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
                                                 className: "card-header",
                                                 children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
                                                     className: [
-                                                        (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().dropDown),
-                                                        toggleState === "COLLAPSED" ? (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().dropDown) : (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().active), 
+                                                        (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().dropDown),
+                                                        toggleState === "COLLAPSED" ? (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().dropDown) : (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().active), 
                                                     ].join(" "),
                                                     onClick: toggle,
                                                     children: [
@@ -1715,44 +1647,35 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                                                 })
                                             }),
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().cardBody),
+                                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().cardBody),
                                                 ref: setCollapsibleElement,
                                                 children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                                    className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().dropDownContent),
+                                                    className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().dropDownContent),
                                                     children: [
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
                                                             children: t("applyForm.stepTwo.itemBCD")
                                                         }),
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                                                            className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().bGroup),
-                                                            children: stepTwo.items[2].data.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+                                                            className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().bGroup),
+                                                            children: priceData.items[2].data.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
                                                                     children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
                                                                         htmlFor: item.item_id,
                                                                         children: [
-                                                                            item.chk === "N" ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
                                                                                 type: "checkbox",
                                                                                 id: item.item_id,
                                                                                 value: item.item_id,
                                                                                 onChange: enableNextTextBox
-                                                                            }) : /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
-                                                                                type: "checkbox",
-                                                                                id: item.item_id,
-                                                                                value: item.item_id,
-                                                                                onChange: enableNextTextBox,
-                                                                                defaultChecked: true
                                                                             }),
                                                                             item.name,
                                                                             /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                                                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().num),
+                                                                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().num),
                                                                                 children: [
                                                                                     t("applyForm.stepTwo.quantity"),
-                                                                                    item.quantity === "" ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
                                                                                         type: "number",
                                                                                         min: "0",
                                                                                         disabled: true
-                                                                                    }) : /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
-                                                                                        type: "number",
-                                                                                        min: item.quantity.toString()
                                                                                     })
                                                                                 ]
                                                                             }),
@@ -1766,7 +1689,7 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                                                                                 ]
                                                                             })
                                                                         ]
-                                                                    })
+                                                                    }, item.item_id)
                                                                 }))
                                                         })
                                                     ]
@@ -1780,18 +1703,18 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                                 collapsed: true,
                                 whenReversedUseBackwardEase: false,
                                 render: ({ toggle , setCollapsibleElement , toggleState ,  })=>/*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().card),
+                                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().card),
                                         children: [
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
                                                 className: "card-header",
                                                 children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
                                                     className: [
-                                                        (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().dropDown),
-                                                        toggleState === "COLLAPSED" ? (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().dropDown) : (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().active), 
+                                                        (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().dropDown),
+                                                        toggleState === "COLLAPSED" ? (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().dropDown) : (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().active), 
                                                     ].join(" "),
                                                     onClick: toggle,
                                                     children: [
-                                                        "D. 24小時用電",
+                                                        "D. 用電440V電源箱",
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("span", {
                                                             children: toggleState === "EXPANDED" || toggleState === "EXPANDING" ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("svg", {
                                                                 width: "16",
@@ -1821,59 +1744,16 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                                                 })
                                             }),
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().cardBody),
+                                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().cardBody),
                                                 ref: setCollapsibleElement,
                                                 children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                                    className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().dropDownContent),
+                                                    className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().dropDownContent),
                                                     children: [
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
                                                             children: t("applyForm.stepTwo.itemBCD")
                                                         }),
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                                                            className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().bGroup),
-                                                            children: stepTwo.items[3].data.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
-                                                                    children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                                                        htmlFor: item.item_id,
-                                                                        children: [
-                                                                            item.chk === "N" ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
-                                                                                type: "checkbox",
-                                                                                id: item.item_id,
-                                                                                value: item.item_id,
-                                                                                onChange: enableNextTextBox
-                                                                            }) : /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
-                                                                                type: "checkbox",
-                                                                                id: item.item_id,
-                                                                                value: item.item_id,
-                                                                                onChange: enableNextTextBox,
-                                                                                defaultChecked: true
-                                                                            }),
-                                                                            item.name,
-                                                                            /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                                                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().num),
-                                                                                children: [
-                                                                                    t("applyForm.stepTwo.quantity"),
-                                                                                    item.quantity === "" ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
-                                                                                        type: "number",
-                                                                                        min: "0",
-                                                                                        disabled: true
-                                                                                    }) : /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
-                                                                                        type: "number",
-                                                                                        min: item.quantity.toString()
-                                                                                    })
-                                                                                ]
-                                                                            }),
-                                                                            /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("span", {
-                                                                                children: [
-                                                                                    "$",
-                                                                                    " ",
-                                                                                    item.prcie,
-                                                                                    "/",
-                                                                                    t("applyForm.stepTwo.set")
-                                                                                ]
-                                                                            })
-                                                                        ]
-                                                                    })
-                                                                }))
+                                                            className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().bGroup)
                                                         })
                                                     ]
                                                 })
@@ -1886,18 +1766,18 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                                 collapsed: true,
                                 whenReversedUseBackwardEase: false,
                                 render: ({ toggle , setCollapsibleElement , toggleState ,  })=>/*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().card),
+                                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().card),
                                         children: [
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
                                                 className: "card-header",
                                                 children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
                                                     className: [
-                                                        (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().dropDown),
-                                                        toggleState === "COLLAPSED" ? (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().dropDown) : (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().active), 
+                                                        (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().dropDown),
+                                                        toggleState === "COLLAPSED" ? (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().dropDown) : (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().active), 
                                                     ].join(" "),
                                                     onClick: toggle,
                                                     children: [
-                                                        "E. 給排水管",
+                                                        "E. 24小時用電",
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("span", {
                                                             children: toggleState === "EXPANDED" || toggleState === "EXPANDING" ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("svg", {
                                                                 width: "16",
@@ -1927,44 +1807,132 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                                                 })
                                             }),
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().cardBody),
+                                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().cardBody),
                                                 ref: setCollapsibleElement,
                                                 children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                                    className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().dropDownContent),
+                                                    className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().dropDownContent),
+                                                    children: [
+                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
+                                                            children: t("applyForm.stepTwo.itemBCD")
+                                                        }),
+                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                                            className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().bGroup),
+                                                            children: priceData.items[3].data.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+                                                                    children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                        htmlFor: item.item_id,
+                                                                        children: [
+                                                                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                                                type: "checkbox",
+                                                                                id: item.item_id,
+                                                                                value: item.item_id,
+                                                                                onChange: enableNextTextBox
+                                                                            }),
+                                                                            item.name,
+                                                                            /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().num),
+                                                                                children: [
+                                                                                    t("applyForm.stepTwo.quantity"),
+                                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                                                        type: "number",
+                                                                                        min: "0",
+                                                                                        disabled: true
+                                                                                    })
+                                                                                ]
+                                                                            }),
+                                                                            /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("span", {
+                                                                                children: [
+                                                                                    "$",
+                                                                                    " ",
+                                                                                    item.prcie,
+                                                                                    "/",
+                                                                                    t("applyForm.stepTwo.set")
+                                                                                ]
+                                                                            })
+                                                                        ]
+                                                                    }, item.item_id)
+                                                                }))
+                                                        })
+                                                    ]
+                                                })
+                                            })
+                                        ]
+                                    })
+                            }),
+                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx((react_slide_toggle__WEBPACK_IMPORTED_MODULE_3___default()), {
+                                duration: 1000,
+                                collapsed: true,
+                                whenReversedUseBackwardEase: false,
+                                render: ({ toggle , setCollapsibleElement , toggleState ,  })=>/*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().card),
+                                        children: [
+                                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                                className: "card-header",
+                                                children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                    className: [
+                                                        (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().dropDown),
+                                                        toggleState === "COLLAPSED" ? (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().dropDown) : (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().active), 
+                                                    ].join(" "),
+                                                    onClick: toggle,
+                                                    children: [
+                                                        "F. 給排水管",
+                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("span", {
+                                                            children: toggleState === "EXPANDED" || toggleState === "EXPANDING" ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("svg", {
+                                                                width: "16",
+                                                                height: "10",
+                                                                viewBox: "0 0 16 10",
+                                                                fill: "none",
+                                                                xmlns: "http://www.w3.org/2000/svg",
+                                                                children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("path", {
+                                                                    d: "M1 9L8 2L15 9",
+                                                                    stroke: "white",
+                                                                    strokeWidth: "2"
+                                                                })
+                                                            }) : /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("svg", {
+                                                                width: "16",
+                                                                height: "10",
+                                                                viewBox: "0 0 16 10",
+                                                                fill: "none",
+                                                                xmlns: "http://www.w3.org/2000/svg",
+                                                                children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("path", {
+                                                                    d: "M15 1L8 8L1 1",
+                                                                    stroke: "white",
+                                                                    strokeWidth: "2"
+                                                                })
+                                                            })
+                                                        })
+                                                    ]
+                                                })
+                                            }),
+                                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().cardBody),
+                                                ref: setCollapsibleElement,
+                                                children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                                                    className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().dropDownContent),
                                                     children: [
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
                                                             children: t("applyForm.stepTwo.itemE")
                                                         }),
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                                                            className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().bGroup),
-                                                            children: stepTwo.items[4].data.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+                                                            className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().bGroup),
+                                                            children: priceData.items[4].data.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
                                                                     children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
                                                                         htmlFor: item.item_id,
                                                                         children: [
-                                                                            item.chk === "N" ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
                                                                                 type: "checkbox",
                                                                                 id: item.item_id,
                                                                                 value: item.item_id,
                                                                                 onChange: enableNextTextBox
-                                                                            }) : /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
-                                                                                type: "checkbox",
-                                                                                id: item.item_id,
-                                                                                value: item.item_id,
-                                                                                onChange: enableNextTextBox,
-                                                                                defaultChecked: true
                                                                             }),
                                                                             item.name,
                                                                             /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                                                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().num),
+                                                                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().num),
                                                                                 children: [
                                                                                     t("applyForm.stepTwo.quantity"),
-                                                                                    item.quantity === "" ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
                                                                                         type: "number",
                                                                                         min: "0",
                                                                                         disabled: true
-                                                                                    }) : /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
-                                                                                        type: "number",
-                                                                                        min: item.quantity.toString()
                                                                                     })
                                                                                 ]
                                                                             }),
@@ -1978,7 +1946,7 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                                                                                 ]
                                                                             })
                                                                         ]
-                                                                    })
+                                                                    }, item.item_id)
                                                                 }))
                                                         })
                                                     ]
@@ -1992,18 +1960,18 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                                 collapsed: true,
                                 whenReversedUseBackwardEase: false,
                                 render: ({ toggle , setCollapsibleElement , toggleState ,  })=>/*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().card),
+                                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().card),
                                         children: [
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
                                                 className: "card-header",
                                                 children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
                                                     className: [
-                                                        (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().dropDown),
-                                                        toggleState === "COLLAPSED" ? (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().dropDown) : (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().active), 
+                                                        (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().dropDown),
+                                                        toggleState === "COLLAPSED" ? (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().dropDown) : (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().active), 
                                                     ].join(" "),
                                                     onClick: toggle,
                                                     children: [
-                                                        "F. 壓縮空氣",
+                                                        "G. 壓縮空氣",
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("span", {
                                                             children: toggleState === "EXPANDED" || toggleState === "EXPANDING" ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("svg", {
                                                                 width: "16",
@@ -2033,44 +2001,35 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                                                 })
                                             }),
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().cardBody),
+                                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().cardBody),
                                                 ref: setCollapsibleElement,
                                                 children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                                    className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().dropDownContent),
+                                                    className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().dropDownContent),
                                                     children: [
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
                                                             children: t("applyForm.stepTwo.itemF")
                                                         }),
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                                                            className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().bGroup),
-                                                            children: stepTwo.items[5].data.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+                                                            className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().bGroup),
+                                                            children: priceData.items[5].data.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
                                                                     children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
                                                                         htmlFor: item.item_id,
                                                                         children: [
-                                                                            item.chk === "N" ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
                                                                                 type: "checkbox",
                                                                                 id: item.item_id,
                                                                                 value: item.item_id,
                                                                                 onChange: enableNextTextBox
-                                                                            }) : /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
-                                                                                type: "checkbox",
-                                                                                id: item.item_id,
-                                                                                value: item.item_id,
-                                                                                onChange: enableNextTextBox,
-                                                                                defaultChecked: true
                                                                             }),
                                                                             item.name,
                                                                             /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                                                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().num),
+                                                                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().num),
                                                                                 children: [
                                                                                     t("applyForm.stepTwo.quantity"),
-                                                                                    item.quantity === "" ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
                                                                                         type: "number",
                                                                                         min: "0",
                                                                                         disabled: true
-                                                                                    }) : /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
-                                                                                        type: "number",
-                                                                                        min: item.quantity.toString()
                                                                                     })
                                                                                 ]
                                                                             }),
@@ -2084,7 +2043,7 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                                                                                 ]
                                                                             })
                                                                         ]
-                                                                    })
+                                                                    }, item.item_id)
                                                                 }))
                                                         })
                                                     ]
@@ -2095,9 +2054,64 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                             })
                         ]
                     }),
+                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("h2", {
+                        children: t("applyForm.stepOne.groupThree.title")
+                    }),
+                    /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().form),
+                        children: [
+                            /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().addressGroup),
+                                children: [
+                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                        children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                            htmlFor: "company_address",
+                                            children: [
+                                                t("applyForm.stepOne.groupThree.asTheExhibitor"),
+                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                    type: "radio",
+                                                    id: "company_address",
+                                                    name: "drone",
+                                                    value: "1",
+                                                    required: true
+                                                })
+                                            ]
+                                        })
+                                    }),
+                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                        children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                            htmlFor: "agent_address",
+                                            children: [
+                                                t("applyForm.stepOne.groupThree.asTheAgent"),
+                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                    type: "radio",
+                                                    id: "agent_address",
+                                                    name: "drone",
+                                                    value: "2"
+                                                })
+                                            ]
+                                        })
+                                    })
+                                ]
+                            }),
+                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                className: [
+                                    (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().formRow),
+                                    (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().address)
+                                ].join(" "),
+                                children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_Input_Fields_Input__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .Z, {
+                                    name: "address",
+                                    label: t("applyForm.stepOne.groupThree.invoiceAddress"),
+                                    type: "text",
+                                    placeholder: t("applyForm.stepOne.groupThree.invoicePlaceHolder"),
+                                    id: "address"
+                                })
+                            })
+                        ]
+                    }),
                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("button", {
                         type: "submit",
-                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().next),
+                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().next),
                         children: t("applyForm.stepper.next")
                     })
                 ]
@@ -2324,7 +2338,7 @@ function Preview({ formStep , nextFormStep , applicatonId , dataID ,  }) {
                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("h2", {
                         children: t("applyForm.preview.groupThree.title")
                     }),
-                    data.hydro_items.items.length === 0 ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                    data.hydro_items.base_option === "Y" ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
                         children: t("applyForm.preview.groupThree.useDefault")
                     }) : /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
                         className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().applyItem),
@@ -2407,12 +2421,12 @@ function Preview({ formStep , nextFormStep , applicatonId , dataID ,  }) {
                                     t("applyForm.preview.groupFour.file"),
                                     " ",
                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("span", {
-                                        children: "JO318水電圖圖.jpg"
+                                        children: data.imageData_filename
                                     })
                                 ]
                             }),
                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("img", {
-                                src: data.imageData_file
+                                src: "https://ewsadm.taiwantradeshows.com.tw/" + data.imageData_file
                             })
                         ]
                     }),
@@ -2453,16 +2467,23 @@ function Preview({ formStep , nextFormStep , applicatonId , dataID ,  }) {
 
 function Write({ formStep , nextFormStep , stepThree , dataID  }) {
     const { t  } = (0,next_i18next__WEBPACK_IMPORTED_MODULE_3__.useTranslation)();
-    const { 0: imageSrc , 1: setImageSrc  } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)("https://ewsadm.taiwantradeshows.com.tw/" + stepThree.imageData);
+    const { 0: imageSrc , 1: setImageSrc  } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(stepThree.imageData);
     const { 0: uploadData , 1: setUploadData  } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)();
     const { 0: goNext , 1: setGoNext  } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(true);
     const { 0: show , 1: setShow  } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
+    const IFrameRef = (0,react__WEBPACK_IMPORTED_MODULE_1__.useRef)(null);
+    const { 0: recievedMessage , 1: setRecievedMessage  } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)("");
     (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(()=>{
-        console.log(imageSrc);
-        if (imageSrc !== undefined) {
+        console.log(stepThree.status);
+        if (stepThree.status !== false) {
             setGoNext(false);
         }
     }, []);
+    // useEffect(() => {
+    //     window.addEventListener("message", function (e) {
+    //         console.log(e);
+    //     });
+    // }, []);
     const close = ()=>{
         setShow(false);
     };
@@ -2477,6 +2498,14 @@ function Write({ formStep , nextFormStep , stepThree , dataID  }) {
             type: mime
         });
     }
+    const handleWritePlan = ()=>{
+        setShow(true);
+        setTimeout(()=>{
+            console.log(IFrameRef);
+            if (!IFrameRef.current) return;
+            IFrameRef.current.contentWindow.postMessage("Hello son", "http://localhost:3001/");
+        }, 100);
+    };
     const temporary = async ()=>{
         let file = dataURLtoFile(imageSrc, "png");
         const form = new FormData();
@@ -2579,7 +2608,17 @@ function Write({ formStep , nextFormStep , stepThree , dataID  }) {
                             })
                         ]
                     }),
-                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("img", {
+                    imageSrc !== undefined ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+                        children: imageSrc.slice(0, 4) === "data" ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("img", {
+                            id: "blah",
+                            src: imageSrc,
+                            className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().uploadImg)
+                        }) : /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("img", {
+                            id: "blah",
+                            src: "https://ewsadm.taiwantradeshows.com.tw/" + imageSrc,
+                            className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().uploadImg)
+                        })
+                    }) : /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("img", {
                         id: "blah",
                         src: imageSrc,
                         className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().uploadImg)
@@ -2589,8 +2628,10 @@ function Write({ formStep , nextFormStep , stepThree , dataID  }) {
                     }),
                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("a", {
                         className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_4___default().popupToWrite),
-                        href: "https://anbon.vip/twtc_diagram/",
-                        onClick: ()=>setShow(true),
+                        // href="https://anbon.vip/twtc_diagram/"
+                        // onClick={() => setShow(true)}
+                        href: "http://localhost:3001/",
+                        onClick: handleWritePlan,
                         target: "iframe_a",
                         children: t("applyForm.stepThree.groupTwo.clickPopup")
                     }),
@@ -2635,7 +2676,9 @@ function Write({ formStep , nextFormStep , stepThree , dataID  }) {
                         height: "90%"
                     },
                     children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("iframe", {
+                        ref: IFrameRef,
                         src: "demo_iframe.htm",
+                        id: "iframe1",
                         name: "iframe_a",
                         height: "100%",
                         width: "100%",
@@ -2643,6 +2686,64 @@ function Write({ formStep , nextFormStep , stepThree , dataID  }) {
                     })
                 })
             }) : null
+        ]
+    });
+};
+
+
+/***/ }),
+
+/***/ 1144:
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+
+// EXPORTS
+__webpack_require__.d(__webpack_exports__, {
+  "Z": () => (/* binding */ Input)
+});
+
+// EXTERNAL MODULE: external "react/jsx-runtime"
+var jsx_runtime_ = __webpack_require__(997);
+// EXTERNAL MODULE: external "react"
+var external_react_ = __webpack_require__(6689);
+;// CONCATENATED MODULE: external "@unform/core"
+const core_namespaceObject = require("@unform/core");
+;// CONCATENATED MODULE: ./Components/Input Fields/Input.js
+
+
+
+function Input({ name , label , ...rest }) {
+    const inputRef = (0,external_react_.useRef)(null);
+    const { fieldName , defaultValue ="" , registerField , error ,  } = (0,core_namespaceObject.useField)(name);
+    (0,external_react_.useEffect)(()=>{
+        registerField({
+            name: fieldName,
+            ref: inputRef.current,
+            path: "value"
+        });
+    }, [
+        fieldName,
+        registerField
+    ]);
+    return /*#__PURE__*/ (0,jsx_runtime_.jsxs)(jsx_runtime_.Fragment, {
+        children: [
+            label && /*#__PURE__*/ jsx_runtime_.jsx("label", {
+                htmlFor: fieldName,
+                children: label
+            }),
+            /*#__PURE__*/ jsx_runtime_.jsx("input", {
+                ref: inputRef,
+                id: fieldName,
+                defaultValue: defaultValue,
+                ...rest
+            }),
+            error && /*#__PURE__*/ jsx_runtime_.jsx("span", {
+                style: {
+                    color: "#f00"
+                },
+                children: error
+            })
         ]
     });
 };
@@ -2697,8 +2798,17 @@ function Popup({ children , close  }) {
 
 
 
-function FormCard({ children , currentStep , prevFormStep  }) {
+function FormCard({ children , currentStep , prevFormStep , useDefaultChecked ,  }) {
     const { t  } = (0,next_i18next__WEBPACK_IMPORTED_MODULE_1__.useTranslation)();
+    const handlePrev = ()=>{
+        // console.log(useDefaultChecked);
+        if (useDefaultChecked && currentStep === 2) {
+            prevFormStep();
+            prevFormStep();
+        } else {
+            prevFormStep();
+        }
+    };
     return /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
         className: "",
         children: [
@@ -2706,7 +2816,7 @@ function FormCard({ children , currentStep , prevFormStep  }) {
                 children: [
                     currentStep > 0 && /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("button", {
                         className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_2___default().back),
-                        onClick: prevFormStep,
+                        onClick: handlePrev,
                         type: "button",
                         children: t("applyForm.stepper.prev")
                     }),
@@ -2846,7 +2956,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var next_i18next__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(1377);
 /* harmony import */ var next_i18next__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(next_i18next__WEBPACK_IMPORTED_MODULE_7__);
 /* harmony import */ var _Components_Stepper_FormCard__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(6105);
-/* harmony import */ var _Components_Forms_Basic__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(7504);
+/* harmony import */ var _Components_Forms_Basic__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(6984);
 /* harmony import */ var _Components_Forms_Choose__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(4473);
 /* harmony import */ var _Components_Forms_Write__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(7171);
 /* harmony import */ var _Components_Forms_Preview__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(8041);
@@ -2933,7 +3043,9 @@ function Apply(props) {
     const { t  } = (0,next_i18next__WEBPACK_IMPORTED_MODULE_7__.useTranslation)();
     const { 0: formStep , 1: setFormStep  } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(0);
     const { 0: savadata , 1: setSavaData  } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(props.company.savadata);
+    const { 0: useDefaultChecked , 1: setUseDefaultChecked  } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
     const saveID = (item)=>setSavaData(item);
+    const jumpOverStepTwo = (item)=>setUseDefaultChecked(item);
     const nextFormStep = ()=>setFormStep((currentStep)=>currentStep + 1);
     const prevFormStep = ()=>setFormStep((currentStep)=>currentStep - 1);
     return /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
@@ -2960,6 +3072,7 @@ function Apply(props) {
                 children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_Components_Stepper_FormCard__WEBPACK_IMPORTED_MODULE_8__/* ["default"] */ .Z, {
                     currentStep: formStep,
                     prevFormStep: prevFormStep,
+                    useDefaultChecked: useDefaultChecked,
                     children: [
                         formStep >= 0 && /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_Components_Forms_Basic__WEBPACK_IMPORTED_MODULE_9__/* ["default"] */ .Z, {
                             formStep: formStep,
@@ -2967,7 +3080,8 @@ function Apply(props) {
                             stepOne: props.stepOne,
                             company: props.company,
                             saveID: saveID,
-                            dataID: savadata
+                            dataID: savadata,
+                            jump: jumpOverStepTwo
                         }),
                         formStep >= 1 && /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_Components_Forms_Choose__WEBPACK_IMPORTED_MODULE_10__/* ["default"] */ .Z, {
                             formStep: formStep,

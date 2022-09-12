@@ -3,6 +3,7 @@ import styles from "../../styles/Form.module.scss";
 import { Form } from "@unform/web";
 import SlideToggle from "react-slide-toggle";
 import { useTranslation } from "next-i18next";
+import Input from "../Input Fields/Input";
 
 export default function Choose({
     formStep,
@@ -14,145 +15,108 @@ export default function Choose({
     const { t } = useTranslation();
 
     const temporary = async () => {
-        const useDefault = document.getElementById("chooseDefault");
-        let items = [];
-        if (useDefault.checked) {
-            const options = {
-                method: "POST",
-                headers: {
-                    // cookie: "ci_session=9lejfn4cgisk4havru3sjg4s9e8aiqho",
-                    "Content-Type": "application/x-www-form-urlencoded",
-                },
-                body: new URLSearchParams({
-                    application_form_id: dataID,
-                    base_option: "Y",
-                    items: [],
-                    sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
-                }),
-            };
-            await fetch(`${process.env.customKey}setApplyHydroItems`, options)
-                .then((response) => response.json())
-                .then((response) => console.log(response))
-                .then(nextFormStep())
-                .catch((err) => console.error(err));
-        } else {
-            const checkBoxsOne = document.querySelectorAll(
-                ".Form_aGroup__FN6oc input[type='checkbox']"
-            );
-            const checkBoxsTwo = document.querySelectorAll(
-                ".Form_bGroup__4aN8N input[type='checkbox']"
-            );
-            for (let check of checkBoxsOne) {
-                if (check.checked) {
-                    items.push({ item_id: check.value, quantity: "1" });
-                }
+        let invoice = "";
+        const radios = document.querySelectorAll('input[name="drone"]');
+        for (let radio of radios) {
+            if (radio.checked) {
+                invoice = radio.value;
             }
-            for (let check of checkBoxsTwo) {
-                if (check.checked) {
-                    let num = check.nextSibling.nextSibling.childNodes[1];
-                    items.push({
-                        item_id: check.value,
-                        quantity: num.value,
-                    });
-                }
-            }
-            const options = {
-                method: "POST",
-                headers: {
-                    // cookie: "ci_session=9lejfn4cgisk4havru3sjg4s9e8aiqho",
-                    "Content-Type": "application/x-www-form-urlencoded",
-                },
-                body: new URLSearchParams({
-                    application_form_id: dataID,
-                    base_option: "N",
-                    items: JSON.stringify(items),
-                    sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
-                }),
-            };
-            await fetch(`${process.env.customKey}setApplyHydroItems`, options)
-                .then((response) => response.json())
-                .then((response) => {
-                    console.log(response);
-                    alert("success");
-                })
-                .catch((err) => console.error(err));
         }
+        let address = document.getElementById("address").value;
+        let items = [];
+        const checkBoxsOne = document.querySelectorAll(
+            ".Form_aGroup__FN6oc input[type='checkbox']"
+        );
+        const checkBoxsTwo = document.querySelectorAll(
+            ".Form_bGroup__4aN8N input[type='checkbox']"
+        );
+        for (let check of checkBoxsOne) {
+            if (check.checked) {
+                items.push({ item_id: check.value, quantity: "1" });
+            }
+        }
+        for (let check of checkBoxsTwo) {
+            if (check.checked) {
+                let num = check.nextSibling.nextSibling.childNodes[1];
+                items.push({
+                    item_id: check.value,
+                    quantity: num.value,
+                });
+            }
+        }
+        const options = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: new URLSearchParams({
+                application_form_id: dataID,
+                invoice: invoice,
+                invoice_address: address,
+                items: JSON.stringify(items),
+                sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
+            }),
+        };
+        await fetch(`${process.env.customKey}setApplyHydroItems`, options)
+            .then((response) => response.json())
+            .then((response) => {
+                console.log(response);
+                alert("success");
+            })
+            .catch((err) => console.error(err));
     };
-    async function handleSubmit() {
-        const useDefault = document.getElementById("chooseDefault");
-        let items = [];
-        if (useDefault.checked) {
-            const options = {
-                method: "POST",
-                headers: {
-                    // cookie: "ci_session=9lejfn4cgisk4havru3sjg4s9e8aiqho",
-                    "Content-Type": "application/x-www-form-urlencoded",
-                },
-                body: new URLSearchParams({
-                    application_form_id: dataID,
-                    base_option: "Y",
-                    items: [],
-                    sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
-                }),
-            };
-            await fetch(`${process.env.customKey}setApplyHydroItems`, options)
-                .then((response) => response.json())
-                .then((response) => console.log(response))
-                .then(nextFormStep())
-                .catch((err) => console.error(err));
-        } else {
-            const checkBoxsOne = document.querySelectorAll(
-                ".Form_aGroup__FN6oc input[type='checkbox']"
-            );
-            const checkBoxsTwo = document.querySelectorAll(
-                ".Form_bGroup__4aN8N input[type='checkbox']"
-            );
-            for (let check of checkBoxsOne) {
-                if (check.checked) {
-                    items.push({ item_id: check.value, quantity: "1" });
-                }
-            }
-            for (let check of checkBoxsTwo) {
-                if (check.checked) {
-                    let num = check.nextSibling.nextSibling.childNodes[1];
-                    if (num.value === "0" || num.value === "") {
-                        alert("請填入數量");
-                    } else {
-                        items.push({
-                            item_id: check.value,
-                            quantity: num.value,
-                        });
-                    }
-                }
-            }
-            if (items.length !== 0) {
-                const options = {
-                    method: "POST",
-                    headers: {
-                        // cookie: "ci_session=9lejfn4cgisk4havru3sjg4s9e8aiqho",
-                        "Content-Type": "application/x-www-form-urlencoded",
-                    },
-                    body: new URLSearchParams({
-                        application_form_id: dataID,
-                        base_option: "N",
-                        items: JSON.stringify(items),
-                        sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
-                    }),
-                };
-                await fetch(
-                    `${process.env.customKey}setApplyHydroItems`,
-                    options
-                )
-                    .then((response) => response.json())
-                    .then((response) => console.log(response))
-                    .then(nextFormStep())
-                    .catch((err) => console.error(err));
+
+    async function handleSubmit(data) {
+        console.log(data);
+        let invoice = "";
+        const radios = document.querySelectorAll('input[name="drone"]');
+        for (let radio of radios) {
+            if (radio.checked) {
+                invoice = radio.value;
             }
         }
+        let items = [];
+        const checkBoxsOne = document.querySelectorAll(
+            ".Form_aGroup__FN6oc input[type='checkbox']"
+        );
+        const checkBoxsTwo = document.querySelectorAll(
+            ".Form_bGroup__4aN8N input[type='checkbox']"
+        );
+        for (let check of checkBoxsOne) {
+            if (check.checked) {
+                items.push({ item_id: check.value, quantity: "1" });
+            }
+        }
+        for (let check of checkBoxsTwo) {
+            if (check.checked) {
+                let num = check.nextSibling.nextSibling.childNodes[1];
+                items.push({
+                    item_id: check.value,
+                    quantity: num.value,
+                });
+            }
+        }
+        const options = {
+            method: "POST",
+            headers: {
+                // cookie: "ci_session=9lejfn4cgisk4havru3sjg4s9e8aiqho",
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: new URLSearchParams({
+                application_form_id: dataID,
+                items: JSON.stringify(items),
+                invoice: invoice,
+                invoice_address: data.address,
+                sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
+            }),
+        };
+        await fetch(`${process.env.customKey}setApplyHydroItems`, options)
+            .then((response) => response.json())
+            .then((response) => console.log(response))
+            .then(nextFormStep())
+            .catch((err) => console.error(err));
     }
     const active = (e) => {
-        const useDefault = document.getElementById("chooseDefault");
-        useDefault.checked = false;
         if (e.target.checked) {
             e.target.parentNode.className = styles.checkedActive;
         } else {
@@ -160,8 +124,6 @@ export default function Choose({
         }
     };
     const enableNextTextBox = (e) => {
-        const useDefault = document.getElementById("chooseDefault");
-        useDefault.checked = false;
         if (e.target.checked) {
             e.target.nextSibling.nextSibling.childNodes[1].removeAttribute(
                 "disabled"
@@ -176,32 +138,32 @@ export default function Choose({
             e.target.parentNode.className = "";
         }
     };
-    const handleDefault = (e) => {
-        const checkBoxsOne = document.querySelectorAll(
-            ".Form_aGroup__FN6oc input[type='checkbox']"
-        );
-        const checkBoxsTwo = document.querySelectorAll(
-            ".Form_bGroup__4aN8N input"
-        );
-        if (e.target.checked) {
-            for (let check of checkBoxsOne) {
-                if (check.checked) {
-                    check.checked = false;
-                    check.parentNode.className = "";
-                }
-            }
-            for (let check of checkBoxsTwo) {
-                if (check.checked) {
-                    check.checked = false;
-                    check.parentNode.className = "";
-                }
-                if (check.type === "number") {
-                    check.value = 0;
-                    check.setAttribute("disabled", "");
-                }
-            }
-        }
-    };
+    // const handleDefault = (e) => {
+    //     const checkBoxsOne = document.querySelectorAll(
+    //         ".Form_aGroup__FN6oc input[type='checkbox']"
+    //     );
+    //     const checkBoxsTwo = document.querySelectorAll(
+    //         ".Form_bGroup__4aN8N input"
+    //     );
+    //     if (e.target.checked) {
+    //         for (let check of checkBoxsOne) {
+    //             if (check.checked) {
+    //                 check.checked = false;
+    //                 check.parentNode.className = "";
+    //             }
+    //         }
+    //         for (let check of checkBoxsTwo) {
+    //             if (check.checked) {
+    //                 check.checked = false;
+    //                 check.parentNode.className = "";
+    //             }
+    //             if (check.type === "number") {
+    //                 check.value = 0;
+    //                 check.setAttribute("disabled", "");
+    //             }
+    //         }
+    //     }
+    // };
 
     return (
         <div
@@ -216,18 +178,6 @@ export default function Choose({
             {stepTwo.status === false ? (
                 <Form onSubmit={handleSubmit}>
                     <h2>{t("applyForm.stepTwo.title")}</h2>
-                    <div className={styles.applyDefault}>
-                        <input
-                            type="checkbox"
-                            id="chooseDefault"
-                            value="useDefault"
-                            onChange={handleDefault}
-                            defaultChecked
-                        />
-                        <label htmlFor="chooseDefault">
-                            {t("applyForm.stepTwo.useDefault")}
-                        </label>
-                    </div>
                     <div className={styles.applyCheckBox}>
                         <SlideToggle
                             duration={1000}
@@ -298,6 +248,9 @@ export default function Choose({
                                                         <>
                                                             <label
                                                                 htmlFor={
+                                                                    item.item_id
+                                                                }
+                                                                key={
                                                                     item.item_id
                                                                 }
                                                             >
@@ -397,6 +350,9 @@ export default function Choose({
                                                         <>
                                                             <label
                                                                 htmlFor={
+                                                                    item.item_id
+                                                                }
+                                                                key={
                                                                     item.item_id
                                                                 }
                                                             >
@@ -516,6 +472,9 @@ export default function Choose({
                                                                 htmlFor={
                                                                     item.item_id
                                                                 }
+                                                                key={
+                                                                    item.item_id
+                                                                }
                                                             >
                                                                 <input
                                                                     type="checkbox"
@@ -556,24 +515,6 @@ export default function Choose({
                                                         </>
                                                     )
                                                 )}
-                                                {/* <label htmlFor="380V">
-                                                <input
-                                                    type="checkbox"
-                                                    id="380V"
-                                                    value="380V"
-                                                    onChange={enableNextTextBox}
-                                                />
-                                                用電380V電源箱
-                                                <label className={styles.num}>
-                                                    {t("applyForm.stepTwo.quantity")}
-                                                    <input
-                                                        type="number"
-                                                        min="0"
-                                                        disabled
-                                                    />
-                                                </label>
-                                                <span>$ 2,994/{t("applyForm.stepTwo.set")}</span>
-                                            </label> */}
                                             </div>
                                         </div>
                                     </div>
@@ -600,7 +541,78 @@ export default function Choose({
                                             ].join(" ")}
                                             onClick={toggle}
                                         >
-                                            D. 24小時用電
+                                            D. 用電440V電源箱
+                                            <span>
+                                                {toggleState === "EXPANDED" ||
+                                                toggleState === "EXPANDING" ? (
+                                                    <svg
+                                                        width="16"
+                                                        height="10"
+                                                        viewBox="0 0 16 10"
+                                                        fill="none"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                    >
+                                                        <path
+                                                            d="M1 9L8 2L15 9"
+                                                            stroke="white"
+                                                            strokeWidth="2"
+                                                        />
+                                                    </svg>
+                                                ) : (
+                                                    <svg
+                                                        width="16"
+                                                        height="10"
+                                                        viewBox="0 0 16 10"
+                                                        fill="none"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                    >
+                                                        <path
+                                                            d="M15 1L8 8L1 1"
+                                                            stroke="white"
+                                                            strokeWidth="2"
+                                                        />
+                                                    </svg>
+                                                )}
+                                            </span>
+                                        </label>
+                                    </div>
+                                    <div
+                                        className={styles.cardBody}
+                                        ref={setCollapsibleElement}
+                                    >
+                                        <div className={styles.dropDownContent}>
+                                            <p>
+                                                {t("applyForm.stepTwo.itemBCD")}
+                                            </p>
+                                            <div
+                                                className={styles.bGroup}
+                                            ></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        />
+                        <SlideToggle
+                            duration={1000}
+                            collapsed={true}
+                            whenReversedUseBackwardEase={false}
+                            render={({
+                                toggle,
+                                setCollapsibleElement,
+                                toggleState,
+                            }) => (
+                                <div className={styles.card}>
+                                    <div className="card-header">
+                                        <label
+                                            className={[
+                                                styles.dropDown,
+                                                toggleState === "COLLAPSED"
+                                                    ? styles.dropDown
+                                                    : styles.active,
+                                            ].join(" ")}
+                                            onClick={toggle}
+                                        >
+                                            E. 24小時用電
                                             <span>
                                                 {toggleState === "EXPANDED" ||
                                                 toggleState === "EXPANDING" ? (
@@ -651,6 +663,9 @@ export default function Choose({
                                                                 htmlFor={
                                                                     item.item_id
                                                                 }
+                                                                key={
+                                                                    item.item_id
+                                                                }
                                                             >
                                                                 <input
                                                                     type="checkbox"
@@ -691,24 +706,6 @@ export default function Choose({
                                                         </>
                                                     )
                                                 )}
-                                                {/* <label htmlFor="electricity">
-                                                <input
-                                                    type="checkbox"
-                                                    id="electricity"
-                                                    value="electricity"
-                                                    onChange={enableNextTextBox}
-                                                />
-                                                24小時用電
-                                                <label className={styles.num}>
-                                                    {t("applyForm.stepTwo.quantity")}
-                                                    <input
-                                                        type="number"
-                                                        min="0"
-                                                        disabled
-                                                    />
-                                                </label>
-                                                <span>$ 2,994/{t("applyForm.stepTwo.set")}</span>
-                                            </label> */}
                                             </div>
                                         </div>
                                     </div>
@@ -735,7 +732,7 @@ export default function Choose({
                                             ].join(" ")}
                                             onClick={toggle}
                                         >
-                                            E. 給排水管
+                                            F. 給排水管
                                             <span>
                                                 {toggleState === "EXPANDED" ||
                                                 toggleState === "EXPANDING" ? (
@@ -786,6 +783,9 @@ export default function Choose({
                                                                 htmlFor={
                                                                     item.item_id
                                                                 }
+                                                                key={
+                                                                    item.item_id
+                                                                }
                                                             >
                                                                 <input
                                                                     type="checkbox"
@@ -852,7 +852,7 @@ export default function Choose({
                                             ].join(" ")}
                                             onClick={toggle}
                                         >
-                                            F. 壓縮空氣
+                                            G. 壓縮空氣
                                             <span>
                                                 {toggleState === "EXPANDED" ||
                                                 toggleState === "EXPANDING" ? (
@@ -903,6 +903,9 @@ export default function Choose({
                                                                 htmlFor={
                                                                     item.item_id
                                                                 }
+                                                                key={
+                                                                    item.item_id
+                                                                }
                                                             >
                                                                 <input
                                                                     type="checkbox"
@@ -950,6 +953,54 @@ export default function Choose({
                             )}
                         />
                     </div>
+                    <h2>{t("applyForm.stepOne.groupThree.title")}</h2>
+                    <div className={styles.form}>
+                        <div className={styles.addressGroup}>
+                            <div>
+                                <label htmlFor="company_address">
+                                    {t(
+                                        "applyForm.stepOne.groupThree.asTheExhibitor"
+                                    )}
+                                    <input
+                                        type="radio"
+                                        id="company_address"
+                                        name="drone"
+                                        value="1"
+                                    />
+                                </label>
+                            </div>
+                            <div>
+                                <label htmlFor="agent_address">
+                                    {t(
+                                        "applyForm.stepOne.groupThree.asTheAgent"
+                                    )}
+                                    <input
+                                        type="radio"
+                                        id="agent_address"
+                                        name="drone"
+                                        value="2"
+                                    />
+                                </label>
+                            </div>
+                        </div>
+                        <div
+                            className={[styles.formRow, styles.address].join(
+                                " "
+                            )}
+                        >
+                            <Input
+                                name="address"
+                                label={t(
+                                    "applyForm.stepOne.groupThree.invoiceAddress"
+                                )}
+                                type="text"
+                                placeholder={t(
+                                    "applyForm.stepOne.groupThree.invoicePlaceHolder"
+                                )}
+                                id="address"
+                            />
+                        </div>
+                    </div>
                     <button type="submit" className={styles.next}>
                         {t("applyForm.stepper.next")}
                     </button>
@@ -957,17 +1008,6 @@ export default function Choose({
             ) : (
                 <Form onSubmit={handleSubmit}>
                     <h2>{t("applyForm.stepTwo.title")}</h2>
-                    <div className={styles.applyDefault}>
-                        <input
-                            type="checkbox"
-                            id="chooseDefault"
-                            value="useDefault"
-                            onChange={handleDefault}
-                        />
-                        <label htmlFor="chooseDefault">
-                            {t("applyForm.stepTwo.useDefault")}
-                        </label>
-                    </div>
                     <div className={styles.applyCheckBox}>
                         <SlideToggle
                             duration={1000}
@@ -1030,24 +1070,22 @@ export default function Choose({
                                     >
                                         <div className={styles.dropDownContent}>
                                             <p>
-                                                {t(
-                                                    "applyForm.stepTwo.itemA"
-                                                ).replace(
-                                                    "/\r\n|\r|\n/",
-                                                    "<br />"
-                                                )}
+                                                {t("applyForm.stepTwo.itemA")}
                                             </p>
                                             <div className={styles.aGroup}>
-                                                {stepTwo.items[0].data.map(
+                                                {priceData.items[0].data.map(
                                                     (item) => (
                                                         <>
-                                                            <label
-                                                                htmlFor={
-                                                                    item.item_id
-                                                                }
-                                                            >
-                                                                {item.chk ===
-                                                                "N" ? (
+                                                            {item.chk ===
+                                                            "N" ? (
+                                                                <label
+                                                                    htmlFor={
+                                                                        item.item_id
+                                                                    }
+                                                                    key={
+                                                                        item.item_id
+                                                                    }
+                                                                >
                                                                     <input
                                                                         type="checkbox"
                                                                         id={
@@ -1060,7 +1098,26 @@ export default function Choose({
                                                                             active
                                                                         }
                                                                     />
-                                                                ) : (
+                                                                    {item.name}
+                                                                    <span>
+                                                                        ${" "}
+                                                                        {
+                                                                            item.prcie
+                                                                        }
+                                                                    </span>
+                                                                </label>
+                                                            ) : (
+                                                                <label
+                                                                    htmlFor={
+                                                                        item.item_id
+                                                                    }
+                                                                    key={
+                                                                        item.item_id
+                                                                    }
+                                                                    className={
+                                                                        styles.checkedActive
+                                                                    }
+                                                                >
                                                                     <input
                                                                         type="checkbox"
                                                                         id={
@@ -1072,15 +1129,16 @@ export default function Choose({
                                                                         onChange={
                                                                             active
                                                                         }
-                                                                        defaultChecked
                                                                     />
-                                                                )}
-                                                                {item.name}
-                                                                <span>
-                                                                    ${" "}
-                                                                    {item.prcie}
-                                                                </span>
-                                                            </label>
+                                                                    {item.name}
+                                                                    <span>
+                                                                        ${" "}
+                                                                        {
+                                                                            item.prcie
+                                                                        }
+                                                                    </span>
+                                                                </label>
+                                                            )}
                                                         </>
                                                     )
                                                 )}
@@ -1154,44 +1212,29 @@ export default function Choose({
                                                 {t("applyForm.stepTwo.itemBCD")}
                                             </p>
                                             <div className={styles.bGroup}>
-                                                {stepTwo.items[1].data.map(
+                                                {priceData.items[1].data.map(
                                                     (item) => (
                                                         <>
                                                             <label
                                                                 htmlFor={
                                                                     item.item_id
                                                                 }
+                                                                key={
+                                                                    item.item_id
+                                                                }
                                                             >
-                                                                {item.chk ===
-                                                                "N" ? (
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        id={
-                                                                            item.item_id
-                                                                        }
-                                                                        value={
-                                                                            item.item_id
-                                                                        }
-                                                                        onChange={
-                                                                            enableNextTextBox
-                                                                        }
-                                                                    />
-                                                                ) : (
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        id={
-                                                                            item.item_id
-                                                                        }
-                                                                        value={
-                                                                            item.item_id
-                                                                        }
-                                                                        onChange={
-                                                                            enableNextTextBox
-                                                                        }
-                                                                        defaultChecked
-                                                                    />
-                                                                )}
-
+                                                                <input
+                                                                    type="checkbox"
+                                                                    id={
+                                                                        item.item_id
+                                                                    }
+                                                                    value={
+                                                                        item.item_id
+                                                                    }
+                                                                    onChange={
+                                                                        enableNextTextBox
+                                                                    }
+                                                                />
                                                                 {item.name}
                                                                 <label
                                                                     className={
@@ -1201,19 +1244,11 @@ export default function Choose({
                                                                     {t(
                                                                         "applyForm.stepTwo.quantity"
                                                                     )}
-                                                                    {item.quantity ===
-                                                                    "" ? (
-                                                                        <input
-                                                                            type="number"
-                                                                            min="0"
-                                                                            disabled
-                                                                        />
-                                                                    ) : (
-                                                                        <input
-                                                                            type="number"
-                                                                            min={item.quantity.toString()}
-                                                                        />
-                                                                    )}
+                                                                    <input
+                                                                        type="number"
+                                                                        min="0"
+                                                                        disabled
+                                                                    />
                                                                 </label>
                                                                 <span>
                                                                     ${" "}
@@ -1297,44 +1332,29 @@ export default function Choose({
                                                 {t("applyForm.stepTwo.itemBCD")}
                                             </p>
                                             <div className={styles.bGroup}>
-                                                {stepTwo.items[2].data.map(
+                                                {priceData.items[2].data.map(
                                                     (item) => (
                                                         <>
                                                             <label
                                                                 htmlFor={
                                                                     item.item_id
                                                                 }
+                                                                key={
+                                                                    item.item_id
+                                                                }
                                                             >
-                                                                {item.chk ===
-                                                                "N" ? (
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        id={
-                                                                            item.item_id
-                                                                        }
-                                                                        value={
-                                                                            item.item_id
-                                                                        }
-                                                                        onChange={
-                                                                            enableNextTextBox
-                                                                        }
-                                                                    />
-                                                                ) : (
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        id={
-                                                                            item.item_id
-                                                                        }
-                                                                        value={
-                                                                            item.item_id
-                                                                        }
-                                                                        onChange={
-                                                                            enableNextTextBox
-                                                                        }
-                                                                        defaultChecked
-                                                                    />
-                                                                )}
-
+                                                                <input
+                                                                    type="checkbox"
+                                                                    id={
+                                                                        item.item_id
+                                                                    }
+                                                                    value={
+                                                                        item.item_id
+                                                                    }
+                                                                    onChange={
+                                                                        enableNextTextBox
+                                                                    }
+                                                                />
                                                                 {item.name}
                                                                 <label
                                                                     className={
@@ -1344,19 +1364,11 @@ export default function Choose({
                                                                     {t(
                                                                         "applyForm.stepTwo.quantity"
                                                                     )}
-                                                                    {item.quantity ===
-                                                                    "" ? (
-                                                                        <input
-                                                                            type="number"
-                                                                            min="0"
-                                                                            disabled
-                                                                        />
-                                                                    ) : (
-                                                                        <input
-                                                                            type="number"
-                                                                            min={item.quantity.toString()}
-                                                                        />
-                                                                    )}
+                                                                    <input
+                                                                        type="number"
+                                                                        min="0"
+                                                                        disabled
+                                                                    />
                                                                 </label>
                                                                 <span>
                                                                     ${" "}
@@ -1370,24 +1382,6 @@ export default function Choose({
                                                         </>
                                                     )
                                                 )}
-                                                {/* <label htmlFor="380V">
-                                                <input
-                                                    type="checkbox"
-                                                    id="380V"
-                                                    value="380V"
-                                                    onChange={enableNextTextBox}
-                                                />
-                                                用電380V電源箱
-                                                <label className={styles.num}>
-                                                    {t("applyForm.stepTwo.quantity")}
-                                                    <input
-                                                        type="number"
-                                                        min="0"
-                                                        disabled
-                                                    />
-                                                </label>
-                                                <span>$ 2,994/{t("applyForm.stepTwo.set")}</span>
-                                            </label> */}
                                             </div>
                                         </div>
                                     </div>
@@ -1414,7 +1408,78 @@ export default function Choose({
                                             ].join(" ")}
                                             onClick={toggle}
                                         >
-                                            D. 24小時用電
+                                            D. 用電440V電源箱
+                                            <span>
+                                                {toggleState === "EXPANDED" ||
+                                                toggleState === "EXPANDING" ? (
+                                                    <svg
+                                                        width="16"
+                                                        height="10"
+                                                        viewBox="0 0 16 10"
+                                                        fill="none"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                    >
+                                                        <path
+                                                            d="M1 9L8 2L15 9"
+                                                            stroke="white"
+                                                            strokeWidth="2"
+                                                        />
+                                                    </svg>
+                                                ) : (
+                                                    <svg
+                                                        width="16"
+                                                        height="10"
+                                                        viewBox="0 0 16 10"
+                                                        fill="none"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                    >
+                                                        <path
+                                                            d="M15 1L8 8L1 1"
+                                                            stroke="white"
+                                                            strokeWidth="2"
+                                                        />
+                                                    </svg>
+                                                )}
+                                            </span>
+                                        </label>
+                                    </div>
+                                    <div
+                                        className={styles.cardBody}
+                                        ref={setCollapsibleElement}
+                                    >
+                                        <div className={styles.dropDownContent}>
+                                            <p>
+                                                {t("applyForm.stepTwo.itemBCD")}
+                                            </p>
+                                            <div
+                                                className={styles.bGroup}
+                                            ></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        />
+                        <SlideToggle
+                            duration={1000}
+                            collapsed={true}
+                            whenReversedUseBackwardEase={false}
+                            render={({
+                                toggle,
+                                setCollapsibleElement,
+                                toggleState,
+                            }) => (
+                                <div className={styles.card}>
+                                    <div className="card-header">
+                                        <label
+                                            className={[
+                                                styles.dropDown,
+                                                toggleState === "COLLAPSED"
+                                                    ? styles.dropDown
+                                                    : styles.active,
+                                            ].join(" ")}
+                                            onClick={toggle}
+                                        >
+                                            E. 24小時用電
                                             <span>
                                                 {toggleState === "EXPANDED" ||
                                                 toggleState === "EXPANDING" ? (
@@ -1458,44 +1523,29 @@ export default function Choose({
                                                 {t("applyForm.stepTwo.itemBCD")}
                                             </p>
                                             <div className={styles.bGroup}>
-                                                {stepTwo.items[3].data.map(
+                                                {priceData.items[3].data.map(
                                                     (item) => (
                                                         <>
                                                             <label
                                                                 htmlFor={
                                                                     item.item_id
                                                                 }
+                                                                key={
+                                                                    item.item_id
+                                                                }
                                                             >
-                                                                {item.chk ===
-                                                                "N" ? (
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        id={
-                                                                            item.item_id
-                                                                        }
-                                                                        value={
-                                                                            item.item_id
-                                                                        }
-                                                                        onChange={
-                                                                            enableNextTextBox
-                                                                        }
-                                                                    />
-                                                                ) : (
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        id={
-                                                                            item.item_id
-                                                                        }
-                                                                        value={
-                                                                            item.item_id
-                                                                        }
-                                                                        onChange={
-                                                                            enableNextTextBox
-                                                                        }
-                                                                        defaultChecked
-                                                                    />
-                                                                )}
-
+                                                                <input
+                                                                    type="checkbox"
+                                                                    id={
+                                                                        item.item_id
+                                                                    }
+                                                                    value={
+                                                                        item.item_id
+                                                                    }
+                                                                    onChange={
+                                                                        enableNextTextBox
+                                                                    }
+                                                                />
                                                                 {item.name}
                                                                 <label
                                                                     className={
@@ -1505,19 +1555,11 @@ export default function Choose({
                                                                     {t(
                                                                         "applyForm.stepTwo.quantity"
                                                                     )}
-                                                                    {item.quantity ===
-                                                                    "" ? (
-                                                                        <input
-                                                                            type="number"
-                                                                            min="0"
-                                                                            disabled
-                                                                        />
-                                                                    ) : (
-                                                                        <input
-                                                                            type="number"
-                                                                            min={item.quantity.toString()}
-                                                                        />
-                                                                    )}
+                                                                    <input
+                                                                        type="number"
+                                                                        min="0"
+                                                                        disabled
+                                                                    />
                                                                 </label>
                                                                 <span>
                                                                     ${" "}
@@ -1531,24 +1573,6 @@ export default function Choose({
                                                         </>
                                                     )
                                                 )}
-                                                {/* <label htmlFor="electricity">
-                                                <input
-                                                    type="checkbox"
-                                                    id="electricity"
-                                                    value="electricity"
-                                                    onChange={enableNextTextBox}
-                                                />
-                                                24小時用電
-                                                <label className={styles.num}>
-                                                    {t("applyForm.stepTwo.quantity")}
-                                                    <input
-                                                        type="number"
-                                                        min="0"
-                                                        disabled
-                                                    />
-                                                </label>
-                                                <span>$ 2,994/{t("applyForm.stepTwo.set")}</span>
-                                            </label> */}
                                             </div>
                                         </div>
                                     </div>
@@ -1575,7 +1599,7 @@ export default function Choose({
                                             ].join(" ")}
                                             onClick={toggle}
                                         >
-                                            E. 給排水管
+                                            F. 給排水管
                                             <span>
                                                 {toggleState === "EXPANDED" ||
                                                 toggleState === "EXPANDING" ? (
@@ -1619,44 +1643,29 @@ export default function Choose({
                                                 {t("applyForm.stepTwo.itemE")}
                                             </p>
                                             <div className={styles.bGroup}>
-                                                {stepTwo.items[4].data.map(
+                                                {priceData.items[4].data.map(
                                                     (item) => (
                                                         <>
                                                             <label
                                                                 htmlFor={
                                                                     item.item_id
                                                                 }
+                                                                key={
+                                                                    item.item_id
+                                                                }
                                                             >
-                                                                {item.chk ===
-                                                                "N" ? (
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        id={
-                                                                            item.item_id
-                                                                        }
-                                                                        value={
-                                                                            item.item_id
-                                                                        }
-                                                                        onChange={
-                                                                            enableNextTextBox
-                                                                        }
-                                                                    />
-                                                                ) : (
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        id={
-                                                                            item.item_id
-                                                                        }
-                                                                        value={
-                                                                            item.item_id
-                                                                        }
-                                                                        onChange={
-                                                                            enableNextTextBox
-                                                                        }
-                                                                        defaultChecked
-                                                                    />
-                                                                )}
-
+                                                                <input
+                                                                    type="checkbox"
+                                                                    id={
+                                                                        item.item_id
+                                                                    }
+                                                                    value={
+                                                                        item.item_id
+                                                                    }
+                                                                    onChange={
+                                                                        enableNextTextBox
+                                                                    }
+                                                                />
                                                                 {item.name}
                                                                 <label
                                                                     className={
@@ -1666,19 +1675,11 @@ export default function Choose({
                                                                     {t(
                                                                         "applyForm.stepTwo.quantity"
                                                                     )}
-                                                                    {item.quantity ===
-                                                                    "" ? (
-                                                                        <input
-                                                                            type="number"
-                                                                            min="0"
-                                                                            disabled
-                                                                        />
-                                                                    ) : (
-                                                                        <input
-                                                                            type="number"
-                                                                            min={item.quantity.toString()}
-                                                                        />
-                                                                    )}
+                                                                    <input
+                                                                        type="number"
+                                                                        min="0"
+                                                                        disabled
+                                                                    />
                                                                 </label>
                                                                 <span>
                                                                     ${" "}
@@ -1718,7 +1719,7 @@ export default function Choose({
                                             ].join(" ")}
                                             onClick={toggle}
                                         >
-                                            F. 壓縮空氣
+                                            G. 壓縮空氣
                                             <span>
                                                 {toggleState === "EXPANDED" ||
                                                 toggleState === "EXPANDING" ? (
@@ -1762,44 +1763,29 @@ export default function Choose({
                                                 {t("applyForm.stepTwo.itemF")}
                                             </p>
                                             <div className={styles.bGroup}>
-                                                {stepTwo.items[5].data.map(
+                                                {priceData.items[5].data.map(
                                                     (item) => (
                                                         <>
                                                             <label
                                                                 htmlFor={
                                                                     item.item_id
                                                                 }
+                                                                key={
+                                                                    item.item_id
+                                                                }
                                                             >
-                                                                {item.chk ===
-                                                                "N" ? (
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        id={
-                                                                            item.item_id
-                                                                        }
-                                                                        value={
-                                                                            item.item_id
-                                                                        }
-                                                                        onChange={
-                                                                            enableNextTextBox
-                                                                        }
-                                                                    />
-                                                                ) : (
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        id={
-                                                                            item.item_id
-                                                                        }
-                                                                        value={
-                                                                            item.item_id
-                                                                        }
-                                                                        onChange={
-                                                                            enableNextTextBox
-                                                                        }
-                                                                        defaultChecked
-                                                                    />
-                                                                )}
-
+                                                                <input
+                                                                    type="checkbox"
+                                                                    id={
+                                                                        item.item_id
+                                                                    }
+                                                                    value={
+                                                                        item.item_id
+                                                                    }
+                                                                    onChange={
+                                                                        enableNextTextBox
+                                                                    }
+                                                                />
                                                                 {item.name}
                                                                 <label
                                                                     className={
@@ -1809,19 +1795,11 @@ export default function Choose({
                                                                     {t(
                                                                         "applyForm.stepTwo.quantity"
                                                                     )}
-                                                                    {item.quantity ===
-                                                                    "" ? (
-                                                                        <input
-                                                                            type="number"
-                                                                            min="0"
-                                                                            disabled
-                                                                        />
-                                                                    ) : (
-                                                                        <input
-                                                                            type="number"
-                                                                            min={item.quantity.toString()}
-                                                                        />
-                                                                    )}
+                                                                    <input
+                                                                        type="number"
+                                                                        min="0"
+                                                                        disabled
+                                                                    />
                                                                 </label>
                                                                 <span>
                                                                     ${" "}
@@ -1841,6 +1819,55 @@ export default function Choose({
                                 </div>
                             )}
                         />
+                    </div>
+                    <h2>{t("applyForm.stepOne.groupThree.title")}</h2>
+                    <div className={styles.form}>
+                        <div className={styles.addressGroup}>
+                            <div>
+                                <label htmlFor="company_address">
+                                    {t(
+                                        "applyForm.stepOne.groupThree.asTheExhibitor"
+                                    )}
+                                    <input
+                                        type="radio"
+                                        id="company_address"
+                                        name="drone"
+                                        value="1"
+                                        required
+                                    />
+                                </label>
+                            </div>
+                            <div>
+                                <label htmlFor="agent_address">
+                                    {t(
+                                        "applyForm.stepOne.groupThree.asTheAgent"
+                                    )}
+                                    <input
+                                        type="radio"
+                                        id="agent_address"
+                                        name="drone"
+                                        value="2"
+                                    />
+                                </label>
+                            </div>
+                        </div>
+                        <div
+                            className={[styles.formRow, styles.address].join(
+                                " "
+                            )}
+                        >
+                            <Input
+                                name="address"
+                                label={t(
+                                    "applyForm.stepOne.groupThree.invoiceAddress"
+                                )}
+                                type="text"
+                                placeholder={t(
+                                    "applyForm.stepOne.groupThree.invoicePlaceHolder"
+                                )}
+                                id="address"
+                            />
+                        </div>
                     </div>
                     <button type="submit" className={styles.next}>
                         {t("applyForm.stepper.next")}
