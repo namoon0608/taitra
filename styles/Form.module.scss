@@ -24,6 +24,7 @@
         width: 100%;
     }
     table {
+        text-align: center;
         border: none;
         width: 100%;
         border: 1px solid #999999;
@@ -37,6 +38,9 @@
         th,
         td {
             padding: 16px 0;
+        }
+        td {
+            font-weight: 400;
         }
         .title {
             background: #245384;
@@ -76,9 +80,7 @@
         }
         .sum {
             color: #666666;
-            font-weight: 700;
             .sumTitle {
-                text-align: right;
                 font-weight: 700;
                 color: #666666;
             }
@@ -261,7 +263,6 @@
 .hideForm {
     display: none;
 }
-
 .showForm {
     display: block;
 }

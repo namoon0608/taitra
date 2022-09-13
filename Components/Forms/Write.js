@@ -5,6 +5,7 @@ import { useTranslation } from "next-i18next";
 
 export default function Write({ formStep, nextFormStep, stepThree, dataID }) {
     const { t } = useTranslation();
+    // const [imageSrc, setImageSrc] = useState("");
     const [imageSrc, setImageSrc] = useState(stepThree.imageData);
     const [uploadData, setUploadData] = useState();
     const [goNext, setGoNext] = useState(true);
@@ -13,7 +14,7 @@ export default function Write({ formStep, nextFormStep, stepThree, dataID }) {
     const [recievedMessage, setRecievedMessage] = useState("");
 
     useEffect(() => {
-        console.log(stepThree.status);
+        console.log(imageSrc);
         if (stepThree.status !== false) {
             setGoNext(false);
         }
@@ -24,6 +25,19 @@ export default function Write({ formStep, nextFormStep, stepThree, dataID }) {
     //         console.log(e);
     //     });
     // }, []);
+
+    const handleWritePlan = () => {
+        setShow(true);
+        // const form = {
+        //     application_form_id: dataID,
+        //     sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
+        // };
+        // if (!IFrameRef.current) return;
+        // IFrameRef.current.contentWindow.postMessage(
+        //     form,
+        //     "http://localhost:3001/"
+        // );
+    };
 
     const close = () => {
         setShow(false);
@@ -40,18 +54,6 @@ export default function Write({ formStep, nextFormStep, stepThree, dataID }) {
         }
         return new File([u8arr], filename, { type: mime });
     }
-
-    const handleWritePlan = () => {
-        setShow(true);
-        setTimeout(() => {
-            console.log(IFrameRef);
-            if (!IFrameRef.current) return;
-            IFrameRef.current.contentWindow.postMessage(
-                "Hello son",
-                "http://localhost:3001/"
-            );
-        }, 100);
-    };
 
     const temporary = async () => {
         let file = dataURLtoFile(imageSrc, "png");
@@ -168,7 +170,7 @@ export default function Write({ formStep, nextFormStep, stepThree, dataID }) {
                         accept="image/*"
                     />
                 </div>
-                {imageSrc !== undefined ? (
+                {stepThree.status !== false ? (
                     <>
                         {imageSrc.slice(0, 4) === "data" ? (
                             <img
@@ -197,7 +199,7 @@ export default function Write({ formStep, nextFormStep, stepThree, dataID }) {
                     className={styles.popupToWrite}
                     // href="https://anbon.vip/twtc_diagram/"
                     // onClick={() => setShow(true)}
-                    href="http://localhost:3001/"
+                    // href=""
                     onClick={handleWritePlan}
                     target="iframe_a"
                 >
@@ -221,7 +223,7 @@ export default function Write({ formStep, nextFormStep, stepThree, dataID }) {
                     {t("applyForm.stepper.next")}
                 </button>
             </form>
-            {show ? (
+            <div style={{ display: show ? "block" : "none" }}>
                 <Popup close={close}>
                     <div
                         onClick={(e) => {
@@ -232,7 +234,8 @@ export default function Write({ formStep, nextFormStep, stepThree, dataID }) {
                     >
                         <iframe
                             ref={IFrameRef}
-                            src="demo_iframe.htm"
+                            // src="http://localhost:3001/"
+                            src="https://anbon.vip/twtc_diagram/"
                             id="iframe1"
                             name="iframe_a"
                             height="100%"
@@ -241,7 +244,7 @@ export default function Write({ formStep, nextFormStep, stepThree, dataID }) {
                         ></iframe>
                     </div>
                 </Popup>
-            ) : null}
+            </div>
         </div>
     );
 }

@@ -99,32 +99,66 @@ export default function Preview({
                     </div>
                 </div>
                 <h2>{t("applyForm.preview.groupTwo.title")}</h2>
-                <div className={styles.formCompleteInvoce}>
-                    <div className={styles.formRow}>
-                        <label>
-                            {t("applyForm.preview.groupTwo.companyName")}
-                        </label>
-                        <p>{data.invoice.invoice_company}</p>
+                {data.hydro_items.base_option === "Y" ? (
+                    <div className={styles.formCompleteInvoce}>
+                        <div className={styles.formRow}>
+                            <label>
+                                {t("applyForm.preview.groupTwo.companyName")}
+                            </label>
+                            <p></p>
+                        </div>
+                        <div className={styles.formRow}>
+                            <label>
+                                {t("applyForm.preview.groupTwo.taxID")}
+                            </label>
+                            <p></p>
+                        </div>
+                        <div className={styles.formRow}>
+                            <label>
+                                {" "}
+                                {t("applyForm.preview.groupTwo.invoiceAddress")}
+                            </label>
+                            <p></p>
+                        </div>
+                        <div className={styles.formRow}>
+                            <label>
+                                {" "}
+                                {t("applyForm.preview.groupTwo.remark")}：
+                            </label>
+                            <p></p>
+                        </div>
                     </div>
-                    <div className={styles.formRow}>
-                        <label>{t("applyForm.preview.groupTwo.taxID")}</label>
-                        <p>{data.invoice.invoice_taxid}</p>
+                ) : (
+                    <div className={styles.formCompleteInvoce}>
+                        <div className={styles.formRow}>
+                            <label>
+                                {t("applyForm.preview.groupTwo.companyName")}
+                            </label>
+                            <p>{data.invoice.invoice_company}</p>
+                        </div>
+                        <div className={styles.formRow}>
+                            <label>
+                                {t("applyForm.preview.groupTwo.taxID")}
+                            </label>
+                            <p>{data.invoice.invoice_taxid}</p>
+                        </div>
+                        <div className={styles.formRow}>
+                            <label>
+                                {" "}
+                                {t("applyForm.preview.groupTwo.invoiceAddress")}
+                            </label>
+                            <p>{data.invoice.invoice_address}</p>
+                        </div>
+                        <div className={styles.formRow}>
+                            <label>
+                                {" "}
+                                {t("applyForm.preview.groupTwo.remark")}：
+                            </label>
+                            <p>{data.invoice.remark}</p>
+                        </div>
                     </div>
-                    <div className={styles.formRow}>
-                        <label>
-                            {" "}
-                            {t("applyForm.preview.groupTwo.invoiceAddress")}
-                        </label>
-                        <p>{data.invoice.invoice_address}</p>
-                    </div>
-                    <div className={styles.formRow}>
-                        <label>
-                            {" "}
-                            {t("applyForm.preview.groupTwo.remark")}：
-                        </label>
-                        <p>{data.invoice.remark}</p>
-                    </div>
-                </div>
+                )}
+
                 <h2>{t("applyForm.preview.groupThree.title")}</h2>
                 {data.hydro_items.base_option === "Y" ? (
                     <div>{t("applyForm.preview.groupThree.useDefault")}</div>
@@ -164,7 +198,14 @@ export default function Preview({
                                             key={item.index}
                                         >
                                             <td>{item.index}</td>
-                                            <td>{item.name}</td>
+                                            <td
+                                                style={{
+                                                    textAlign: "left",
+                                                    paddingLeft: "15px",
+                                                }}
+                                            >
+                                                {item.name}
+                                            </td>
                                             <td>{item.quantity}</td>
                                             <td>{item.price}</td>
                                             <td>{item.sum}</td>
@@ -172,13 +213,40 @@ export default function Preview({
                                     </>
                                 ))}
                                 <tr className={styles.sum}>
-                                    <td className={styles.sumTitle} colSpan={4}>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td className={styles.sumTitle}>
                                         {t(
                                             "applyForm.preview.groupThree.total"
                                         )}
                                     </td>
                                     <td>{data.hydro_items.total_sum}</td>
                                 </tr>
+                                {data.discount.discount_value !== "" ? (
+                                    <>
+                                        <tr className={styles.sum}>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td className={styles.sumTitle}>
+                                                {data.discount.discount_type}
+                                            </td>
+                                            <td>
+                                                {data.discount.discount_price}
+                                            </td>
+                                        </tr>
+                                        <tr className={styles.sum}>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td className={styles.sumTitle}>
+                                                總價
+                                            </td>
+                                            <td>{data.discount.finally_sum}</td>
+                                        </tr>
+                                    </>
+                                ) : null}
                             </tbody>
                         </table>
                     </div>

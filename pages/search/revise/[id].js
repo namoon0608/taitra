@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Head from "next/head";
 import Nav from "../../../Components/Nav";
 import Footer from "../../../Components/Footer";
@@ -9,6 +9,7 @@ import { useTranslation } from "next-i18next";
 import Popup from "../../../Components/Popup/Popup";
 import SlideToggle from "react-slide-toggle";
 import { StylesContext } from "@material-ui/styles";
+import { useRouter } from "next/router";
 
 export async function getServerSideProps({ locale, query }) {
     const options = {
@@ -28,11 +29,13 @@ export async function getServerSideProps({ locale, query }) {
     const infoData = await infoRes.json();
 
     options.body.append("application_form_id", `${query.id}`);
+    options.body.append("revised", "N");
 
     const reviseData = await fetch(
-        `${process.env.API_BASE_URL}getSecondModifyData`,
+        `${process.env.API_BASE_URL}getReviseData`,
         options
     ).then((response) => response.json());
+    console.log(reviseData);
 
     return {
         props: {
@@ -45,10 +48,135 @@ export async function getServerSideProps({ locale, query }) {
 
 export default function Revise(props) {
     const { t } = useTranslation();
+    const [data, setData] = useState(null);
+    const [isLoading, setLoading] = useState(false);
     const [show, setShow] = useState(false);
+    const [preview, setPreview] = useState(false);
+    const [upNumber, setUpNumber] = useState();
+    const [downNumber, setDownNumber] = useState();
+    const router = useRouter();
 
+    const initProducts = async () => {
+        const form = new FormData();
+        form.append("application_form_id", router.query.id);
+        form.append(
+            "sid",
+            "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
+        );
+        form.append("revised", "Y");
+        const options = {
+            method: "POST",
+            // headers: {
+            //     "Content-Type":
+            //         "multipart/form-data; boundary=---011000010111000001101001",
+            // },
+        };
+        options.body = form;
+        // const form = new FormData();
+        // let items = [];
+        // const checkBoxsOne = document.querySelectorAll(
+        //     ".Form_aGroup__FN6oc input[type='checkbox']"
+        // );
+        // const checkBoxsTwo = document.querySelectorAll(
+        //     ".Form_bGroup__4aN8N input[type='checkbox']"
+        // );
+        // for (let check of checkBoxsOne) {
+        //     if (check.checked) {
+        //         items.push({ item_id: check.value, quantity: "1" });
+        //     }
+        // }
+        // for (let check of checkBoxsTwo) {
+        //     if (check.checked) {
+        //         let num = check.nextSibling.nextSibling.childNodes[1];
+        //         items.push({
+        //             item_id: check.value,
+        //             quantity: num.value,
+        //         });
+        //     }
+        // }
+        // form.append("application_form_id", router.query.id);
+        // form.append(
+        //     "proxy_company_name",
+        //     document.querySelectorAll('input[name="company"]')[0].value
+        // );
+        // form.append(
+        //     "proxy_tax_id",
+        //     document.querySelectorAll('input[name="uniformNum"]')[0].value
+        // );
+        // form.append(
+        //     "proxy_contact_person",
+        //     document.querySelectorAll('input[name="contactPerson"]')[0].value
+        // );
+        // form.append(
+        //     "proxy_email",
+        //     document.querySelectorAll('input[name="email"]')[0].value
+        // );
+        // form.append(
+        //     "proxy_phone",
+        //     document.querySelectorAll('input[name="phone"]')[0].value
+        // );
+        // form.append(
+        //     "invoice_company_name",
+        //     document.querySelectorAll('input[name="company"]')[1].value
+        // );
+        // form.append(
+        //     "invoice_address",
+        //     document.querySelector('input[name="address"]').value
+        // );
+        // form.append(
+        //     "invoice_tax_id",
+        //     document.querySelectorAll('input[name="uniformNum"]')[1].value
+        // );
+        // form.append(
+        //     "remark",
+        //     document.querySelectorAll('textarea[name="remark"]')[0].value
+        // );
+        // form.append(
+        //     "sid",
+        //     "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
+        // );
+        // form.append("items", JSON.stringify(items));
+        // const options = {
+        //     method: "POST",
+        //     headers: {
+        //         // cookie: "ci_session=8v7iclm76gcb6fsic32lodnk29j11j6b",
+        //         "Content-Type": "application/x-www-form-urlencoded",
+        //     },
+        //     body: new URLSearchParams({
+        //         lang: router.locale,
+        //         application_form_id: dataID,
+        //         sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
+        //     }),
+        // };
+        setLoading(true);
+        const result = await fetch(
+            `${process.env.customKey}getReviseData`,
+            options
+        )
+            .then((response) => response.json())
+            // .then((response) => {
+            //     setData(response);
+            //     // console.log(response);
+            //     setLoading(false);
+            // })
+            .catch((err) => console.error(err));
+        // console.log(result);
+        setData(result);
+    };
+
+    useEffect(() => {
+        if (preview) {
+            initProducts();
+        }
+    }, [preview]);
     const close = () => {
         setShow(false);
+        setPreview(false);
+    };
+
+    const handleRevise = () => {
+        setShow(false);
+        setPreview(true);
     };
 
     const active = (e) => {
@@ -63,13 +191,15 @@ export default function Revise(props) {
             e.target.nextSibling.nextSibling.childNodes[1].removeAttribute(
                 "disabled"
             );
+            e.target.nextSibling.nextSibling.childNodes[1].min = 1;
+            e.target.nextSibling.nextSibling.childNodes[1].value = 1;
             e.target.parentNode.className = styles.checkedActive;
         } else {
             e.target.nextSibling.nextSibling.childNodes[1].setAttribute(
                 "disabled",
                 ""
             );
-            e.target.nextSibling.nextSibling.childNodes[1].value = null;
+            e.target.nextSibling.nextSibling.childNodes[1].value = 0;
             e.target.parentNode.className = "";
         }
     };
@@ -92,12 +222,12 @@ export default function Revise(props) {
                     <h2>{t("search.option")}</h2>
                     <p
                         className={styles.opinionBox}
-                        dangerouslySetInnerHTML={{
-                            __html: props.data.comment.replace(
-                                /(?:\r\n|\r|\n)/g,
-                                "<br>"
-                            ),
-                        }}
+                        // dangerouslySetInnerHTML={{
+                        //     __html: props.data.comment.replace(
+                        //         /(?:\r\n|\r|\n)/g,
+                        //         "<br>"
+                        //     ),
+                        // }}
                     ></p>
                     <h2>代理或裝潢公司基本資料</h2>
                     <div className={styles.form}>
@@ -109,6 +239,7 @@ export default function Revise(props) {
                                 defaultValue={
                                     props.data.proxy.proxy_company_name
                                 }
+                                maxLength={30}
                             />
                         </div>
                         <div className={styles.formRow}>
@@ -117,6 +248,13 @@ export default function Revise(props) {
                                 name="uniformNum"
                                 type="text"
                                 defaultValue={props.data.proxy.proxy_tax_id}
+                                maxLength={8}
+                                value={upNumber}
+                                onChange={(e) =>
+                                    setUpNumber(
+                                        e.target.value.replace(/[^\d]/g, "")
+                                    )
+                                }
                             />
                         </div>
                         <div className={styles.formRow}>
@@ -127,6 +265,16 @@ export default function Revise(props) {
                                 defaultValue={
                                     props.data.proxy.proxy_contact_person
                                 }
+                                maxLength={20}
+                            />
+                        </div>
+                        <div className={styles.formRow}>
+                            <label>聯絡電話</label>
+                            <input
+                                name="phone"
+                                type="text"
+                                defaultValue={props.data.proxy.proxy_phone}
+                                maxLength={20}
                             />
                         </div>
                         <div className={styles.formRow}>
@@ -148,6 +296,7 @@ export default function Revise(props) {
                                 defaultValue={
                                     props.data.invoice.invoice_comapny
                                 }
+                                maxLength={30}
                             />
                         </div>
                         <div className={styles.formRow}>
@@ -155,6 +304,13 @@ export default function Revise(props) {
                             <input
                                 name="uniformNum"
                                 type="text"
+                                maxLength={8}
+                                value={downNumber}
+                                onChange={(e) =>
+                                    setDownNumber(
+                                        e.target.value.replace(/[^\d]/g, "")
+                                    )
+                                }
                                 defaultValue={props.data.invoice.invoice_taxid}
                             />
                         </div>
@@ -163,7 +319,10 @@ export default function Revise(props) {
                             <input
                                 name="address"
                                 type="text"
-                                defaultValue={"台北市南京東路四段1號2樓"}
+                                maxLength={30}
+                                defaultValue={
+                                    props.data.invoice.invoice_address
+                                }
                             />
                         </div>
                         <div
@@ -172,7 +331,10 @@ export default function Revise(props) {
                             )}
                         >
                             <label htmlFor="prepare">備註</label>
-                            <textarea defaultValue={"123"}></textarea>
+                            <textarea
+                                name="remark"
+                                defaultValue={props.data.invoice.remark}
+                            ></textarea>
                         </div>
                     </div>
                     <h2 className={styles.reviseTitle}>
@@ -188,55 +350,45 @@ export default function Revise(props) {
                         <table>
                             <thead>
                                 <tr className={styles.title}>
-                                    <th>項次</th>
-                                    <th>申請項目</th>
-                                    <th>數量</th>
-                                    <th>單價</th>
-                                    <th>複價</th>
+                                    <th style={{ width: "7%" }}>項次</th>
+                                    <th style={{ width: "60%" }}>申請項目</th>
+                                    <th style={{ width: "11%" }}>數量</th>
+                                    <th style={{ width: "11%" }}>單價</th>
+                                    <th style={{ width: "11%" }}>複價</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr className={styles.content}>
-                                    <td>1</td>
-                                    <td>
-                                        用電110V電源箱 - 單相 110V 15A (1,500W)
-                                    </td>
-                                    <td>1</td>
-                                    <td>1,950</td>
-                                    <td>1,950</td>
-                                </tr>
-                                <tr className={styles.content}>
-                                    <td>2</td>
-                                    <td>
-                                        用電110V電源箱 - 單相 110V 15A (1,500W)
-                                    </td>
-                                    <td>1</td>
-                                    <td>1,950</td>
-                                    <td>1,950</td>
-                                </tr>
-                                <tr className={styles.content}>
-                                    <td>3</td>
-                                    <td>
-                                        用電110V電源箱 - 單相 110V 15A (1,500W)
-                                    </td>
-                                    <td>1</td>
-                                    <td>1,950</td>
-                                    <td>1,950</td>
-                                </tr>
-                                <tr className={styles.content}>
-                                    <td>4</td>
-                                    <td>
-                                        用電110V電源箱 - 單相 110V 15A (1,500W)
-                                    </td>
-                                    <td>1</td>
-                                    <td>1,950</td>
-                                    <td>1,950</td>
-                                </tr>
+                                {props.data.hydro_items_trial.items.map(
+                                    (item) => (
+                                        <tr
+                                            className={styles.content}
+                                            key={item.index}
+                                        >
+                                            <td>{item.index}</td>
+                                            <td
+                                                style={{
+                                                    textAlign: "left",
+                                                    paddingLeft: "15px",
+                                                }}
+                                            >
+                                                {item.item}
+                                            </td>
+                                            <td>{item.quantity}</td>
+                                            <td>{item.price}</td>
+                                            <td>{item.sum}</td>
+                                        </tr>
+                                    )
+                                )}
                                 <tr className={styles.sum}>
-                                    <td className={styles.sumTitle} colSpan={4}>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td className={styles.sumTitle}>
                                         合計總金額
                                     </td>
-                                    <td>20,439</td>
+                                    <td>
+                                        {props.data.hydro_items_trial.total_sum}
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -321,98 +473,87 @@ export default function Revise(props) {
                                                     }
                                                 >
                                                     <p>
-                                                        110V 用電計算說明：
-                                                        0.5KW(千瓦)＝500W(瓦)＝5A(安培)；1KW(千瓦)＝1000W(瓦)＝10A(安培
-                                                        (a)
-                                                        110V攤位總用電量(KW)＝攤位上照明用電＋各種電器用品用電(電視、開飲機、電腦等)＋展示產品用電....總計。
-                                                        (b)
-                                                        110V免費累計電量(KW)＝參展攤位數
-                                                        X 500W（每1攤位500W免費)
-                                                        (c)
-                                                        1100V需追申請之電量(KW)＝110V攤位總用電量扣除了110V免費累計電量；(a)
-                                                        - (b) = (c) 。
-                                                        請點選計算出的 (c) 值
+                                                        {t(
+                                                            "applyForm.stepTwo.itemA"
+                                                        )}
                                                     </p>
                                                     <div
                                                         className={
                                                             styles.aGroup
                                                         }
                                                     >
-                                                        <label htmlFor="500W">
-                                                            <input
-                                                                type="checkbox"
-                                                                id="500W"
-                                                                value="110V_5A"
-                                                                onChange={
-                                                                    active
-                                                                }
-                                                            />
-                                                            單 相 110V 5A
-                                                            （500W）
-                                                            <span>$ 650</span>
-                                                        </label>
-                                                        <label htmlFor="1000W">
-                                                            <input
-                                                                type="checkbox"
-                                                                id="1000W"
-                                                                value="110V_10A"
-                                                                onChange={
-                                                                    active
-                                                                }
-                                                            />
-                                                            單 相 110V
-                                                            10A（1,000W）
-                                                            <span>$ 1,300</span>
-                                                        </label>
-                                                        <label htmlFor="1500W">
-                                                            <input
-                                                                type="checkbox"
-                                                                id="1500W"
-                                                                value="110V_15A"
-                                                                onChange={
-                                                                    active
-                                                                }
-                                                            />
-                                                            單 相 110V
-                                                            15A（1,500W）
-                                                            <span>$ 1,950</span>
-                                                        </label>
-                                                        <label htmlFor="2KW">
-                                                            <input
-                                                                type="checkbox"
-                                                                id="2KW"
-                                                                value="110V/190V_2"
-                                                                onChange={
-                                                                    active
-                                                                }
-                                                            />
-                                                            三 相 110V/190V 2KW
-                                                            <span>$ 2,600</span>
-                                                        </label>
-                                                        <label htmlFor="4KW">
-                                                            <input
-                                                                type="checkbox"
-                                                                id="4KW"
-                                                                value="110V/190V_4"
-                                                                onChange={
-                                                                    active
-                                                                }
-                                                            />
-                                                            三 相 110V/190V 4KW
-                                                            <span>$ 5,200</span>
-                                                        </label>
-                                                        <label htmlFor="6KW">
-                                                            <input
-                                                                type="checkbox"
-                                                                id="6KW"
-                                                                value="110V/190V_6"
-                                                                onChange={
-                                                                    active
-                                                                }
-                                                            />
-                                                            三 相 110V/190V 6KW
-                                                            <span>$ 7,800</span>
-                                                        </label>
+                                                        {props.data.hydro_items[0].data.map(
+                                                            (item) => (
+                                                                <>
+                                                                    {item.chk ===
+                                                                    "Y" ? (
+                                                                        <label
+                                                                            htmlFor={
+                                                                                item.item_id
+                                                                            }
+                                                                            key={
+                                                                                item.item_id
+                                                                            }
+                                                                            className={
+                                                                                styles.checkedActive
+                                                                            }
+                                                                        >
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                id={
+                                                                                    item.item_id
+                                                                                }
+                                                                                value={
+                                                                                    item.item_id
+                                                                                }
+                                                                                onChange={
+                                                                                    active
+                                                                                }
+                                                                                defaultChecked
+                                                                            />
+                                                                            {
+                                                                                item.name
+                                                                            }
+                                                                            <span>
+                                                                                {
+                                                                                    item.price
+                                                                                }
+                                                                            </span>
+                                                                        </label>
+                                                                    ) : (
+                                                                        <label
+                                                                            htmlFor={
+                                                                                item.item_id
+                                                                            }
+                                                                            key={
+                                                                                item.item_id
+                                                                            }
+                                                                        >
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                id={
+                                                                                    item.item_id
+                                                                                }
+                                                                                value={
+                                                                                    item.item_id
+                                                                                }
+                                                                                onChange={
+                                                                                    active
+                                                                                }
+                                                                            />
+                                                                            {
+                                                                                item.name
+                                                                            }
+                                                                            <span>
+                                                                                {
+                                                                                    item.price
+                                                                                }
+                                                                            </span>
+                                                                        </label>
+                                                                    )}
+                                                                </>
+                                                            )
+                                                        )}
                                                     </div>
                                                 </div>
                                             </div>
@@ -486,89 +627,128 @@ export default function Revise(props) {
                                                         styles.dropDownContent
                                                     }
                                                 >
+                                                    <p>
+                                                        {t(
+                                                            "applyForm.stepTwo.itemBCD"
+                                                        )}
+                                                    </p>
                                                     <div
                                                         className={
                                                             styles.bGroup
                                                         }
                                                     >
-                                                        <label htmlFor="220V_15A">
-                                                            <input
-                                                                type="checkbox"
-                                                                id="220V_15A"
-                                                                value="220V_15A"
-                                                                onChange={
-                                                                    enableNextTextBox
-                                                                }
-                                                            />
-                                                            三相 220V 動力用電
-                                                            15A
-                                                            <label
-                                                                className={
-                                                                    styles.num
-                                                                }
-                                                            >
-                                                                數量
-                                                                <input
-                                                                    type="number"
-                                                                    disabled
-                                                                />
-                                                            </label>
-                                                            <span>
-                                                                $ 2,994/組
-                                                            </span>
-                                                        </label>
-                                                        <label htmlFor="220V_20A">
-                                                            <input
-                                                                type="checkbox"
-                                                                id="220V_20A"
-                                                                value="220V_20A"
-                                                                onChange={
-                                                                    enableNextTextBox
-                                                                }
-                                                            />
-                                                            三相 220V 動力用電
-                                                            20A
-                                                            <label
-                                                                className={
-                                                                    styles.num
-                                                                }
-                                                            >
-                                                                數量
-                                                                <input
-                                                                    type="number"
-                                                                    disabled
-                                                                />
-                                                            </label>
-                                                            <span>
-                                                                $ 5,889/組
-                                                            </span>
-                                                        </label>
-                                                        <label htmlFor="220V_30A">
-                                                            <input
-                                                                type="checkbox"
-                                                                id="220V_30A"
-                                                                value="220V_30A"
-                                                                onChange={
-                                                                    enableNextTextBox
-                                                                }
-                                                            />
-                                                            三相 220V 動力用電
-                                                            30A
-                                                            <label
-                                                                className={
-                                                                    styles.num
-                                                                }
-                                                            >
-                                                                數量
-                                                                <input
-                                                                    type="number"
-                                                                    disabled
-                                                                />
-                                                            </label>
-                                                            <span>
-                                                                $ 7,834/組
-                                                            </span>
-                                                        </label>
+                                                        {props.data.hydro_items[1].data.map(
+                                                            (item) => (
+                                                                <>
+                                                                    {item.chk ===
+                                                                    "Y" ? (
+                                                                        <label
+                                                                            htmlFor={
+                                                                                item.item_id
+                                                                            }
+                                                                            key={
+                                                                                item.item_id
+                                                                            }
+                                                                            className={
+                                                                                styles.checkedActive
+                                                                            }
+                                                                        >
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                id={
+                                                                                    item.item_id
+                                                                                }
+                                                                                value={
+                                                                                    item.item_id
+                                                                                }
+                                                                                onChange={
+                                                                                    enableNextTextBox
+                                                                                }
+                                                                                defaultChecked
+                                                                            />
+                                                                            {
+                                                                                item.name
+                                                                            }
+                                                                            <label
+                                                                                className={
+                                                                                    styles.num
+                                                                                }
+                                                                            >
+                                                                                {t(
+                                                                                    "applyForm.stepTwo.quantity"
+                                                                                )}
+                                                                                <input
+                                                                                    type="number"
+                                                                                    min="1"
+                                                                                    defaultValue={
+                                                                                        item.quantity
+                                                                                    }
+                                                                                />
+                                                                            </label>
+                                                                            <span>
+                                                                                {
+                                                                                    item.prcie
+                                                                                }
+
+                                                                                /
+                                                                                {t(
+                                                                                    "applyForm.stepTwo.set"
+                                                                                )}
+                                                                            </span>
+                                                                        </label>
+                                                                    ) : (
+                                                                        <label
+                                                                            htmlFor={
+                                                                                item.item_id
+                                                                            }
+                                                                            key={
+                                                                                item.item_id
+                                                                            }
+                                                                        >
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                id={
+                                                                                    item.item_id
+                                                                                }
+                                                                                value={
+                                                                                    item.item_id
+                                                                                }
+                                                                                onChange={
+                                                                                    enableNextTextBox
+                                                                                }
+                                                                            />
+                                                                            {
+                                                                                item.name
+                                                                            }
+                                                                            <label
+                                                                                className={
+                                                                                    styles.num
+                                                                                }
+                                                                            >
+                                                                                {t(
+                                                                                    "applyForm.stepTwo.quantity"
+                                                                                )}
+                                                                                <input
+                                                                                    type="number"
+                                                                                    min="0"
+                                                                                    disabled
+                                                                                />
+                                                                            </label>
+                                                                            <span>
+                                                                                {
+                                                                                    item.prcie
+                                                                                }
+
+                                                                                /
+                                                                                {t(
+                                                                                    "applyForm.stepTwo.set"
+                                                                                )}
+                                                                            </span>
+                                                                        </label>
+                                                                    )}
+                                                                </>
+                                                            )
+                                                        )}
                                                     </div>
                                                 </div>
                                             </div>
@@ -642,36 +822,128 @@ export default function Revise(props) {
                                                         styles.dropDownContent
                                                     }
                                                 >
+                                                    <p>
+                                                        {t(
+                                                            "applyForm.stepTwo.itemBCD"
+                                                        )}
+                                                    </p>
                                                     <div
                                                         className={
                                                             styles.bGroup
                                                         }
                                                     >
-                                                        <label htmlFor="380V">
-                                                            <input
-                                                                type="checkbox"
-                                                                id="380V"
-                                                                value="380V"
-                                                                onChange={
-                                                                    enableNextTextBox
-                                                                }
-                                                            />
-                                                            用電380V電源箱
-                                                            <label
-                                                                className={
-                                                                    styles.num
-                                                                }
-                                                            >
-                                                                數量
-                                                                <input
-                                                                    type="number"
-                                                                    disabled
-                                                                />
-                                                            </label>
-                                                            <span>
-                                                                $ 2,994/組
-                                                            </span>
-                                                        </label>
+                                                        {props.data.hydro_items[2].data.map(
+                                                            (item) => (
+                                                                <>
+                                                                    {item.chk ===
+                                                                    "Y" ? (
+                                                                        <label
+                                                                            htmlFor={
+                                                                                item.item_id
+                                                                            }
+                                                                            key={
+                                                                                item.item_id
+                                                                            }
+                                                                            className={
+                                                                                styles.checkedActive
+                                                                            }
+                                                                        >
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                id={
+                                                                                    item.item_id
+                                                                                }
+                                                                                value={
+                                                                                    item.item_id
+                                                                                }
+                                                                                onChange={
+                                                                                    enableNextTextBox
+                                                                                }
+                                                                                defaultChecked
+                                                                            />
+                                                                            {
+                                                                                item.name
+                                                                            }
+                                                                            <label
+                                                                                className={
+                                                                                    styles.num
+                                                                                }
+                                                                            >
+                                                                                {t(
+                                                                                    "applyForm.stepTwo.quantity"
+                                                                                )}
+                                                                                <input
+                                                                                    type="number"
+                                                                                    min="1"
+                                                                                    defaultValue={
+                                                                                        item.quantity
+                                                                                    }
+                                                                                />
+                                                                            </label>
+                                                                            <span>
+                                                                                {
+                                                                                    item.prcie
+                                                                                }
+
+                                                                                /
+                                                                                {t(
+                                                                                    "applyForm.stepTwo.set"
+                                                                                )}
+                                                                            </span>
+                                                                        </label>
+                                                                    ) : (
+                                                                        <label
+                                                                            htmlFor={
+                                                                                item.item_id
+                                                                            }
+                                                                            key={
+                                                                                item.item_id
+                                                                            }
+                                                                        >
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                id={
+                                                                                    item.item_id
+                                                                                }
+                                                                                value={
+                                                                                    item.item_id
+                                                                                }
+                                                                                onChange={
+                                                                                    enableNextTextBox
+                                                                                }
+                                                                            />
+                                                                            {
+                                                                                item.name
+                                                                            }
+                                                                            <label
+                                                                                className={
+                                                                                    styles.num
+                                                                                }
+                                                                            >
+                                                                                {t(
+                                                                                    "applyForm.stepTwo.quantity"
+                                                                                )}
+                                                                                <input
+                                                                                    type="number"
+                                                                                    min="0"
+                                                                                    disabled
+                                                                                />
+                                                                            </label>
+                                                                            <span>
+                                                                                {
+                                                                                    item.prcie
+                                                                                }
+
+                                                                                /
+                                                                                {t(
+                                                                                    "applyForm.stepTwo.set"
+                                                                                )}
+                                                                            </span>
+                                                                        </label>
+                                                                    )}
+                                                                </>
+                                                            )
+                                                        )}
                                                     </div>
                                                 </div>
                                             </div>
@@ -699,7 +971,7 @@ export default function Revise(props) {
                                                     ].join(" ")}
                                                     onClick={toggle}
                                                 >
-                                                    D. 24小時用電
+                                                    D. 用電440V電源箱
                                                     <span>
                                                         {toggleState ===
                                                             "EXPANDED" ||
@@ -745,36 +1017,128 @@ export default function Revise(props) {
                                                         styles.dropDownContent
                                                     }
                                                 >
+                                                    <p>
+                                                        {t(
+                                                            "applyForm.stepTwo.itemBCD"
+                                                        )}
+                                                    </p>
                                                     <div
                                                         className={
                                                             styles.bGroup
                                                         }
                                                     >
-                                                        <label htmlFor="electricity">
-                                                            <input
-                                                                type="checkbox"
-                                                                id="electricity"
-                                                                value="electricity"
-                                                                onChange={
-                                                                    enableNextTextBox
-                                                                }
-                                                            />
-                                                            24小時用電
-                                                            <label
-                                                                className={
-                                                                    styles.num
-                                                                }
-                                                            >
-                                                                數量
-                                                                <input
-                                                                    type="number"
-                                                                    disabled
-                                                                />
-                                                            </label>
-                                                            <span>
-                                                                $ 2,994/組
-                                                            </span>
-                                                        </label>
+                                                        {props.data.hydro_items[3].data.map(
+                                                            (item) => (
+                                                                <>
+                                                                    {item.chk ===
+                                                                    "Y" ? (
+                                                                        <label
+                                                                            htmlFor={
+                                                                                item.item_id
+                                                                            }
+                                                                            key={
+                                                                                item.item_id
+                                                                            }
+                                                                            className={
+                                                                                styles.checkedActive
+                                                                            }
+                                                                        >
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                id={
+                                                                                    item.item_id
+                                                                                }
+                                                                                value={
+                                                                                    item.item_id
+                                                                                }
+                                                                                onChange={
+                                                                                    enableNextTextBox
+                                                                                }
+                                                                                defaultChecked
+                                                                            />
+                                                                            {
+                                                                                item.name
+                                                                            }
+                                                                            <label
+                                                                                className={
+                                                                                    styles.num
+                                                                                }
+                                                                            >
+                                                                                {t(
+                                                                                    "applyForm.stepTwo.quantity"
+                                                                                )}
+                                                                                <input
+                                                                                    type="number"
+                                                                                    min="1"
+                                                                                    defaultValue={
+                                                                                        item.quantity
+                                                                                    }
+                                                                                />
+                                                                            </label>
+                                                                            <span>
+                                                                                {
+                                                                                    item.prcie
+                                                                                }
+
+                                                                                /
+                                                                                {t(
+                                                                                    "applyForm.stepTwo.set"
+                                                                                )}
+                                                                            </span>
+                                                                        </label>
+                                                                    ) : (
+                                                                        <label
+                                                                            htmlFor={
+                                                                                item.item_id
+                                                                            }
+                                                                            key={
+                                                                                item.item_id
+                                                                            }
+                                                                        >
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                id={
+                                                                                    item.item_id
+                                                                                }
+                                                                                value={
+                                                                                    item.item_id
+                                                                                }
+                                                                                onChange={
+                                                                                    enableNextTextBox
+                                                                                }
+                                                                            />
+                                                                            {
+                                                                                item.name
+                                                                            }
+                                                                            <label
+                                                                                className={
+                                                                                    styles.num
+                                                                                }
+                                                                            >
+                                                                                {t(
+                                                                                    "applyForm.stepTwo.quantity"
+                                                                                )}
+                                                                                <input
+                                                                                    type="number"
+                                                                                    min="0"
+                                                                                    disabled
+                                                                                />
+                                                                            </label>
+                                                                            <span>
+                                                                                {
+                                                                                    item.prcie
+                                                                                }
+
+                                                                                /
+                                                                                {t(
+                                                                                    "applyForm.stepTwo.set"
+                                                                                )}
+                                                                            </span>
+                                                                        </label>
+                                                                    )}
+                                                                </>
+                                                            )
+                                                        )}
                                                     </div>
                                                 </div>
                                             </div>
@@ -802,7 +1166,7 @@ export default function Revise(props) {
                                                     ].join(" ")}
                                                     onClick={toggle}
                                                 >
-                                                    E. 給排水管
+                                                    E. 24小時用電
                                                     <span>
                                                         {toggleState ===
                                                             "EXPANDED" ||
@@ -848,36 +1212,128 @@ export default function Revise(props) {
                                                         styles.dropDownContent
                                                     }
                                                 >
+                                                    <p>
+                                                        {t(
+                                                            "applyForm.stepTwo.itemBCD"
+                                                        )}
+                                                    </p>
                                                     <div
                                                         className={
                                                             styles.bGroup
                                                         }
                                                     >
-                                                        <label htmlFor="drain_pipe">
-                                                            <input
-                                                                type="checkbox"
-                                                                id="drain_pipe"
-                                                                value="drain_pipe"
-                                                                onChange={
-                                                                    enableNextTextBox
-                                                                }
-                                                            />
-                                                            給排水管
-                                                            <label
-                                                                className={
-                                                                    styles.num
-                                                                }
-                                                            >
-                                                                數量
-                                                                <input
-                                                                    type="number"
-                                                                    disabled
-                                                                />
-                                                            </label>
-                                                            <span>
-                                                                $ 5,000 /組
-                                                            </span>
-                                                        </label>
+                                                        {props.data.hydro_items[4].data.map(
+                                                            (item) => (
+                                                                <>
+                                                                    {item.chk ===
+                                                                    "Y" ? (
+                                                                        <label
+                                                                            htmlFor={
+                                                                                item.item_id
+                                                                            }
+                                                                            key={
+                                                                                item.item_id
+                                                                            }
+                                                                            className={
+                                                                                styles.checkedActive
+                                                                            }
+                                                                        >
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                id={
+                                                                                    item.item_id
+                                                                                }
+                                                                                value={
+                                                                                    item.item_id
+                                                                                }
+                                                                                onChange={
+                                                                                    enableNextTextBox
+                                                                                }
+                                                                                defaultChecked
+                                                                            />
+                                                                            {
+                                                                                item.name
+                                                                            }
+                                                                            <label
+                                                                                className={
+                                                                                    styles.num
+                                                                                }
+                                                                            >
+                                                                                {t(
+                                                                                    "applyForm.stepTwo.quantity"
+                                                                                )}
+                                                                                <input
+                                                                                    type="number"
+                                                                                    min="1"
+                                                                                    defaultValue={
+                                                                                        item.quantity
+                                                                                    }
+                                                                                />
+                                                                            </label>
+                                                                            <span>
+                                                                                {
+                                                                                    item.prcie
+                                                                                }
+
+                                                                                /
+                                                                                {t(
+                                                                                    "applyForm.stepTwo.set"
+                                                                                )}
+                                                                            </span>
+                                                                        </label>
+                                                                    ) : (
+                                                                        <label
+                                                                            htmlFor={
+                                                                                item.item_id
+                                                                            }
+                                                                            key={
+                                                                                item.item_id
+                                                                            }
+                                                                        >
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                id={
+                                                                                    item.item_id
+                                                                                }
+                                                                                value={
+                                                                                    item.item_id
+                                                                                }
+                                                                                onChange={
+                                                                                    enableNextTextBox
+                                                                                }
+                                                                            />
+                                                                            {
+                                                                                item.name
+                                                                            }
+                                                                            <label
+                                                                                className={
+                                                                                    styles.num
+                                                                                }
+                                                                            >
+                                                                                {t(
+                                                                                    "applyForm.stepTwo.quantity"
+                                                                                )}
+                                                                                <input
+                                                                                    type="number"
+                                                                                    min="0"
+                                                                                    disabled
+                                                                                />
+                                                                            </label>
+                                                                            <span>
+                                                                                {
+                                                                                    item.prcie
+                                                                                }
+
+                                                                                /
+                                                                                {t(
+                                                                                    "applyForm.stepTwo.set"
+                                                                                )}
+                                                                            </span>
+                                                                        </label>
+                                                                    )}
+                                                                </>
+                                                            )
+                                                        )}
                                                     </div>
                                                 </div>
                                             </div>
@@ -905,7 +1361,7 @@ export default function Revise(props) {
                                                     ].join(" ")}
                                                     onClick={toggle}
                                                 >
-                                                    F. 壓縮空氣
+                                                    F. 給排水管
                                                     <span>
                                                         {toggleState ===
                                                             "EXPANDED" ||
@@ -951,42 +1407,659 @@ export default function Revise(props) {
                                                         styles.dropDownContent
                                                     }
                                                 >
+                                                    <p>
+                                                        {t(
+                                                            "applyForm.stepTwo.itemE"
+                                                        )}
+                                                    </p>
                                                     <div
                                                         className={
                                                             styles.bGroup
                                                         }
                                                     >
-                                                        <label htmlFor="press_air">
-                                                            <input
-                                                                type="checkbox"
-                                                                id="press_air"
-                                                                value="press_air"
-                                                                onChange={
-                                                                    enableNextTextBox
-                                                                }
-                                                            />
-                                                            壓縮空氣
-                                                            <label
-                                                                className={
-                                                                    styles.num
-                                                                }
-                                                            >
-                                                                數量
-                                                                <input
-                                                                    type="number"
-                                                                    disabled
-                                                                />
-                                                            </label>
-                                                            <span>
-                                                                $ 2,994/組
-                                                            </span>
-                                                        </label>
+                                                        {props.data.hydro_items[5].data.map(
+                                                            (item) => (
+                                                                <>
+                                                                    {item.chk ===
+                                                                    "Y" ? (
+                                                                        <label
+                                                                            htmlFor={
+                                                                                item.item_id
+                                                                            }
+                                                                            key={
+                                                                                item.item_id
+                                                                            }
+                                                                            className={
+                                                                                styles.checkedActive
+                                                                            }
+                                                                        >
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                id={
+                                                                                    item.item_id
+                                                                                }
+                                                                                value={
+                                                                                    item.item_id
+                                                                                }
+                                                                                onChange={
+                                                                                    enableNextTextBox
+                                                                                }
+                                                                                defaultChecked
+                                                                            />
+                                                                            {
+                                                                                item.name
+                                                                            }
+                                                                            <label
+                                                                                className={
+                                                                                    styles.num
+                                                                                }
+                                                                            >
+                                                                                {t(
+                                                                                    "applyForm.stepTwo.quantity"
+                                                                                )}
+                                                                                <input
+                                                                                    type="number"
+                                                                                    min="1"
+                                                                                    defaultValue={
+                                                                                        item.quantity
+                                                                                    }
+                                                                                />
+                                                                            </label>
+                                                                            <span>
+                                                                                {
+                                                                                    item.prcie
+                                                                                }
+
+                                                                                /
+                                                                                {t(
+                                                                                    "applyForm.stepTwo.set"
+                                                                                )}
+                                                                            </span>
+                                                                        </label>
+                                                                    ) : (
+                                                                        <label
+                                                                            htmlFor={
+                                                                                item.item_id
+                                                                            }
+                                                                            key={
+                                                                                item.item_id
+                                                                            }
+                                                                        >
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                id={
+                                                                                    item.item_id
+                                                                                }
+                                                                                value={
+                                                                                    item.item_id
+                                                                                }
+                                                                                onChange={
+                                                                                    enableNextTextBox
+                                                                                }
+                                                                            />
+                                                                            {
+                                                                                item.name
+                                                                            }
+                                                                            <label
+                                                                                className={
+                                                                                    styles.num
+                                                                                }
+                                                                            >
+                                                                                {t(
+                                                                                    "applyForm.stepTwo.quantity"
+                                                                                )}
+                                                                                <input
+                                                                                    type="number"
+                                                                                    min="0"
+                                                                                    disabled
+                                                                                />
+                                                                            </label>
+                                                                            <span>
+                                                                                {
+                                                                                    item.prcie
+                                                                                }
+
+                                                                                /
+                                                                                {t(
+                                                                                    "applyForm.stepTwo.set"
+                                                                                )}
+                                                                            </span>
+                                                                        </label>
+                                                                    )}
+                                                                </>
+                                                            )
+                                                        )}
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     )}
                                 />
+                                <SlideToggle
+                                    duration={1000}
+                                    collapsed={true}
+                                    whenReversedUseBackwardEase={false}
+                                    render={({
+                                        toggle,
+                                        setCollapsibleElement,
+                                        toggleState,
+                                    }) => (
+                                        <div className={styles.card}>
+                                            <div className="card-header">
+                                                <label
+                                                    className={[
+                                                        styles.dropDown,
+                                                        toggleState ===
+                                                        "COLLAPSED"
+                                                            ? styles.dropDown
+                                                            : styles.active,
+                                                    ].join(" ")}
+                                                    onClick={toggle}
+                                                >
+                                                    G. 壓縮空氣
+                                                    <span>
+                                                        {toggleState ===
+                                                            "EXPANDED" ||
+                                                        toggleState ===
+                                                            "EXPANDING" ? (
+                                                            <svg
+                                                                width="16"
+                                                                height="10"
+                                                                viewBox="0 0 16 10"
+                                                                fill="none"
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                            >
+                                                                <path
+                                                                    d="M1 9L8 2L15 9"
+                                                                    stroke="white"
+                                                                    strokeWidth="2"
+                                                                />
+                                                            </svg>
+                                                        ) : (
+                                                            <svg
+                                                                width="16"
+                                                                height="10"
+                                                                viewBox="0 0 16 10"
+                                                                fill="none"
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                            >
+                                                                <path
+                                                                    d="M15 1L8 8L1 1"
+                                                                    stroke="white"
+                                                                    strokeWidth="2"
+                                                                />
+                                                            </svg>
+                                                        )}
+                                                    </span>
+                                                </label>
+                                            </div>
+                                            <div
+                                                className={styles.cardBody}
+                                                ref={setCollapsibleElement}
+                                            >
+                                                <div
+                                                    className={
+                                                        styles.dropDownContent
+                                                    }
+                                                >
+                                                    <p>
+                                                        {t(
+                                                            "applyForm.stepTwo.itemF"
+                                                        )}
+                                                    </p>
+                                                    <div
+                                                        className={
+                                                            styles.bGroup
+                                                        }
+                                                    >
+                                                        {props.data.hydro_items[6].data.map(
+                                                            (item) => (
+                                                                <>
+                                                                    {item.chk ===
+                                                                    "Y" ? (
+                                                                        <label
+                                                                            htmlFor={
+                                                                                item.item_id
+                                                                            }
+                                                                            key={
+                                                                                item.item_id
+                                                                            }
+                                                                            className={
+                                                                                styles.checkedActive
+                                                                            }
+                                                                        >
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                id={
+                                                                                    item.item_id
+                                                                                }
+                                                                                value={
+                                                                                    item.item_id
+                                                                                }
+                                                                                onChange={
+                                                                                    enableNextTextBox
+                                                                                }
+                                                                                defaultChecked
+                                                                            />
+                                                                            {
+                                                                                item.name
+                                                                            }
+                                                                            <label
+                                                                                className={
+                                                                                    styles.num
+                                                                                }
+                                                                            >
+                                                                                {t(
+                                                                                    "applyForm.stepTwo.quantity"
+                                                                                )}
+                                                                                <input
+                                                                                    type="number"
+                                                                                    min="1"
+                                                                                    defaultValue={
+                                                                                        item.quantity
+                                                                                    }
+                                                                                />
+                                                                            </label>
+                                                                            <span>
+                                                                                {
+                                                                                    item.prcie
+                                                                                }
+
+                                                                                /
+                                                                                {t(
+                                                                                    "applyForm.stepTwo.set"
+                                                                                )}
+                                                                            </span>
+                                                                        </label>
+                                                                    ) : (
+                                                                        <label
+                                                                            htmlFor={
+                                                                                item.item_id
+                                                                            }
+                                                                            key={
+                                                                                item.item_id
+                                                                            }
+                                                                        >
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                id={
+                                                                                    item.item_id
+                                                                                }
+                                                                                value={
+                                                                                    item.item_id
+                                                                                }
+                                                                                onChange={
+                                                                                    enableNextTextBox
+                                                                                }
+                                                                            />
+                                                                            {
+                                                                                item.name
+                                                                            }
+                                                                            <label
+                                                                                className={
+                                                                                    styles.num
+                                                                                }
+                                                                            >
+                                                                                {t(
+                                                                                    "applyForm.stepTwo.quantity"
+                                                                                )}
+                                                                                <input
+                                                                                    type="number"
+                                                                                    min="0"
+                                                                                    disabled
+                                                                                />
+                                                                            </label>
+                                                                            <span>
+                                                                                {
+                                                                                    item.prcie
+                                                                                }
+
+                                                                                /
+                                                                                {t(
+                                                                                    "applyForm.stepTwo.set"
+                                                                                )}
+                                                                            </span>
+                                                                        </label>
+                                                                    )}
+                                                                </>
+                                                            )
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                />
+                            </div>
+
+                            <div className={styles.btns}>
+                                <button
+                                    className={styles.cancel}
+                                    onClick={close}
+                                >
+                                    取消
+                                </button>
+                                <button
+                                    className={styles.complete}
+                                    onClick={handleRevise}
+                                >
+                                    完成
+                                </button>
+                            </div>
+                        </div>
+                    </Popup>
+                ) : null}
+                {preview ? (
+                    <Popup close={close}>
+                        <div
+                            className={styles.applyCheckBox}
+                            onClick={(e) => {
+                                // do not close modal if anything inside modal content is clicked
+                                e.stopPropagation();
+                            }}
+                        >
+                            <div className={styles.form}>
+                                <h2>{t("applyForm.preview.groupOne.title")}</h2>
+                                <div className={styles.formComplete}>
+                                    <div className={styles.formRow}>
+                                        <label>
+                                            {t(
+                                                "applyForm.preview.groupOne.companyName"
+                                            )}
+                                        </label>
+                                        <p>
+                                            {
+                                                document.querySelectorAll(
+                                                    'input[name="company"]'
+                                                )[0].value
+                                            }
+                                        </p>
+                                    </div>
+                                    <div className={styles.formRow}>
+                                        <label>
+                                            {t(
+                                                "applyForm.preview.groupOne.taxID"
+                                            )}
+                                        </label>
+                                        <p>
+                                            {
+                                                document.querySelectorAll(
+                                                    'input[name="uniformNum"]'
+                                                )[0].value
+                                            }
+                                        </p>
+                                    </div>
+                                    <div className={styles.formRow}>
+                                        <label>
+                                            {t(
+                                                "applyForm.preview.groupOne.contactPerson"
+                                            )}
+                                        </label>
+                                        <p>
+                                            {
+                                                document.querySelectorAll(
+                                                    'input[name="contactPerson"]'
+                                                )[0].value
+                                            }
+                                        </p>
+                                    </div>
+                                    <div className={styles.formRow}>
+                                        <label>
+                                            {t(
+                                                "applyForm.preview.groupOne.phone"
+                                            )}
+                                        </label>
+                                        <p>
+                                            {
+                                                document.querySelectorAll(
+                                                    'input[name="phone"]'
+                                                )[0].value
+                                            }
+                                        </p>
+                                    </div>
+                                    <div className={styles.formRow}>
+                                        <label>E-mail</label>
+                                        <p>
+                                            {
+                                                document.querySelectorAll(
+                                                    'input[name="email"]'
+                                                )[0].value
+                                            }
+                                        </p>
+                                    </div>
+                                </div>
+                                <h2>{t("applyForm.preview.groupTwo.title")}</h2>
+                                <div className={styles.formCompleteInvoce}>
+                                    <div className={styles.formRow}>
+                                        <label>
+                                            {t(
+                                                "applyForm.preview.groupTwo.companyName"
+                                            )}
+                                        </label>
+                                        <p>
+                                            {
+                                                document.querySelectorAll(
+                                                    'input[name="company"]'
+                                                )[1].value
+                                            }
+                                        </p>
+                                    </div>
+                                    <div className={styles.formRow}>
+                                        <label>
+                                            {t(
+                                                "applyForm.preview.groupTwo.taxID"
+                                            )}
+                                        </label>
+                                        <p>
+                                            {" "}
+                                            {
+                                                document.querySelectorAll(
+                                                    'input[name="uniformNum"]'
+                                                )[1].value
+                                            }
+                                        </p>
+                                    </div>
+                                    <div className={styles.formRow}>
+                                        <label>
+                                            {" "}
+                                            {t(
+                                                "applyForm.preview.groupTwo.invoiceAddress"
+                                            )}
+                                        </label>
+                                        <p>
+                                            {
+                                                document.querySelector(
+                                                    'input[name="address"]'
+                                                ).value
+                                            }
+                                        </p>
+                                    </div>
+                                    <div className={styles.formRow}>
+                                        <label>
+                                            {" "}
+                                            {t(
+                                                "applyForm.preview.groupTwo.remark"
+                                            )}
+                                            ：
+                                        </label>
+                                        <p>
+                                            {" "}
+                                            {
+                                                document.querySelectorAll(
+                                                    'textarea[name="remark"]'
+                                                )[0].value
+                                            }
+                                        </p>
+                                    </div>
+                                </div>
+                                <h2>
+                                    {t("applyForm.preview.groupThree.title")}
+                                </h2>
+                                <div className={styles.applyItem}>
+                                    <table>
+                                        <thead>
+                                            <tr className={styles.title}>
+                                                <th>
+                                                    {t(
+                                                        "applyForm.preview.groupThree.no"
+                                                    )}
+                                                </th>
+                                                <th>
+                                                    {t(
+                                                        "applyForm.preview.groupThree.item"
+                                                    )}
+                                                </th>
+                                                <th>
+                                                    {t(
+                                                        "applyForm.preview.groupThree.quantity"
+                                                    )}
+                                                </th>
+                                                <th>
+                                                    {t(
+                                                        "applyForm.preview.groupThree.unitPrice"
+                                                    )}
+                                                </th>
+                                                <th>
+                                                    {t(
+                                                        "applyForm.preview.groupThree.itemCost"
+                                                    )}
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {data !== null ? (
+                                                <>
+                                                    {data.hydro_items_trial.items.map(
+                                                        (item) => (
+                                                            <>
+                                                                <tr
+                                                                    className={
+                                                                        styles.content
+                                                                    }
+                                                                    key={
+                                                                        item.index
+                                                                    }
+                                                                >
+                                                                    <td>
+                                                                        {
+                                                                            item.index
+                                                                        }
+                                                                    </td>
+                                                                    <td
+                                                                        style={{
+                                                                            textAlign:
+                                                                                "left",
+                                                                            paddingLeft:
+                                                                                "15px",
+                                                                        }}
+                                                                    >
+                                                                        {
+                                                                            item.item
+                                                                        }
+                                                                    </td>
+                                                                    <td>
+                                                                        {
+                                                                            item.quantity
+                                                                        }
+                                                                    </td>
+                                                                    <td>
+                                                                        {
+                                                                            item.price
+                                                                        }
+                                                                    </td>
+                                                                    <td>
+                                                                        {
+                                                                            item.sum
+                                                                        }
+                                                                    </td>
+                                                                </tr>
+                                                            </>
+                                                        )
+                                                    )}
+                                                    <tr className={styles.sum}>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td
+                                                            className={
+                                                                styles.sumTitle
+                                                            }
+                                                        >
+                                                            {t(
+                                                                "applyForm.preview.groupThree.total"
+                                                            )}
+                                                        </td>
+                                                        <td>
+                                                            {
+                                                                data
+                                                                    .hydro_items_trial
+                                                                    .total_sum
+                                                            }
+                                                        </td>
+                                                    </tr>
+                                                    {data.discount
+                                                        .discount_value !==
+                                                    "" ? (
+                                                        <>
+                                                            <tr
+                                                                className={
+                                                                    styles.sum
+                                                                }
+                                                            >
+                                                                <td></td>
+                                                                <td></td>
+                                                                <td></td>
+                                                                <td
+                                                                    className={
+                                                                        styles.sumTitle
+                                                                    }
+                                                                >
+                                                                    {
+                                                                        data
+                                                                            .discount
+                                                                            .discount_type
+                                                                    }
+                                                                </td>
+                                                                <td>
+                                                                    {
+                                                                        data
+                                                                            .discount
+                                                                            .discount_price
+                                                                    }
+                                                                </td>
+                                                            </tr>
+                                                            <tr
+                                                                className={
+                                                                    styles.sum
+                                                                }
+                                                            >
+                                                                <td></td>
+                                                                <td></td>
+                                                                <td></td>
+                                                                <td
+                                                                    className={
+                                                                        styles.sumTitle
+                                                                    }
+                                                                >
+                                                                    總價
+                                                                </td>
+                                                                <td>
+                                                                    {
+                                                                        data
+                                                                            .discount
+                                                                            .finally_sum
+                                                                    }
+                                                                </td>
+                                                            </tr>
+                                                        </>
+                                                    ) : null}
+                                                </>
+                                            ) : (
+                                                <>Loading...</>
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
 
                             <div className={styles.btns}>

@@ -132,35 +132,28 @@ export default function Apply(props) {
                     prevFormStep={prevFormStep}
                     useDefaultChecked={useDefaultChecked}
                 >
-                    {formStep >= 0 && (
-                        <Basic
-                            formStep={formStep}
-                            nextFormStep={nextFormStep}
-                            stepOne={props.stepOne}
-                            company={props.company}
-                            saveID={saveID}
-                            dataID={savadata}
-                            jump={jumpOverStepTwo}
-                        />
-                    )}
-                    {formStep >= 1 && (
-                        <Choose
-                            formStep={formStep}
-                            nextFormStep={nextFormStep}
-                            priceData={props.priceData}
-                            stepTwo={props.stepTwo}
-                            dataID={savadata}
-                        />
-                    )}
-                    {formStep >= 2 && (
-                        <Write
-                            formStep={formStep}
-                            nextFormStep={nextFormStep}
-                            stepThree={props.stepThree}
-                            dataID={savadata}
-                        />
-                    )}
-
+                    <Basic
+                        formStep={formStep}
+                        nextFormStep={nextFormStep}
+                        stepOne={props.stepOne}
+                        company={props.company}
+                        saveID={saveID}
+                        dataID={savadata}
+                        jump={jumpOverStepTwo}
+                    />
+                    <Choose
+                        formStep={formStep}
+                        nextFormStep={nextFormStep}
+                        priceData={props.priceData}
+                        stepTwo={props.stepTwo}
+                        dataID={savadata}
+                    />
+                    <Write
+                        formStep={formStep}
+                        nextFormStep={nextFormStep}
+                        stepThree={props.stepThree}
+                        dataID={savadata}
+                    />
                     {formStep > 2 && (
                         <Preview
                             applicatonId={props.company.savadata}

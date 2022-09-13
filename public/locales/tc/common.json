@@ -115,7 +115,7 @@
                 "quantity":"數量",
                 "unitPrice":"單價",
                 "itemCost":"複價",
-                "total":"合計總金額",
+                "total":"合計",
                 "useDefault": "只使用大會提供每 1 攤位免費基本用電 110V 0.5KW"
             },
             "groupFour":{

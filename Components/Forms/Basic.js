@@ -1,3 +1,4 @@
+import { useState } from "react";
 import styles from "../../styles/Form.module.scss";
 import { Form } from "@unform/web";
 import Input from "../Input Fields/Input";
@@ -13,6 +14,7 @@ export default function Basic({
     jump,
 }) {
     const { t } = useTranslation();
+    const [number, setNumber] = useState();
 
     const temporary = async () => {
         const useDefault = document.getElementById("chooseDefault");
@@ -88,7 +90,6 @@ export default function Basic({
                 sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
             }),
         };
-        console.log(options);
         if (baseOption === "N") {
             await fetch(`${process.env.customKey}setApplyForm`, options)
                 .then((response) => response.json())
@@ -193,6 +194,7 @@ export default function Basic({
                                     "applyForm.stepOne.groupTwo.companyPlaceHolder"
                                 )}
                                 id="company"
+                                maxLength={30}
                             />
                         </div>
                         <div className={styles.formRow}>
@@ -204,6 +206,13 @@ export default function Basic({
                                     "applyForm.stepOne.groupTwo.taxIdPlaceHolder"
                                 )}
                                 id="uniformNum"
+                                maxLength={8}
+                                value={number}
+                                onChange={(e) =>
+                                    setNumber(
+                                        e.target.value.replace(/[^\d]/g, "")
+                                    )
+                                }
                             />
                         </div>
                         <div className={styles.formRow}>
@@ -217,6 +226,7 @@ export default function Basic({
                                     "applyForm.stepOne.groupTwo.contactPersonPlaceHolder"
                                 )}
                                 id="contactPerson"
+                                maxLength={20}
                             />
                         </div>
                         <div className={styles.formRow}>
@@ -239,6 +249,7 @@ export default function Basic({
                                     "applyForm.stepOne.groupTwo.phonePlaceHolder"
                                 )}
                                 id="phone"
+                                maxLength={20}
                             />
                         </div>
                     </div>
@@ -252,53 +263,7 @@ export default function Basic({
                             {t("applyForm.stepTwo.useDefault")}
                         </label>
                     </div>
-                    {/* <h2>{t("applyForm.stepOne.groupThree.title")}</h2> */}
                     <div className={styles.form}>
-                        {/* <div className={styles.addressGroup}>
-                            <div>
-                                <label htmlFor="company_address">
-                                    {t(
-                                        "applyForm.stepOne.groupThree.asTheExhibitor"
-                                    )}
-                                    <input
-                                        type="radio"
-                                        id="company_address"
-                                        name="drone"
-                                        value="1"
-                                    />
-                                </label>
-                            </div>
-                            <div>
-                                <label htmlFor="agent_address">
-                                    {t(
-                                        "applyForm.stepOne.groupThree.asTheAgent"
-                                    )}
-                                    <input
-                                        type="radio"
-                                        id="agent_address"
-                                        name="drone"
-                                        value="2"
-                                    />
-                                </label>
-                            </div>
-                        </div> */}
-                        {/* <div
-                            className={[styles.formRow, styles.address].join(
-                                " "
-                            )}
-                        >
-                            <Input
-                                name="address"
-                                label={t(
-                                    "applyForm.stepOne.groupThree.invoiceAddress"
-                                )}
-                                type="text"
-                                placeholder={t(
-                                    "applyForm.stepOne.groupThree.invoicePlaceHolder"
-                                )}
-                                id="address"
-                            />
-                        </div> */}
                         <div
                             className={[styles.formRow, styles.prepare].join(
                                 " "
@@ -307,7 +272,7 @@ export default function Basic({
                             <label htmlFor="prepare">
                                 {t("applyForm.stepOne.groupThree.remark")}
                             </label>
-                            <textarea id="remark"></textarea>
+                            <textarea id="remark" maxLength={200}></textarea>
                         </div>
                     </div>
 
@@ -331,6 +296,7 @@ export default function Basic({
                                 )}
                                 id="company"
                                 defaultValue={stepOne.data.proxy_company_name}
+                                maxLength={30}
                             />
                         </div>
                         <div className={styles.formRow}>
@@ -343,6 +309,13 @@ export default function Basic({
                                 )}
                                 id="uniformNum"
                                 defaultValue={stepOne.data.proxy_tax_id}
+                                maxLength={8}
+                                value={number}
+                                onChange={(e) =>
+                                    setNumber(
+                                        e.target.value.replace(/[^\d]/g, "")
+                                    )
+                                }
                             />
                         </div>
                         <div className={styles.formRow}>
@@ -357,6 +330,7 @@ export default function Basic({
                                 )}
                                 id="contactPerson"
                                 defaultValue={stepOne.data.proxy_contact_person}
+                                maxLength={20}
                             />
                         </div>
                         <div className={styles.formRow}>
@@ -381,6 +355,7 @@ export default function Basic({
                                 )}
                                 id="phone"
                                 defaultValue={stepOne.data.proxy_phone}
+                                maxLength={20}
                             />
                         </div>
                     </div>
@@ -501,6 +476,7 @@ export default function Basic({
                             <textarea
                                 id="remark"
                                 defaultValue={stepOne.data.remark}
+                                maxLength={200}
                             ></textarea>
                         </div>
                     </div>
