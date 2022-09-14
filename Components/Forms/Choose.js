@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "../../styles/Form.module.scss";
 import { Form } from "@unform/web";
 import SlideToggle from "react-slide-toggle";
@@ -14,16 +14,61 @@ export default function Choose({
     sid,
 }) {
     const { t } = useTranslation();
+    const [number, setNumber] = useState();
+
+    function handleOnChange(changeEvent) {
+        const radios = document.querySelectorAll('input[name="drone"]');
+        const invoiceRequired = document.getElementsByClassName(
+            "Form_address__LoRLg"
+        );
+        const requiredField = document.querySelectorAll(
+            ".Form_address__LoRLg input"
+        );
+        for (let radio of radios) {
+            if (radio.checked) {
+                if (radio.value === "2") {
+                    invoiceRequired[0].style.display = "grid";
+                    for (let field of requiredField) {
+                        field.required = true;
+                    }
+                } else if (radio.value === "1") {
+                    invoiceRequired[0].style.display = "none";
+                    for (let field of requiredField) {
+                        field.value = "";
+                        field.required = false;
+                    }
+                }
+            }
+        }
+    }
 
     const temporary = async () => {
         let invoice = "";
+        let address;
+        let contact_person;
+        let company;
+        let phone;
+        let tax_id;
         const radios = document.querySelectorAll('input[name="drone"]');
         for (let radio of radios) {
             if (radio.checked) {
                 invoice = radio.value;
             }
         }
-        let address = document.getElementById("address").value;
+        if (invoice === "1") {
+            address = "";
+            contact_person = "";
+            company = "";
+            phone = "";
+            tax_id = "";
+        } else if (invoice === "2") {
+            address = document.getElementById("address").value;
+            contact_person = document.getElementById("contactPerson").value;
+            company = document.getElementById("company").value;
+            phone = document.getElementById("phone").value;
+            tax_id = document.getElementById("uniformNum").value;
+        }
+
         let items = [];
         const checkBoxsOne = document.querySelectorAll(
             ".Form_aGroup__FN6oc input[type='checkbox']"
@@ -53,7 +98,11 @@ export default function Choose({
             body: new URLSearchParams({
                 application_form_id: dataID,
                 invoice: invoice,
-                invoice_address: address,
+                proxy_address: address,
+                proxy_contact_person: contact_person,
+                proxy_phone: phone,
+                proxy_company_name: company,
+                proxy_tax_id: tax_id,
                 items: JSON.stringify(items),
                 event_uid: sid.event_uid,
                 company_id: sid.company_id,
@@ -69,7 +118,6 @@ export default function Choose({
     };
 
     async function handleSubmit(data) {
-        console.log(data);
         let invoice = "";
         const radios = document.querySelectorAll('input[name="drone"]');
         for (let radio of radios) {
@@ -101,14 +149,17 @@ export default function Choose({
         const options = {
             method: "POST",
             headers: {
-                // cookie: "ci_session=9lejfn4cgisk4havru3sjg4s9e8aiqho",
                 "Content-Type": "application/x-www-form-urlencoded",
             },
             body: new URLSearchParams({
                 application_form_id: dataID,
                 items: JSON.stringify(items),
                 invoice: invoice,
-                invoice_address: data.address,
+                proxy_address: data.address,
+                proxy_contact_person: data.contact_person,
+                proxy_phone: data.phone,
+                proxy_company_name: data.company,
+                proxy_tax_id: data.tax_id,
                 event_uid: sid.event_uid,
                 company_id: sid.company_id,
             }),
@@ -143,32 +194,6 @@ export default function Choose({
             e.target.parentNode.className = "";
         }
     };
-    // const handleDefault = (e) => {
-    //     const checkBoxsOne = document.querySelectorAll(
-    //         ".Form_aGroup__FN6oc input[type='checkbox']"
-    //     );
-    //     const checkBoxsTwo = document.querySelectorAll(
-    //         ".Form_bGroup__4aN8N input"
-    //     );
-    //     if (e.target.checked) {
-    //         for (let check of checkBoxsOne) {
-    //             if (check.checked) {
-    //                 check.checked = false;
-    //                 check.parentNode.className = "";
-    //             }
-    //         }
-    //         for (let check of checkBoxsTwo) {
-    //             if (check.checked) {
-    //                 check.checked = false;
-    //                 check.parentNode.className = "";
-    //             }
-    //             if (check.type === "number") {
-    //                 check.value = 0;
-    //                 check.setAttribute("disabled", "");
-    //             }
-    //         }
-    //     }
-    // };
 
     return (
         <div
@@ -181,7 +206,7 @@ export default function Choose({
                 {t("applyForm.stepper.save")}
             </button>
             {stepTwo.status === false ? (
-                <Form onSubmit={handleSubmit}>
+                <Form onSubmit={handleSubmit} onChange={handleOnChange}>
                     <h2>{t("applyForm.stepTwo.title")}</h2>
                     <div className={styles.applyCheckBox}>
                         <SlideToggle
@@ -1034,20 +1059,93 @@ export default function Choose({
                             className={[styles.formRow, styles.address].join(
                                 " "
                             )}
+                            style={{
+                                display: "none",
+                                gridTemplateColumns: "1fr 1fr",
+                                gap: "20px",
+                            }}
                         >
-                            <Input
-                                name="address"
-                                label={t(
-                                    "applyForm.stepOne.groupThree.invoiceAddress"
-                                )}
-                                type="text"
-                                placeholder={t(
-                                    "applyForm.stepOne.groupThree.invoicePlaceHolder"
-                                )}
-                                id="address"
-                                maxLength="30"
-                                required
-                            />
+                            <div>
+                                <Input
+                                    name="company"
+                                    label={t(
+                                        "applyForm.stepOne.groupTwo.companyName"
+                                    )}
+                                    type="text"
+                                    placeholder={t(
+                                        "applyForm.stepOne.groupTwo.companyPlaceHolder"
+                                    )}
+                                    id="company"
+                                    maxLength={30}
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <Input
+                                    name="uniformNum"
+                                    label={t(
+                                        "applyForm.stepOne.groupTwo.taxID"
+                                    )}
+                                    type="text"
+                                    placeholder={t(
+                                        "applyForm.stepOne.groupTwo.taxIdPlaceHolder"
+                                    )}
+                                    id="uniformNum"
+                                    maxLength={8}
+                                    value={number}
+                                    onChange={(e) =>
+                                        setNumber(
+                                            e.target.value.replace(/[^\d]/g, "")
+                                        )
+                                    }
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <Input
+                                    name="contactPerson"
+                                    label={t(
+                                        "applyForm.stepOne.groupTwo.contactPerson"
+                                    )}
+                                    type="text"
+                                    placeholder={t(
+                                        "applyForm.stepOne.groupTwo.contactPersonPlaceHolder"
+                                    )}
+                                    id="contactPerson"
+                                    maxLength={20}
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <Input
+                                    name="phone"
+                                    label={t(
+                                        "applyForm.stepOne.groupTwo.phone"
+                                    )}
+                                    type="tel"
+                                    placeholder={t(
+                                        "applyForm.stepOne.groupTwo.phonePlaceHolder"
+                                    )}
+                                    id="phone"
+                                    maxLength={20}
+                                    required
+                                />
+                            </div>
+                            <div style={{ gridColumn: "1/3" }}>
+                                <Input
+                                    name="address"
+                                    label={t(
+                                        "applyForm.stepOne.groupThree.invoiceAddress"
+                                    )}
+                                    type="text"
+                                    placeholder={t(
+                                        "applyForm.stepOne.groupThree.invoicePlaceHolder"
+                                    )}
+                                    id="address"
+                                    maxLength="30"
+                                    required
+                                />
+                            </div>
                         </div>
                     </div>
                     <button type="submit" className={styles.next}>
@@ -1055,7 +1153,7 @@ export default function Choose({
                     </button>
                 </Form>
             ) : (
-                <Form onSubmit={handleSubmit}>
+                <Form onSubmit={handleSubmit} onChange={handleOnChange}>
                     <h2>{t("applyForm.stepTwo.title")}</h2>
                     <div className={styles.applyCheckBox}>
                         <SlideToggle
@@ -2320,26 +2418,201 @@ export default function Choose({
                                 </>
                             )}
                         </div>
-                        <div
-                            className={[styles.formRow, styles.address].join(
-                                " "
-                            )}
-                        >
-                            <Input
-                                name="address"
-                                label={t(
-                                    "applyForm.stepOne.groupThree.invoiceAddress"
-                                )}
-                                type="text"
-                                placeholder={t(
-                                    "applyForm.stepOne.groupThree.invoicePlaceHolder"
-                                )}
-                                id="address"
-                                maxLength="30"
-                                defaultValue={stepTwo.invoice.address}
-                                required
-                            />
-                        </div>
+                        {stepTwo.invoice.checkbox === "1" ? (
+                            <div
+                                className={[
+                                    styles.formRow,
+                                    styles.address,
+                                ].join(" ")}
+                                style={{
+                                    display: "none",
+                                    gridTemplateColumns: "1fr 1fr",
+                                    gap: "20px",
+                                }}
+                            >
+                                <div>
+                                    <Input
+                                        name="company"
+                                        label={t(
+                                            "applyForm.stepOne.groupTwo.companyName"
+                                        )}
+                                        type="text"
+                                        placeholder={t(
+                                            "applyForm.stepOne.groupTwo.companyPlaceHolder"
+                                        )}
+                                        id="company"
+                                        maxLength={30}
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <Input
+                                        name="uniformNum"
+                                        label={t(
+                                            "applyForm.stepOne.groupTwo.taxID"
+                                        )}
+                                        type="text"
+                                        placeholder={t(
+                                            "applyForm.stepOne.groupTwo.taxIdPlaceHolder"
+                                        )}
+                                        id="uniformNum"
+                                        maxLength={8}
+                                        value={number}
+                                        onChange={(e) =>
+                                            setNumber(
+                                                e.target.value.replace(
+                                                    /[^\d]/g,
+                                                    ""
+                                                )
+                                            )
+                                        }
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <Input
+                                        name="contactPerson"
+                                        label={t(
+                                            "applyForm.stepOne.groupTwo.contactPerson"
+                                        )}
+                                        type="text"
+                                        placeholder={t(
+                                            "applyForm.stepOne.groupTwo.contactPersonPlaceHolder"
+                                        )}
+                                        id="contactPerson"
+                                        maxLength={20}
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <Input
+                                        name="phone"
+                                        label={t(
+                                            "applyForm.stepOne.groupTwo.phone"
+                                        )}
+                                        type="tel"
+                                        placeholder={t(
+                                            "applyForm.stepOne.groupTwo.phonePlaceHolder"
+                                        )}
+                                        id="phone"
+                                        maxLength={20}
+                                        required
+                                    />
+                                </div>
+                                <div style={{ gridColumn: "1/3" }}>
+                                    <Input
+                                        name="address"
+                                        label={t(
+                                            "applyForm.stepOne.groupThree.invoiceAddress"
+                                        )}
+                                        type="text"
+                                        placeholder={t(
+                                            "applyForm.stepOne.groupThree.invoicePlaceHolder"
+                                        )}
+                                        id="address"
+                                        maxLength="30"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                        ) : (
+                            <div
+                                className={[
+                                    styles.formRow,
+                                    styles.address,
+                                ].join(" ")}
+                                style={{
+                                    display: "grid",
+                                    gridTemplateColumns: "1fr 1fr",
+                                    gap: "20px",
+                                }}
+                            >
+                                <div>
+                                    <Input
+                                        name="company"
+                                        label={t(
+                                            "applyForm.stepOne.groupTwo.companyName"
+                                        )}
+                                        type="text"
+                                        placeholder={t(
+                                            "applyForm.stepOne.groupTwo.companyPlaceHolder"
+                                        )}
+                                        id="company"
+                                        maxLength={30}
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <Input
+                                        name="uniformNum"
+                                        label={t(
+                                            "applyForm.stepOne.groupTwo.taxID"
+                                        )}
+                                        type="text"
+                                        placeholder={t(
+                                            "applyForm.stepOne.groupTwo.taxIdPlaceHolder"
+                                        )}
+                                        id="uniformNum"
+                                        maxLength={8}
+                                        value={number}
+                                        onChange={(e) =>
+                                            setNumber(
+                                                e.target.value.replace(
+                                                    /[^\d]/g,
+                                                    ""
+                                                )
+                                            )
+                                        }
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <Input
+                                        name="contactPerson"
+                                        label={t(
+                                            "applyForm.stepOne.groupTwo.contactPerson"
+                                        )}
+                                        type="text"
+                                        placeholder={t(
+                                            "applyForm.stepOne.groupTwo.contactPersonPlaceHolder"
+                                        )}
+                                        id="contactPerson"
+                                        maxLength={20}
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <Input
+                                        name="phone"
+                                        label={t(
+                                            "applyForm.stepOne.groupTwo.phone"
+                                        )}
+                                        type="tel"
+                                        placeholder={t(
+                                            "applyForm.stepOne.groupTwo.phonePlaceHolder"
+                                        )}
+                                        id="phone"
+                                        maxLength={20}
+                                        required
+                                    />
+                                </div>
+                                <div style={{ gridColumn: "1/3" }}>
+                                    <Input
+                                        name="address"
+                                        label={t(
+                                            "applyForm.stepOne.groupThree.invoiceAddress"
+                                        )}
+                                        type="text"
+                                        placeholder={t(
+                                            "applyForm.stepOne.groupThree.invoicePlaceHolder"
+                                        )}
+                                        id="address"
+                                        maxLength="30"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                        )}
                     </div>
                     <button type="submit" className={styles.next}>
                         {t("applyForm.stepper.next")}

@@ -95,7 +95,7 @@ function Basic({ formStep , nextFormStep , stepOne , company , saveID , dataID ,
     const temporary = async ()=>{
         const useDefault = document.getElementById("chooseDefault");
         let company = document.getElementById("company").value;
-        let uniformNum = document.getElementById("uniformNum").value;
+        // let uniformNum = document.getElementById("uniformNum").value;
         let contactPerson = document.getElementById("contactPerson").value;
         let email = document.getElementById("email").value;
         let phone = document.getElementById("phone").value;
@@ -109,16 +109,14 @@ function Basic({ formStep , nextFormStep , stepOne , company , saveID , dataID ,
         const options = {
             method: "POST",
             headers: {
-                // cookie: "ci_session=2tuoeunna8cs9312goi03j36jam80pm2",
                 "Content-Type": "application/x-www-form-urlencoded"
             },
             body: new URLSearchParams({
                 application_form_id: dataID,
-                proxy_company_name: company,
-                proxy_tax_id: uniformNum,
-                proxy_contact_person: contactPerson,
-                proxy_email: email,
-                proxy_phone: phone,
+                onsite_company_name: company,
+                onsite_contact_person: contactPerson,
+                onsite_contact_email: email,
+                onsite_contact_phone: phone,
                 base_option: baseOption,
                 remark: remark,
                 event_uid: sid.event_uid,
@@ -145,16 +143,14 @@ function Basic({ formStep , nextFormStep , stepOne , company , saveID , dataID ,
         const options = {
             method: "POST",
             headers: {
-                // cookie: "ci_session=2tuoeunna8cs9312goi03j36jam80pm2",
                 "Content-Type": "application/x-www-form-urlencoded"
             },
             body: new URLSearchParams({
                 application_form_id: dataID,
-                proxy_company_name: data.company,
-                proxy_tax_id: data.uniformNum,
-                proxy_contact_person: data.contactPerson,
-                proxy_email: data.email,
-                proxy_phone: data.phone,
+                onsite_company_name: data.company,
+                onsite_contact_person: data.contactPerson,
+                onsite_contact_email: data.email,
+                onsite_contact_phone: data.phone,
                 base_option: baseOption,
                 remark: remark,
                 event_uid: sid.event_uid,
@@ -297,7 +293,7 @@ function Basic({ formStep , nextFormStep , stepOne , company , saveID , dataID ,
                 onSubmit: handleSubmit,
                 children: [
                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("h2", {
-                        children: t("applyForm.stepOne.groupTwo.title")
+                        children: t("applyForm.stepOne.staffOnSite")
                     }),
                     /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
                         className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().form),
@@ -311,19 +307,6 @@ function Basic({ formStep , nextFormStep , stepOne , company , saveID , dataID ,
                                     placeholder: t("applyForm.stepOne.groupTwo.companyPlaceHolder"),
                                     id: "company",
                                     maxLength: 30
-                                })
-                            }),
-                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().formRow),
-                                children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_Input_Fields_Input__WEBPACK_IMPORTED_MODULE_3__/* ["default"] */ .Z, {
-                                    name: "uniformNum",
-                                    label: t("applyForm.stepOne.groupTwo.taxID"),
-                                    type: "text",
-                                    placeholder: t("applyForm.stepOne.groupTwo.taxIdPlaceHolder"),
-                                    id: "uniformNum",
-                                    maxLength: 8,
-                                    value: number,
-                                    onChange: (e)=>setNumber(e.target.value.replace(/[^\d]/g, ""))
                                 })
                             }),
                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
@@ -416,7 +399,7 @@ function Basic({ formStep , nextFormStep , stepOne , company , saveID , dataID ,
                                     type: "text",
                                     placeholder: t("applyForm.stepOne.groupTwo.companyPlaceHolder"),
                                     id: "company",
-                                    defaultValue: stepOne.data.proxy_company_name,
+                                    defaultValue: stepOne.data.onsite_company_name,
                                     maxLength: 30
                                 })
                             }),
@@ -442,7 +425,7 @@ function Basic({ formStep , nextFormStep , stepOne , company , saveID , dataID ,
                                     type: "text",
                                     placeholder: t("applyForm.stepOne.groupTwo.contactPersonPlaceHolder"),
                                     id: "contactPerson",
-                                    defaultValue: stepOne.data.proxy_contact_person,
+                                    defaultValue: stepOne.data.onsite_contact_person,
                                     maxLength: 20
                                 })
                             }),
@@ -454,7 +437,7 @@ function Basic({ formStep , nextFormStep , stepOne , company , saveID , dataID ,
                                     type: "email",
                                     placeholder: t("applyForm.stepOne.groupTwo.emailPlaceHolder"),
                                     id: "email",
-                                    defaultValue: stepOne.data.proxy_email
+                                    defaultValue: stepOne.data.onsite_contact_email
                                 })
                             }),
                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
@@ -465,7 +448,7 @@ function Basic({ formStep , nextFormStep , stepOne , company , saveID , dataID ,
                                     type: "tel",
                                     placeholder: t("applyForm.stepOne.groupTwo.phonePlaceHolder"),
                                     id: "phone",
-                                    defaultValue: stepOne.data.proxy_phone,
+                                    defaultValue: stepOne.data.onsite_contact_phone,
                                     maxLength: 20
                                 })
                             })
@@ -562,15 +545,54 @@ function Basic({ formStep , nextFormStep , stepOne , company , saveID , dataID ,
 
 function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID , sid ,  }) {
     const { t  } = (0,next_i18next__WEBPACK_IMPORTED_MODULE_4__.useTranslation)();
+    const { 0: number , 1: setNumber  } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)();
+    function handleOnChange(changeEvent) {
+        const radios = document.querySelectorAll('input[name="drone"]');
+        const invoiceRequired = document.getElementsByClassName("Form_address__LoRLg");
+        const requiredField = document.querySelectorAll(".Form_address__LoRLg input");
+        for (let radio of radios){
+            if (radio.checked) {
+                if (radio.value === "2") {
+                    invoiceRequired[0].style.display = "grid";
+                    for (let field of requiredField){
+                        field.required = true;
+                    }
+                } else if (radio.value === "1") {
+                    invoiceRequired[0].style.display = "none";
+                    for (let field1 of requiredField){
+                        field1.value = "";
+                        field1.required = false;
+                    }
+                }
+            }
+        }
+    }
     const temporary = async ()=>{
         let invoice = "";
+        let address;
+        let contact_person;
+        let company;
+        let phone;
+        let tax_id;
         const radios = document.querySelectorAll('input[name="drone"]');
         for (let radio of radios){
             if (radio.checked) {
                 invoice = radio.value;
             }
         }
-        let address = document.getElementById("address").value;
+        if (invoice === "1") {
+            address = "";
+            contact_person = "";
+            company = "";
+            phone = "";
+            tax_id = "";
+        } else if (invoice === "2") {
+            address = document.getElementById("address").value;
+            contact_person = document.getElementById("contactPerson").value;
+            company = document.getElementById("company").value;
+            phone = document.getElementById("phone").value;
+            tax_id = document.getElementById("uniformNum").value;
+        }
         let items = [];
         const checkBoxsOne = document.querySelectorAll(".Form_aGroup__FN6oc input[type='checkbox']");
         const checkBoxsTwo = document.querySelectorAll(".Form_bGroup__4aN8N input[type='checkbox']");
@@ -599,7 +621,11 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID , sid ,
             body: new URLSearchParams({
                 application_form_id: dataID,
                 invoice: invoice,
-                invoice_address: address,
+                proxy_address: address,
+                proxy_contact_person: contact_person,
+                proxy_phone: phone,
+                proxy_company_name: company,
+                proxy_tax_id: tax_id,
                 items: JSON.stringify(items),
                 event_uid: sid.event_uid,
                 company_id: sid.company_id
@@ -611,7 +637,6 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID , sid ,
         }).catch((err)=>console.error(err));
     };
     async function handleSubmit(data) {
-        console.log(data);
         let invoice = "";
         const radios = document.querySelectorAll('input[name="drone"]');
         for (let radio of radios){
@@ -642,14 +667,17 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID , sid ,
         const options = {
             method: "POST",
             headers: {
-                // cookie: "ci_session=9lejfn4cgisk4havru3sjg4s9e8aiqho",
                 "Content-Type": "application/x-www-form-urlencoded"
             },
             body: new URLSearchParams({
                 application_form_id: dataID,
                 items: JSON.stringify(items),
                 invoice: invoice,
-                invoice_address: data.address,
+                proxy_address: data.address,
+                proxy_contact_person: data.contact_person,
+                proxy_phone: data.phone,
+                proxy_company_name: data.company,
+                proxy_tax_id: data.tax_id,
                 event_uid: sid.event_uid,
                 company_id: sid.company_id
             })
@@ -675,32 +703,6 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID , sid ,
             e.target.parentNode.className = "";
         }
     };
-    // const handleDefault = (e) => {
-    //     const checkBoxsOne = document.querySelectorAll(
-    //         ".Form_aGroup__FN6oc input[type='checkbox']"
-    //     );
-    //     const checkBoxsTwo = document.querySelectorAll(
-    //         ".Form_bGroup__4aN8N input"
-    //     );
-    //     if (e.target.checked) {
-    //         for (let check of checkBoxsOne) {
-    //             if (check.checked) {
-    //                 check.checked = false;
-    //                 check.parentNode.className = "";
-    //             }
-    //         }
-    //         for (let check of checkBoxsTwo) {
-    //             if (check.checked) {
-    //                 check.checked = false;
-    //                 check.parentNode.className = "";
-    //             }
-    //             if (check.type === "number") {
-    //                 check.value = 0;
-    //                 check.setAttribute("disabled", "");
-    //             }
-    //         }
-    //     }
-    // };
     return /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
         className: [
             (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().form),
@@ -714,6 +716,7 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID , sid ,
             }),
             stepTwo.status === false ? /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_unform_web__WEBPACK_IMPORTED_MODULE_2__.Form, {
                 onSubmit: handleSubmit,
+                onChange: handleOnChange,
                 children: [
                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("h2", {
                         children: t("applyForm.stepTwo.title")
@@ -1412,20 +1415,78 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID , sid ,
                                     })
                                 ]
                             }),
-                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                            /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
                                 className: [
                                     (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().formRow),
                                     (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().address)
                                 ].join(" "),
-                                children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_Input_Fields_Input__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .Z, {
-                                    name: "address",
-                                    label: t("applyForm.stepOne.groupThree.invoiceAddress"),
-                                    type: "text",
-                                    placeholder: t("applyForm.stepOne.groupThree.invoicePlaceHolder"),
-                                    id: "address",
-                                    maxLength: "30",
-                                    required: true
-                                })
+                                style: {
+                                    display: "none",
+                                    gridTemplateColumns: "1fr 1fr",
+                                    gap: "20px"
+                                },
+                                children: [
+                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                        children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_Input_Fields_Input__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .Z, {
+                                            name: "company",
+                                            label: t("applyForm.stepOne.groupTwo.companyName"),
+                                            type: "text",
+                                            placeholder: t("applyForm.stepOne.groupTwo.companyPlaceHolder"),
+                                            id: "company",
+                                            maxLength: 30,
+                                            required: true
+                                        })
+                                    }),
+                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                        children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_Input_Fields_Input__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .Z, {
+                                            name: "uniformNum",
+                                            label: t("applyForm.stepOne.groupTwo.taxID"),
+                                            type: "text",
+                                            placeholder: t("applyForm.stepOne.groupTwo.taxIdPlaceHolder"),
+                                            id: "uniformNum",
+                                            maxLength: 8,
+                                            value: number,
+                                            onChange: (e)=>setNumber(e.target.value.replace(/[^\d]/g, "")),
+                                            required: true
+                                        })
+                                    }),
+                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                        children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_Input_Fields_Input__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .Z, {
+                                            name: "contactPerson",
+                                            label: t("applyForm.stepOne.groupTwo.contactPerson"),
+                                            type: "text",
+                                            placeholder: t("applyForm.stepOne.groupTwo.contactPersonPlaceHolder"),
+                                            id: "contactPerson",
+                                            maxLength: 20,
+                                            required: true
+                                        })
+                                    }),
+                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                        children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_Input_Fields_Input__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .Z, {
+                                            name: "phone",
+                                            label: t("applyForm.stepOne.groupTwo.phone"),
+                                            type: "tel",
+                                            placeholder: t("applyForm.stepOne.groupTwo.phonePlaceHolder"),
+                                            id: "phone",
+                                            maxLength: 20,
+                                            required: true
+                                        })
+                                    }),
+                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                        style: {
+                                            gridColumn: "1/3"
+                                        },
+                                        children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_Input_Fields_Input__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .Z, {
+                                            name: "address",
+                                            label: t("applyForm.stepOne.groupThree.invoiceAddress"),
+                                            type: "text",
+                                            placeholder: t("applyForm.stepOne.groupThree.invoicePlaceHolder"),
+                                            id: "address",
+                                            maxLength: "30",
+                                            required: true
+                                        })
+                                    })
+                                ]
                             })
                         ]
                     }),
@@ -1437,6 +1498,7 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID , sid ,
                 ]
             }) : /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_unform_web__WEBPACK_IMPORTED_MODULE_2__.Form, {
                 onSubmit: handleSubmit,
+                onChange: handleOnChange,
                 children: [
                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("h2", {
                         children: t("applyForm.stepTwo.title")
@@ -2374,21 +2436,150 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID , sid ,
                                     ]
                                 })
                             }),
-                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                            stepTwo.invoice.checkbox === "1" ? /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
                                 className: [
                                     (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().formRow),
-                                    (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().address)
+                                    (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().address), 
                                 ].join(" "),
-                                children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_Input_Fields_Input__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .Z, {
-                                    name: "address",
-                                    label: t("applyForm.stepOne.groupThree.invoiceAddress"),
-                                    type: "text",
-                                    placeholder: t("applyForm.stepOne.groupThree.invoicePlaceHolder"),
-                                    id: "address",
-                                    maxLength: "30",
-                                    defaultValue: stepTwo.invoice.address,
-                                    required: true
-                                })
+                                style: {
+                                    display: "none",
+                                    gridTemplateColumns: "1fr 1fr",
+                                    gap: "20px"
+                                },
+                                children: [
+                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                        children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_Input_Fields_Input__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .Z, {
+                                            name: "company",
+                                            label: t("applyForm.stepOne.groupTwo.companyName"),
+                                            type: "text",
+                                            placeholder: t("applyForm.stepOne.groupTwo.companyPlaceHolder"),
+                                            id: "company",
+                                            maxLength: 30,
+                                            required: true
+                                        })
+                                    }),
+                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                        children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_Input_Fields_Input__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .Z, {
+                                            name: "uniformNum",
+                                            label: t("applyForm.stepOne.groupTwo.taxID"),
+                                            type: "text",
+                                            placeholder: t("applyForm.stepOne.groupTwo.taxIdPlaceHolder"),
+                                            id: "uniformNum",
+                                            maxLength: 8,
+                                            value: number,
+                                            onChange: (e)=>setNumber(e.target.value.replace(/[^\d]/g, "")),
+                                            required: true
+                                        })
+                                    }),
+                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                        children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_Input_Fields_Input__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .Z, {
+                                            name: "contactPerson",
+                                            label: t("applyForm.stepOne.groupTwo.contactPerson"),
+                                            type: "text",
+                                            placeholder: t("applyForm.stepOne.groupTwo.contactPersonPlaceHolder"),
+                                            id: "contactPerson",
+                                            maxLength: 20,
+                                            required: true
+                                        })
+                                    }),
+                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                        children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_Input_Fields_Input__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .Z, {
+                                            name: "phone",
+                                            label: t("applyForm.stepOne.groupTwo.phone"),
+                                            type: "tel",
+                                            placeholder: t("applyForm.stepOne.groupTwo.phonePlaceHolder"),
+                                            id: "phone",
+                                            maxLength: 20,
+                                            required: true
+                                        })
+                                    }),
+                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                        style: {
+                                            gridColumn: "1/3"
+                                        },
+                                        children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_Input_Fields_Input__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .Z, {
+                                            name: "address",
+                                            label: t("applyForm.stepOne.groupThree.invoiceAddress"),
+                                            type: "text",
+                                            placeholder: t("applyForm.stepOne.groupThree.invoicePlaceHolder"),
+                                            id: "address",
+                                            maxLength: "30",
+                                            required: true
+                                        })
+                                    })
+                                ]
+                            }) : /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                                className: [
+                                    (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().formRow),
+                                    (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_6___default().address), 
+                                ].join(" "),
+                                style: {
+                                    display: "grid",
+                                    gridTemplateColumns: "1fr 1fr",
+                                    gap: "20px"
+                                },
+                                children: [
+                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                        children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_Input_Fields_Input__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .Z, {
+                                            name: "company",
+                                            label: t("applyForm.stepOne.groupTwo.companyName"),
+                                            type: "text",
+                                            placeholder: t("applyForm.stepOne.groupTwo.companyPlaceHolder"),
+                                            id: "company",
+                                            maxLength: 30,
+                                            required: true
+                                        })
+                                    }),
+                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                        children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_Input_Fields_Input__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .Z, {
+                                            name: "uniformNum",
+                                            label: t("applyForm.stepOne.groupTwo.taxID"),
+                                            type: "text",
+                                            placeholder: t("applyForm.stepOne.groupTwo.taxIdPlaceHolder"),
+                                            id: "uniformNum",
+                                            maxLength: 8,
+                                            value: number,
+                                            onChange: (e)=>setNumber(e.target.value.replace(/[^\d]/g, "")),
+                                            required: true
+                                        })
+                                    }),
+                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                        children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_Input_Fields_Input__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .Z, {
+                                            name: "contactPerson",
+                                            label: t("applyForm.stepOne.groupTwo.contactPerson"),
+                                            type: "text",
+                                            placeholder: t("applyForm.stepOne.groupTwo.contactPersonPlaceHolder"),
+                                            id: "contactPerson",
+                                            maxLength: 20,
+                                            required: true
+                                        })
+                                    }),
+                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                        children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_Input_Fields_Input__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .Z, {
+                                            name: "phone",
+                                            label: t("applyForm.stepOne.groupTwo.phone"),
+                                            type: "tel",
+                                            placeholder: t("applyForm.stepOne.groupTwo.phonePlaceHolder"),
+                                            id: "phone",
+                                            maxLength: 20,
+                                            required: true
+                                        })
+                                    }),
+                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                        style: {
+                                            gridColumn: "1/3"
+                                        },
+                                        children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_Input_Fields_Input__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .Z, {
+                                            name: "address",
+                                            label: t("applyForm.stepOne.groupThree.invoiceAddress"),
+                                            type: "text",
+                                            placeholder: t("applyForm.stepOne.groupThree.invoicePlaceHolder"),
+                                            id: "address",
+                                            maxLength: "30",
+                                            required: true
+                                        })
+                                    })
+                                ]
                             })
                         ]
                     }),
@@ -2501,7 +2692,7 @@ function Preview({ formStep , nextFormStep , applicatonId , dataID , sid ,  }) {
                 onSubmit: handleSubmit,
                 children: [
                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("h2", {
-                        children: t("applyForm.preview.groupOne.title")
+                        children: t("applyForm.stepOne.staffOnSite")
                     }),
                     /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
                         className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().formComplete),
@@ -2513,18 +2704,7 @@ function Preview({ formStep , nextFormStep , applicatonId , dataID , sid ,  }) {
                                         children: t("applyForm.preview.groupOne.companyName")
                                     }),
                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
-                                        children: data.proxy.proxy_company_name
-                                    })
-                                ]
-                            }),
-                            /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().formRow),
-                                children: [
-                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
-                                        children: t("applyForm.preview.groupOne.taxID")
-                                    }),
-                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
-                                        children: data.proxy.proxy_tax_id
+                                        children: data.onsite.onsite_company_name
                                     })
                                 ]
                             }),
@@ -2535,7 +2715,7 @@ function Preview({ formStep , nextFormStep , applicatonId , dataID , sid ,  }) {
                                         children: t("applyForm.preview.groupOne.contactPerson")
                                     }),
                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
-                                        children: data.proxy.proxy_contact_person
+                                        children: data.onsite.onsite_contact_person
                                     })
                                 ]
                             }),
@@ -2546,7 +2726,7 @@ function Preview({ formStep , nextFormStep , applicatonId , dataID , sid ,  }) {
                                         children: t("applyForm.preview.groupOne.phone")
                                     }),
                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
-                                        children: data.proxy.proxy_phone
+                                        children: data.onsite.onsite_contact_phone
                                     })
                                 ]
                             }),
@@ -2557,117 +2737,139 @@ function Preview({ formStep , nextFormStep , applicatonId , dataID , sid ,  }) {
                                         children: "E-mail"
                                     }),
                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
-                                        children: data.proxy.proxy_email
+                                        children: data.onsite.onsite_contact_email
                                     })
                                 ]
                             })
                         ]
                     }),
-                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("h2", {
-                        children: t("applyForm.preview.groupTwo.title")
-                    }),
-                    data.hydro_items.base_option === "Y" ? /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().formCompleteInvoce),
-                        children: [
-                            /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().formRow),
-                                children: [
-                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
-                                        children: t("applyForm.preview.groupTwo.companyName")
-                                    }),
-                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {})
-                                ]
-                            }),
-                            /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().formRow),
-                                children: [
-                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
-                                        children: t("applyForm.preview.groupTwo.taxID")
-                                    }),
-                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {})
-                                ]
-                            }),
-                            /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().formRow),
-                                children: [
-                                    /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                        children: [
-                                            " ",
-                                            t("applyForm.preview.groupTwo.invoiceAddress")
-                                        ]
-                                    }),
-                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {})
-                                ]
-                            }),
-                            /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().formRow),
-                                children: [
-                                    /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                        children: [
-                                            " ",
-                                            t("applyForm.preview.groupTwo.remark"),
-                                            "："
-                                        ]
-                                    }),
-                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {})
-                                ]
-                            })
-                        ]
-                    }) : /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                        className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().formCompleteInvoce),
-                        children: [
-                            /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().formRow),
-                                children: [
-                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
-                                        children: t("applyForm.preview.groupTwo.companyName")
-                                    }),
-                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
-                                        children: data.invoice.invoice_company
-                                    })
-                                ]
-                            }),
-                            /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().formRow),
-                                children: [
-                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
-                                        children: t("applyForm.preview.groupTwo.taxID")
-                                    }),
-                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
-                                        children: data.invoice.invoice_taxid
-                                    })
-                                ]
-                            }),
-                            /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().formRow),
-                                children: [
-                                    /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                        children: [
-                                            " ",
-                                            t("applyForm.preview.groupTwo.invoiceAddress")
-                                        ]
-                                    }),
-                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
-                                        children: data.invoice.invoice_address
-                                    })
-                                ]
-                            }),
-                            /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().formRow),
-                                children: [
-                                    /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                        children: [
-                                            " ",
-                                            t("applyForm.preview.groupTwo.remark"),
-                                            "："
-                                        ]
-                                    }),
-                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
-                                        children: data.invoice.remark
-                                    })
-                                ]
-                            })
-                        ]
+                    data.hydro_items.base_option === "Y" ? null : /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+                        children: data.invoice_check === "0" ? null : /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+                            children: [
+                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("h2", {
+                                    children: t("applyForm.preview.groupTwo.title")
+                                }),
+                                /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                                    className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().formCompleteInvoce),
+                                    children: [
+                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                                            className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().formRow),
+                                            children: [
+                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
+                                                    children: t("applyForm.preview.groupTwo.companyName")
+                                                }),
+                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
+                                                    children: data.invoice.invoice_comapny
+                                                })
+                                            ]
+                                        }),
+                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                                            className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().formRow),
+                                            children: [
+                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
+                                                    children: t("applyForm.preview.groupTwo.taxID")
+                                                }),
+                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
+                                                    children: data.invoice.invoice_taxid
+                                                })
+                                            ]
+                                        }),
+                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                                            className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().formRow),
+                                            children: [
+                                                /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                    children: [
+                                                        " ",
+                                                        t("applyForm.preview.groupTwo.invoiceAddress")
+                                                    ]
+                                                }),
+                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
+                                                    children: data.invoice.invoice_address
+                                                })
+                                            ]
+                                        }),
+                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                                            className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().formRow),
+                                            children: [
+                                                /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                    children: [
+                                                        " ",
+                                                        t("applyForm.preview.groupTwo.remark"),
+                                                        "："
+                                                    ]
+                                                }),
+                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
+                                                    children: data.invoice.remark
+                                                })
+                                            ]
+                                        })
+                                    ]
+                                }),
+                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("h2", {
+                                    children: t("applyForm.stepOne.groupTwo.title")
+                                }),
+                                /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                                    className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().formComplete),
+                                    children: [
+                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                                            className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().formRow),
+                                            children: [
+                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
+                                                    children: t("applyForm.preview.groupOne.companyName")
+                                                }),
+                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
+                                                    children: data.proxy.proxy_company_name
+                                                })
+                                            ]
+                                        }),
+                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                                            className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().formRow),
+                                            children: [
+                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
+                                                    children: t("applyForm.preview.groupOne.taxID")
+                                                }),
+                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
+                                                    children: data.proxy.proxy_tax_id
+                                                })
+                                            ]
+                                        }),
+                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                                            className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().formRow),
+                                            children: [
+                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
+                                                    children: t("applyForm.preview.groupOne.contactPerson")
+                                                }),
+                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
+                                                    children: data.proxy.proxy_contact_person
+                                                })
+                                            ]
+                                        }),
+                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                                            className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().formRow),
+                                            children: [
+                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
+                                                    children: t("applyForm.preview.groupOne.phone")
+                                                }),
+                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
+                                                    children: data.proxy.proxy_phone
+                                                })
+                                            ]
+                                        }),
+                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                                            className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().formRow),
+                                            children: [
+                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
+                                                    children: "E-mail"
+                                                }),
+                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
+                                                    children: data.proxy.proxy_email
+                                                })
+                                            ]
+                                        })
+                                    ]
+                                })
+                            ]
+                        })
                     }),
                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("h2", {
                         children: t("applyForm.preview.groupThree.title")

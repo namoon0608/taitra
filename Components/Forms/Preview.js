@@ -76,94 +76,118 @@ export default function Preview({
                 {t("applyForm.stepper.save")}
             </button>
             <Form onSubmit={handleSubmit}>
-                <h2>{t("applyForm.preview.groupOne.title")}</h2>
+                <h2>{t("applyForm.stepOne.staffOnSite")}</h2>
                 <div className={styles.formComplete}>
                     <div className={styles.formRow}>
                         <label>
                             {t("applyForm.preview.groupOne.companyName")}
                         </label>
-                        <p>{data.proxy.proxy_company_name}</p>
+                        <p>{data.onsite.onsite_company_name}</p>
                     </div>
-                    <div className={styles.formRow}>
+                    {/* <div className={styles.formRow}>
                         <label>{t("applyForm.preview.groupOne.taxID")}</label>
                         <p>{data.proxy.proxy_tax_id}</p>
-                    </div>
+                    </div> */}
                     <div className={styles.formRow}>
                         <label>
                             {t("applyForm.preview.groupOne.contactPerson")}
                         </label>
-                        <p>{data.proxy.proxy_contact_person}</p>
+                        <p>{data.onsite.onsite_contact_person}</p>
                     </div>
                     <div className={styles.formRow}>
                         <label>{t("applyForm.preview.groupOne.phone")}</label>
-                        <p>{data.proxy.proxy_phone}</p>
+                        <p>{data.onsite.onsite_contact_phone}</p>
                     </div>
                     <div className={styles.formRow}>
                         <label>E-mail</label>
-                        <p>{data.proxy.proxy_email}</p>
+                        <p>{data.onsite.onsite_contact_email}</p>
                     </div>
                 </div>
-                <h2>{t("applyForm.preview.groupTwo.title")}</h2>
-                {data.hydro_items.base_option === "Y" ? (
-                    <div className={styles.formCompleteInvoce}>
-                        <div className={styles.formRow}>
-                            <label>
-                                {t("applyForm.preview.groupTwo.companyName")}
-                            </label>
-                            <p></p>
-                        </div>
-                        <div className={styles.formRow}>
-                            <label>
-                                {t("applyForm.preview.groupTwo.taxID")}
-                            </label>
-                            <p></p>
-                        </div>
-                        <div className={styles.formRow}>
-                            <label>
-                                {" "}
-                                {t("applyForm.preview.groupTwo.invoiceAddress")}
-                            </label>
-                            <p></p>
-                        </div>
-                        <div className={styles.formRow}>
-                            <label>
-                                {" "}
-                                {t("applyForm.preview.groupTwo.remark")}：
-                            </label>
-                            <p></p>
-                        </div>
-                    </div>
-                ) : (
-                    <div className={styles.formCompleteInvoce}>
-                        <div className={styles.formRow}>
-                            <label>
-                                {t("applyForm.preview.groupTwo.companyName")}
-                            </label>
-                            <p>{data.invoice.invoice_company}</p>
-                        </div>
-                        <div className={styles.formRow}>
-                            <label>
-                                {t("applyForm.preview.groupTwo.taxID")}
-                            </label>
-                            <p>{data.invoice.invoice_taxid}</p>
-                        </div>
-                        <div className={styles.formRow}>
-                            <label>
-                                {" "}
-                                {t("applyForm.preview.groupTwo.invoiceAddress")}
-                            </label>
-                            <p>{data.invoice.invoice_address}</p>
-                        </div>
-                        <div className={styles.formRow}>
-                            <label>
-                                {" "}
-                                {t("applyForm.preview.groupTwo.remark")}：
-                            </label>
-                            <p>{data.invoice.remark}</p>
-                        </div>
-                    </div>
+                {data.hydro_items.base_option === "Y" ? null : (
+                    <>
+                        {data.invoice_check === "0" ? null : (
+                            <>
+                                <h2>{t("applyForm.preview.groupTwo.title")}</h2>
+                                <div className={styles.formCompleteInvoce}>
+                                    <div className={styles.formRow}>
+                                        <label>
+                                            {t(
+                                                "applyForm.preview.groupTwo.companyName"
+                                            )}
+                                        </label>
+                                        <p>{data.invoice.invoice_comapny}</p>
+                                    </div>
+                                    <div className={styles.formRow}>
+                                        <label>
+                                            {t(
+                                                "applyForm.preview.groupTwo.taxID"
+                                            )}
+                                        </label>
+                                        <p>{data.invoice.invoice_taxid}</p>
+                                    </div>
+                                    <div className={styles.formRow}>
+                                        <label>
+                                            {" "}
+                                            {t(
+                                                "applyForm.preview.groupTwo.invoiceAddress"
+                                            )}
+                                        </label>
+                                        <p>{data.invoice.invoice_address}</p>
+                                    </div>
+                                    <div className={styles.formRow}>
+                                        <label>
+                                            {" "}
+                                            {t(
+                                                "applyForm.preview.groupTwo.remark"
+                                            )}
+                                            ：
+                                        </label>
+                                        <p>{data.invoice.remark}</p>
+                                    </div>
+                                </div>
+                                <h2>{t("applyForm.stepOne.groupTwo.title")}</h2>
+                                <div className={styles.formComplete}>
+                                    <div className={styles.formRow}>
+                                        <label>
+                                            {t(
+                                                "applyForm.preview.groupOne.companyName"
+                                            )}
+                                        </label>
+                                        <p>{data.proxy.proxy_company_name}</p>
+                                    </div>
+                                    <div className={styles.formRow}>
+                                        <label>
+                                            {t(
+                                                "applyForm.preview.groupOne.taxID"
+                                            )}
+                                        </label>
+                                        <p>{data.proxy.proxy_tax_id}</p>
+                                    </div>
+                                    <div className={styles.formRow}>
+                                        <label>
+                                            {t(
+                                                "applyForm.preview.groupOne.contactPerson"
+                                            )}
+                                        </label>
+                                        <p>{data.proxy.proxy_contact_person}</p>
+                                    </div>
+                                    <div className={styles.formRow}>
+                                        <label>
+                                            {t(
+                                                "applyForm.preview.groupOne.phone"
+                                            )}
+                                        </label>
+                                        <p>{data.proxy.proxy_phone}</p>
+                                    </div>
+                                    <div className={styles.formRow}>
+                                        <label>E-mail</label>
+                                        <p>{data.proxy.proxy_email}</p>
+                                    </div>
+                                </div>
+                            </>
+                        )}
+                    </>
                 )}
-
                 <h2>{t("applyForm.preview.groupThree.title")}</h2>
                 {data.hydro_items.base_option === "Y" ? (
                     <div>{t("applyForm.preview.groupThree.useDefault")}</div>

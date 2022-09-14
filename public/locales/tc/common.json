@@ -37,6 +37,7 @@
             "step4":"預覽"
         },
         "stepOne": {
+            "staffOnSite":"現場人員聯絡資訊",
             "groupOne":{
                 "title":"參展廠商基本資料",
                 "companyName":"攤位名稱",

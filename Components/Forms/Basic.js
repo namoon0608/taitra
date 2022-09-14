@@ -20,7 +20,7 @@ export default function Basic({
     const temporary = async () => {
         const useDefault = document.getElementById("chooseDefault");
         let company = document.getElementById("company").value;
-        let uniformNum = document.getElementById("uniformNum").value;
+        // let uniformNum = document.getElementById("uniformNum").value;
         let contactPerson = document.getElementById("contactPerson").value;
         let email = document.getElementById("email").value;
         let phone = document.getElementById("phone").value;
@@ -36,16 +36,14 @@ export default function Basic({
         const options = {
             method: "POST",
             headers: {
-                // cookie: "ci_session=2tuoeunna8cs9312goi03j36jam80pm2",
                 "Content-Type": "application/x-www-form-urlencoded",
             },
             body: new URLSearchParams({
                 application_form_id: dataID,
-                proxy_company_name: company,
-                proxy_tax_id: uniformNum,
-                proxy_contact_person: contactPerson,
-                proxy_email: email,
-                proxy_phone: phone,
+                onsite_company_name: company,
+                onsite_contact_person: contactPerson,
+                onsite_contact_email: email,
+                onsite_contact_phone: phone,
                 base_option: baseOption,
                 remark: remark,
                 event_uid: sid.event_uid,
@@ -77,16 +75,14 @@ export default function Basic({
         const options = {
             method: "POST",
             headers: {
-                // cookie: "ci_session=2tuoeunna8cs9312goi03j36jam80pm2",
                 "Content-Type": "application/x-www-form-urlencoded",
             },
             body: new URLSearchParams({
                 application_form_id: dataID,
-                proxy_company_name: data.company,
-                proxy_tax_id: data.uniformNum,
-                proxy_contact_person: data.contactPerson,
-                proxy_email: data.email,
-                proxy_phone: data.phone,
+                onsite_company_name: data.company,
+                onsite_contact_person: data.contactPerson,
+                onsite_contact_email: data.email,
+                onsite_contact_phone: data.phone,
                 base_option: baseOption,
                 remark: remark,
                 event_uid: sid.event_uid,
@@ -184,7 +180,7 @@ export default function Basic({
             </div>
             {stepOne.status === false ? (
                 <Form onSubmit={handleSubmit}>
-                    <h2>{t("applyForm.stepOne.groupTwo.title")}</h2>
+                    <h2>{t("applyForm.stepOne.staffOnSite")}</h2>
                     <div className={styles.form}>
                         <div className={styles.formRow}>
                             <Input
@@ -200,7 +196,7 @@ export default function Basic({
                                 maxLength={30}
                             />
                         </div>
-                        <div className={styles.formRow}>
+                        {/* <div className={styles.formRow}>
                             <Input
                                 name="uniformNum"
                                 label={t("applyForm.stepOne.groupTwo.taxID")}
@@ -217,7 +213,7 @@ export default function Basic({
                                     )
                                 }
                             />
-                        </div>
+                        </div> */}
                         <div className={styles.formRow}>
                             <Input
                                 name="contactPerson"
@@ -298,7 +294,7 @@ export default function Basic({
                                     "applyForm.stepOne.groupTwo.companyPlaceHolder"
                                 )}
                                 id="company"
-                                defaultValue={stepOne.data.proxy_company_name}
+                                defaultValue={stepOne.data.onsite_company_name}
                                 maxLength={30}
                             />
                         </div>
@@ -332,7 +328,9 @@ export default function Basic({
                                     "applyForm.stepOne.groupTwo.contactPersonPlaceHolder"
                                 )}
                                 id="contactPerson"
-                                defaultValue={stepOne.data.proxy_contact_person}
+                                defaultValue={
+                                    stepOne.data.onsite_contact_person
+                                }
                                 maxLength={20}
                             />
                         </div>
@@ -345,7 +343,7 @@ export default function Basic({
                                     "applyForm.stepOne.groupTwo.emailPlaceHolder"
                                 )}
                                 id="email"
-                                defaultValue={stepOne.data.proxy_email}
+                                defaultValue={stepOne.data.onsite_contact_email}
                             />
                         </div>
                         <div className={styles.formRow}>
@@ -357,7 +355,7 @@ export default function Basic({
                                     "applyForm.stepOne.groupTwo.phonePlaceHolder"
                                 )}
                                 id="phone"
-                                defaultValue={stepOne.data.proxy_phone}
+                                defaultValue={stepOne.data.onsite_contact_phone}
                                 maxLength={20}
                             />
                         </div>

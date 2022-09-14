@@ -37,6 +37,7 @@
             "step4":"Preview"
         },
         "stepOne": {
+            "staffOnSite":"On-site Contact Information",
             "groupOne":{
                 "title":"Exhibitor Info",
                 "companyName":"Company Name",
