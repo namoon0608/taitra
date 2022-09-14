@@ -3,9 +3,14 @@ import styles from "../../styles/Form.module.scss";
 import Popup from "../Popup/Popup";
 import { useTranslation } from "next-i18next";
 
-export default function Write({ formStep, nextFormStep, stepThree, dataID }) {
+export default function Write({
+    formStep,
+    nextFormStep,
+    stepThree,
+    dataID,
+    sid,
+}) {
     const { t } = useTranslation();
-    // const [imageSrc, setImageSrc] = useState("");
     const [imageSrc, setImageSrc] = useState(stepThree.imageData);
     const [uploadData, setUploadData] = useState();
     const [goNext, setGoNext] = useState(true);
@@ -30,7 +35,7 @@ export default function Write({ formStep, nextFormStep, stepThree, dataID }) {
         setShow(true);
         // const form = {
         //     application_form_id: dataID,
-        //     sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
+        //     sid: sid,
         // };
         // if (!IFrameRef.current) return;
         // IFrameRef.current.contentWindow.postMessage(
@@ -56,15 +61,18 @@ export default function Write({ formStep, nextFormStep, stepThree, dataID }) {
     }
 
     const temporary = async () => {
-        let file = dataURLtoFile(imageSrc, "png");
+        const later = document.querySelector("input[name=cbox1]");
+        let file;
         const form = new FormData();
         form.append("application_form_id", dataID);
-        form.append(
-            "sid",
-            "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
-        );
-        form.append("imageData", file);
-        console.log(file);
+        form.append("event_uid", sid.event_uid);
+        form.append("company_id", sid.company_id);
+        if (!later.checked) {
+            file = dataURLtoFile(imageSrc, "png");
+            form.append("imageData", file);
+        } else if (later.checked) {
+            form.append("imageData", "Y");
+        }
 
         const options = {
             method: "POST",
@@ -98,12 +106,14 @@ export default function Write({ formStep, nextFormStep, stepThree, dataID }) {
             setGoNext(false);
         } else if (later.checked) {
             setGoNext(false);
+            setImageSrc("");
         } else if (changeEvent.target.files === null) {
             setGoNext(true);
         }
     }
 
     async function handleSubmit(event) {
+        const later = document.querySelector("input[name=cbox1]");
         event.preventDefault();
         const formData = event.currentTarget;
         const fileInput = Array.from(formData.elements).find(
@@ -111,16 +121,16 @@ export default function Write({ formStep, nextFormStep, stepThree, dataID }) {
         );
         const form = new FormData();
         form.append("application_form_id", dataID);
-        form.append(
-            "sid",
-            "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
-        );
-        if (fileInput.files.length === 0) {
-            form.append("imageData", imageSrc);
+        form.append("event_uid", sid.event_uid);
+        form.append("company_id", sid.company_id);
+        if (later.checked) {
+            form.append("imageData", "Y");
         } else {
-            // const file = fileInput.files[0];
-            // form.append("imageData", URL.createObjectURL(file));
-            form.append("imageData", fileInput.files[0]);
+            if (fileInput.files.length === 0) {
+                form.append("imageData", imageSrc);
+            } else {
+                form.append("imageData", fileInput.files[0]);
+            }
         }
 
         const options = {
@@ -131,8 +141,10 @@ export default function Write({ formStep, nextFormStep, stepThree, dataID }) {
 
         await fetch(`${process.env.customKey}setApplyDiagram`, options)
             .then((response) => response.json())
-            .then((response) => console.log(response))
-            .then(nextFormStep())
+            .then((response) => {
+                console.log(response);
+                nextFormStep();
+            })
             .catch((err) => console.error(err));
     }
 

@@ -44,36 +44,60 @@ _Components_Nav__WEBPACK_IMPORTED_MODULE_2__ = (__webpack_async_dependencies__.t
 
 
 async function getServerSideProps({ locale , query , req , res  }) {
-    if ((0,cookies_next__WEBPACK_IMPORTED_MODULE_8__.getCookie)("sid", {
+    // console.log(getCookie("sid", { req, res }));
+    // console.log(query.sid);
+    let oldCookie = (0,cookies_next__WEBPACK_IMPORTED_MODULE_8__.getCookie)("sid", {
         req,
         res
-    }) === undefined || (0,cookies_next__WEBPACK_IMPORTED_MODULE_8__.getCookie)("sid", {
-        req,
-        res
-    }) === "") {
-        (0,cookies_next__WEBPACK_IMPORTED_MODULE_8__.setCookie)("sid", query.sid, {
+    });
+    if (query.sid !== undefined) {
+        if (query.sid !== oldCookie) {
+            (0,cookies_next__WEBPACK_IMPORTED_MODULE_8__.setCookie)("sid", query.sid, {
+                req,
+                res,
+                maxAge: 60 * 6 * 24
+            });
+        } else if (query.sid === (0,cookies_next__WEBPACK_IMPORTED_MODULE_8__.getCookie)("sid", {
             req,
-            res,
-            maxAge: 60 * 6 * 24
-        });
+            res
+        })) {
+            oldCookie = oldCookie;
+        }
+    } else if (query.sid === undefined || query.sid === "") {
+        if (oldCookie !== undefined || oldCookie !== "") {
+            oldCookie = oldCookie;
+        }
+        if (oldCookie === undefined) {
+            return {
+                redirect: {
+                    destination: "https://twtc.com.tw/"
+                }
+            };
+        }
     }
-    console.log((0,cookies_next__WEBPACK_IMPORTED_MODULE_8__.getCookie)("sid", {
+    const form = new URLSearchParams();
+    form.append("sid", (0,cookies_next__WEBPACK_IMPORTED_MODULE_8__.getCookie)("sid", {
         req,
         res
     }));
     const options = {
+        method: "POST"
+    };
+    options.body = form;
+    const sidData = await fetch(`${process.env.API_BASE_URL}sso`, options).then((response)=>response.json());
+    const optionsTwo = {
         method: "POST",
         headers: {
-            cookie: "ci_session=tm7raoegfru3cidh8r88ljnovjura42a",
             "Content-Type": "application/x-www-form-urlencoded"
         },
         body: new URLSearchParams({
             lang: locale,
-            sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
+            event_uid: sidData.event_uid,
+            company_id: sidData.company_id
         })
     };
-    const infoData = await fetch(`${process.env.API_BASE_URL}getDiscountInfo`, options).then((response)=>response.json());
-    const applyRes = await fetch(`${process.env.API_BASE_URL}getApplyInfo`, options);
+    const infoData = await fetch(`${process.env.API_BASE_URL}getDiscountInfo`, optionsTwo).then((response)=>response.json());
+    const applyRes = await fetch(`${process.env.API_BASE_URL}getApplyInfo`, optionsTwo);
     const applyInfo = await applyRes.json();
     return {
         props: {
@@ -81,7 +105,8 @@ async function getServerSideProps({ locale , query , req , res  }) {
                 "common"
             ]),
             info: infoData,
-            applyInfo: applyInfo
+            applyInfo: applyInfo,
+            sidData: sidData
         }
     };
 }

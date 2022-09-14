@@ -65,8 +65,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Components_Nav__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(4269);
 /* harmony import */ var _Components_Footer__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(558);
 /* harmony import */ var _Components_Hero__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(3806);
-/* harmony import */ var _styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(3110);
-/* harmony import */ var _styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_11___default = /*#__PURE__*/__webpack_require__.n(_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_11__);
+/* harmony import */ var _styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(3110);
+/* harmony import */ var _styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_12___default = /*#__PURE__*/__webpack_require__.n(_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_12__);
 /* harmony import */ var next_i18next_serverSideTranslations__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(5460);
 /* harmony import */ var next_i18next_serverSideTranslations__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(next_i18next_serverSideTranslations__WEBPACK_IMPORTED_MODULE_6__);
 /* harmony import */ var next_i18next__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(1377);
@@ -76,6 +76,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Components_Popup_Popup__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(9929);
 /* harmony import */ var next_router__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(1853);
 /* harmony import */ var next_router__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(next_router__WEBPACK_IMPORTED_MODULE_10__);
+/* harmony import */ var cookies_next__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(8982);
+/* harmony import */ var cookies_next__WEBPACK_IMPORTED_MODULE_11___default = /*#__PURE__*/__webpack_require__.n(cookies_next__WEBPACK_IMPORTED_MODULE_11__);
 var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([_Components_Nav__WEBPACK_IMPORTED_MODULE_3__]);
 _Components_Nav__WEBPACK_IMPORTED_MODULE_3__ = (__webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__)[0];
 
@@ -90,7 +92,47 @@ _Components_Nav__WEBPACK_IMPORTED_MODULE_3__ = (__webpack_async_dependencies__.t
 
 
 
-async function getServerSideProps({ locale  }) {
+
+async function getServerSideProps({ locale , query , req , res  }) {
+    let oldCookie = (0,cookies_next__WEBPACK_IMPORTED_MODULE_11__.getCookie)("sid", {
+        req,
+        res
+    });
+    if (query.sid !== undefined) {
+        if (query.sid !== oldCookie) {
+            (0,cookies_next__WEBPACK_IMPORTED_MODULE_11__.setCookie)("sid", query.sid, {
+                req,
+                res,
+                maxAge: 60 * 6 * 24
+            });
+        } else if (query.sid === (0,cookies_next__WEBPACK_IMPORTED_MODULE_11__.getCookie)("sid", {
+            req,
+            res
+        })) {
+            oldCookie = oldCookie;
+        }
+    } else if (query.sid === undefined || query.sid === "") {
+        if (oldCookie !== undefined || oldCookie !== "") {
+            oldCookie = oldCookie;
+        }
+        if (oldCookie === undefined) {
+            return {
+                redirect: {
+                    destination: "https://twtc.com.tw/"
+                }
+            };
+        }
+    }
+    const form = new URLSearchParams();
+    form.append("sid", (0,cookies_next__WEBPACK_IMPORTED_MODULE_11__.getCookie)("sid", {
+        req,
+        res
+    }));
+    const sidForm = {
+        method: "POST"
+    };
+    sidForm.body = form;
+    const sidData = await fetch(`${process.env.API_BASE_URL}sso`, sidForm).then((response)=>response.json());
     const options = {
         method: "POST",
         headers: {
@@ -98,7 +140,8 @@ async function getServerSideProps({ locale  }) {
         },
         body: new URLSearchParams({
             lang: locale,
-            sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
+            event_uid: sidData.event_uid,
+            company_id: sidData.company_id
         })
     };
     const infoRes = await fetch(`${process.env.API_BASE_URL}getDiscountInfo`, options);
@@ -110,7 +153,8 @@ async function getServerSideProps({ locale  }) {
                 "common"
             ]),
             info: infoData,
-            completeData: completeData
+            completeData: completeData,
+            sidData: sidData
         }
     };
 }
@@ -158,7 +202,8 @@ function Sign(props) {
                 const form = new FormData();
                 form.append("application_form_id", applicationList[i]);
                 form.append("imageData", imageURL);
-                form.append("sid", "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a");
+                form.append("event_uid", props.sidData.event_uid);
+                form.append("company_id", props.sidData.company_id);
                 const options = {
                     method: "POST"
                 };
@@ -169,7 +214,7 @@ function Sign(props) {
         }
     };
     return /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-        className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_11___default().container),
+        className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_12___default().container),
         children: [
             /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)((next_head__WEBPACK_IMPORTED_MODULE_2___default()), {
                 children: [
@@ -201,7 +246,7 @@ function Sign(props) {
                         }) : /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
                             children: [
                                 /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                                    className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_11___default().signItem),
+                                    className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_12___default().signItem),
                                     children: props.completeData.data.map((data, idx)=>/*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
                                             children: [
                                                 /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("p", {
@@ -214,7 +259,7 @@ function Sign(props) {
                                                     children: [
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("thead", {
                                                             children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
-                                                                className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_11___default().title),
+                                                                className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_12___default().title),
                                                                 children: [
                                                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("th", {
                                                                         children: "項次"
@@ -230,7 +275,7 @@ function Sign(props) {
                                                         }),
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("tbody", {
                                                             children: data.hydro_items.items.map((item, idx)=>/*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
-                                                                    className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_11___default().content),
+                                                                    className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_12___default().content),
                                                                     children: [
                                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
                                                                             children: "1"
@@ -255,10 +300,10 @@ function Sign(props) {
                                         }))
                                 }),
                                 /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                    className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_11___default().sign),
+                                    className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_12___default().sign),
                                     children: [
                                         /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("button", {
-                                            className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_11___default().signBtn),
+                                            className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_12___default().signBtn),
                                             onClick: ()=>setShow(true),
                                             children: [
                                                 "驗收簽名",
@@ -270,7 +315,7 @@ function Sign(props) {
                                             ]
                                         }),
                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                                            className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_11___default().signImg),
+                                            className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_12___default().signImg),
                                             children: imageURL ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("img", {
                                                 src: imageURL
                                             }) : null
@@ -280,7 +325,7 @@ function Sign(props) {
                                 show ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_Components_Popup_Popup__WEBPACK_IMPORTED_MODULE_9__/* ["default"] */ .Z, {
                                     close: close,
                                     children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                        className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_11___default().signature),
+                                        className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_12___default().signature),
                                         onClick: (e)=>{
                                             // do not close modal if anything inside modal content is clicked
                                             e.stopPropagation();
@@ -297,15 +342,15 @@ function Sign(props) {
                                                 children: "請於上方簽名"
                                             }),
                                             /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                                className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_11___default().signatureBtns),
+                                                className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_12___default().signatureBtns),
                                                 children: [
                                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("button", {
-                                                        className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_11___default().buttons),
+                                                        className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_12___default().buttons),
                                                         onClick: clear,
                                                         children: "清除重簽"
                                                     }),
                                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("button", {
-                                                        className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_11___default().buttons),
+                                                        className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_12___default().buttons),
                                                         onClick: save,
                                                         children: "確認"
                                                     })
@@ -315,7 +360,7 @@ function Sign(props) {
                                     })
                                 }) : null,
                                 /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("button", {
-                                    className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_11___default().signCheck),
+                                    className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_12___default().signCheck),
                                     onClick: handleSubmit,
                                     children: "確認"
                                 })
@@ -331,6 +376,14 @@ function Sign(props) {
 
 __webpack_async_result__();
 } catch(e) { __webpack_async_result__(e); } });
+
+/***/ }),
+
+/***/ 8982:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("cookies-next");
 
 /***/ }),
 

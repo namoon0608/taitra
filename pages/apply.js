@@ -11,8 +11,40 @@ import Basic from "../Components/Forms/Basic";
 import Choose from "../Components/Forms/Choose";
 import Write from "../Components/Forms/Write";
 import Preview from "../Components/Forms/Preview";
+import { setCookie, getCookie } from "cookies-next";
 
-export async function getServerSideProps({ locale }) {
+export async function getServerSideProps({ locale, query, req, res }) {
+    let oldCookie = getCookie("sid", { req, res });
+    if (query.sid !== undefined) {
+        if (query.sid !== oldCookie) {
+            setCookie("sid", query.sid, { req, res, maxAge: 60 * 6 * 24 });
+        } else if (query.sid === getCookie("sid", { req, res })) {
+            oldCookie = oldCookie;
+        }
+    } else if (query.sid === undefined || query.sid === "") {
+        if (oldCookie !== undefined || oldCookie !== "") {
+            oldCookie = oldCookie;
+        }
+        if (oldCookie === undefined) {
+            return {
+                redirect: {
+                    destination: "https://twtc.com.tw/",
+                },
+            };
+        }
+    }
+    const form = new URLSearchParams();
+    form.append("sid", getCookie("sid", { req, res }));
+
+    const sidForm = {
+        method: "POST",
+    };
+    sidForm.body = form;
+
+    const sidData = await fetch(`${process.env.API_BASE_URL}sso`, sidForm).then(
+        (response) => response.json()
+    );
+
     const options = {
         method: "POST",
         headers: {
@@ -21,14 +53,15 @@ export async function getServerSideProps({ locale }) {
         },
         body: new URLSearchParams({
             lang: locale,
-            sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
+            event_uid: sidData.event_uid,
+            company_id: sidData.company_id,
         }),
     };
-    const res = await fetch(
+    const infoRes = await fetch(
         `${process.env.API_BASE_URL}getDiscountInfo`,
         options
     );
-    const infoData = await res.json();
+    const infoData = await infoRes.json();
 
     //get step two價目表
     const getPriceTable = await fetch(
@@ -46,7 +79,8 @@ export async function getServerSideProps({ locale }) {
         },
         body: new URLSearchParams({
             lang: locale,
-            sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
+            event_uid: sidData.event_uid,
+            company_id: sidData.company_id,
         }),
     };
     const companyRes = await fetch(
@@ -63,7 +97,8 @@ export async function getServerSideProps({ locale }) {
         body: new URLSearchParams({
             lang: locale,
             application_form_id: companyRes.savadata,
-            sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
+            event_uid: sidData.event_uid,
+            company_id: sidData.company_id,
         }),
     };
 
@@ -78,7 +113,6 @@ export async function getServerSideProps({ locale }) {
         `${process.env.API_BASE_URL}getApplyHydroItems`,
         steps
     ).then((response) => response.json());
-    console.log(stepTwoRes);
 
     //step three
     const stepThreeRes = await fetch(
@@ -95,6 +129,7 @@ export async function getServerSideProps({ locale }) {
             stepOne: stepOneRes,
             stepTwo: stepTwoRes,
             stepThree: stepThreeRes,
+            sidData: sidData,
         },
     };
 }
@@ -140,6 +175,7 @@ export default function Apply(props) {
                         saveID={saveID}
                         dataID={savadata}
                         jump={jumpOverStepTwo}
+                        sid={props.sidData}
                     />
                     <Choose
                         formStep={formStep}
@@ -147,17 +183,20 @@ export default function Apply(props) {
                         priceData={props.priceData}
                         stepTwo={props.stepTwo}
                         dataID={savadata}
+                        sid={props.sidData}
                     />
                     <Write
                         formStep={formStep}
                         nextFormStep={nextFormStep}
                         stepThree={props.stepThree}
                         dataID={savadata}
+                        sid={props.sidData}
                     />
                     {formStep > 2 && (
                         <Preview
                             applicatonId={props.company.savadata}
                             dataID={savadata}
+                            sid={props.sidData}
                         />
                     )}
                 </FormCard>

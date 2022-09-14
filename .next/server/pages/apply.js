@@ -89,7 +89,7 @@ module.exports = {
 
 
 
-function Basic({ formStep , nextFormStep , stepOne , company , saveID , dataID , jump ,  }) {
+function Basic({ formStep , nextFormStep , stepOne , company , saveID , dataID , jump , sid ,  }) {
     const { t  } = (0,next_i18next__WEBPACK_IMPORTED_MODULE_4__.useTranslation)();
     const { 0: number , 1: setNumber  } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)();
     const temporary = async ()=>{
@@ -121,7 +121,8 @@ function Basic({ formStep , nextFormStep , stepOne , company , saveID , dataID ,
                 proxy_phone: phone,
                 base_option: baseOption,
                 remark: remark,
-                sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
+                event_uid: sid.event_uid,
+                company_id: sid.company_id
             })
         };
         await fetch(`${"https://ewsadm.taiwantradeshows.com.tw/api/"}setApplyForm`, options).then((response)=>response.json()).then((response)=>{
@@ -156,7 +157,8 @@ function Basic({ formStep , nextFormStep , stepOne , company , saveID , dataID ,
                 proxy_phone: data.phone,
                 base_option: baseOption,
                 remark: remark,
-                sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
+                event_uid: sid.event_uid,
+                company_id: sid.company_id
             })
         };
         if (baseOption === "N") {
@@ -558,7 +560,7 @@ function Basic({ formStep , nextFormStep , stepOne , company , saveID , dataID ,
 
 
 
-function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
+function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID , sid ,  }) {
     const { t  } = (0,next_i18next__WEBPACK_IMPORTED_MODULE_4__.useTranslation)();
     const temporary = async ()=>{
         let invoice = "";
@@ -599,7 +601,8 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                 invoice: invoice,
                 invoice_address: address,
                 items: JSON.stringify(items),
-                sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
+                event_uid: sid.event_uid,
+                company_id: sid.company_id
             })
         };
         await fetch(`${"https://ewsadm.taiwantradeshows.com.tw/api/"}setApplyHydroItems`, options).then((response)=>response.json()).then((response)=>{
@@ -647,7 +650,8 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
                 items: JSON.stringify(items),
                 invoice: invoice,
                 invoice_address: data.address,
-                sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
+                event_uid: sid.event_uid,
+                company_id: sid.company_id
             })
         };
         await fetch(`${"https://ewsadm.taiwantradeshows.com.tw/api/"}setApplyHydroItems`, options).then((response)=>response.json()).then((response)=>console.log(response)).then(nextFormStep()).catch((err)=>console.error(err));
@@ -2427,12 +2431,14 @@ function Choose({ formStep , nextFormStep , priceData , stepTwo , dataID ,  }) {
 
 
 
-function Preview({ formStep , nextFormStep , applicatonId , dataID ,  }) {
+function Preview({ formStep , nextFormStep , applicatonId , dataID , sid ,  }) {
     const { t  } = (0,next_i18next__WEBPACK_IMPORTED_MODULE_4__.useTranslation)();
     const { 0: data , 1: setData  } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
     const { 0: isLoading , 1: setLoading  } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
     const router = (0,next_router__WEBPACK_IMPORTED_MODULE_3__.useRouter)();
     async function initProducts() {
+        // console.log(dataID);
+        // console.log(sid);
         const options = {
             method: "POST",
             headers: {
@@ -2442,7 +2448,8 @@ function Preview({ formStep , nextFormStep , applicatonId , dataID ,  }) {
             body: new URLSearchParams({
                 lang: router.locale,
                 application_form_id: dataID,
-                sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
+                company_id: sid.company_id,
+                event_uid: sid.event_uid
             })
         };
         setLoading(true);
@@ -2464,7 +2471,8 @@ function Preview({ formStep , nextFormStep , applicatonId , dataID ,  }) {
             },
             body: new URLSearchParams({
                 application_form_id: dataID,
-                sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
+                event_uid: sid.event_uid,
+                company_id: sid.company_id
             })
         };
         await fetch(`${"https://ewsadm.taiwantradeshows.com.tw/api/"}sumbitApply`, options).then((response)=>response.json()).then((response)=>{
@@ -2777,7 +2785,7 @@ function Preview({ formStep , nextFormStep , applicatonId , dataID ,  }) {
                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("h2", {
                         children: t("applyForm.preview.groupFour.title")
                     }),
-                    data.imageData_file === "" ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                    data.imageData_file === "Y" ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
                         children: t("applyForm.preview.groupFour.pending")
                     }) : /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
                         className: (_styles_Form_module_scss__WEBPACK_IMPORTED_MODULE_5___default().image),
@@ -2831,9 +2839,8 @@ function Preview({ formStep , nextFormStep , applicatonId , dataID ,  }) {
 
 
 
-function Write({ formStep , nextFormStep , stepThree , dataID  }) {
+function Write({ formStep , nextFormStep , stepThree , dataID , sid ,  }) {
     const { t  } = (0,next_i18next__WEBPACK_IMPORTED_MODULE_3__.useTranslation)();
-    // const [imageSrc, setImageSrc] = useState("");
     const { 0: imageSrc , 1: setImageSrc  } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(stepThree.imageData);
     const { 0: uploadData , 1: setUploadData  } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)();
     const { 0: goNext , 1: setGoNext  } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(true);
@@ -2855,7 +2862,7 @@ function Write({ formStep , nextFormStep , stepThree , dataID  }) {
         setShow(true);
     // const form = {
     //     application_form_id: dataID,
-    //     sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
+    //     sid: sid,
     // };
     // if (!IFrameRef.current) return;
     // IFrameRef.current.contentWindow.postMessage(
@@ -2878,12 +2885,18 @@ function Write({ formStep , nextFormStep , stepThree , dataID  }) {
         });
     }
     const temporary = async ()=>{
-        let file = dataURLtoFile(imageSrc, "png");
+        const later = document.querySelector("input[name=cbox1]");
+        let file;
         const form = new FormData();
         form.append("application_form_id", dataID);
-        form.append("sid", "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a");
-        form.append("imageData", file);
-        console.log(file);
+        form.append("event_uid", sid.event_uid);
+        form.append("company_id", sid.company_id);
+        if (!later.checked) {
+            file = dataURLtoFile(imageSrc, "png");
+            form.append("imageData", file);
+        } else if (later.checked) {
+            form.append("imageData", "Y");
+        }
         const options = {
             method: "POST"
         };
@@ -2908,29 +2921,37 @@ function Write({ formStep , nextFormStep , stepThree , dataID  }) {
             setGoNext(false);
         } else if (later.checked) {
             setGoNext(false);
+            setImageSrc("");
         } else if (changeEvent.target.files === null) {
             setGoNext(true);
         }
     }
     async function handleSubmit(event) {
+        const later = document.querySelector("input[name=cbox1]");
         event.preventDefault();
         const formData = event.currentTarget;
         const fileInput = Array.from(formData.elements).find(({ name  })=>name === "photo");
         const form = new FormData();
         form.append("application_form_id", dataID);
-        form.append("sid", "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a");
-        if (fileInput.files.length === 0) {
-            form.append("imageData", imageSrc);
+        form.append("event_uid", sid.event_uid);
+        form.append("company_id", sid.company_id);
+        if (later.checked) {
+            form.append("imageData", "Y");
         } else {
-            // const file = fileInput.files[0];
-            // form.append("imageData", URL.createObjectURL(file));
-            form.append("imageData", fileInput.files[0]);
+            if (fileInput.files.length === 0) {
+                form.append("imageData", imageSrc);
+            } else {
+                form.append("imageData", fileInput.files[0]);
+            }
         }
         const options = {
             method: "POST"
         };
         options.body = form;
-        await fetch(`${"https://ewsadm.taiwantradeshows.com.tw/api/"}setApplyDiagram`, options).then((response)=>response.json()).then((response)=>console.log(response)).then(nextFormStep()).catch((err)=>console.error(err));
+        await fetch(`${"https://ewsadm.taiwantradeshows.com.tw/api/"}setApplyDiagram`, options).then((response)=>response.json()).then((response)=>{
+            console.log(response);
+            nextFormStep();
+        }).catch((err)=>console.error(err));
     }
     return /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
         className: [
@@ -3326,8 +3347,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Components_Nav__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(4269);
 /* harmony import */ var _Components_Footer__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(558);
 /* harmony import */ var _Components_Hero__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(3806);
-/* harmony import */ var _styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(3110);
-/* harmony import */ var _styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_13___default = /*#__PURE__*/__webpack_require__.n(_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_13__);
+/* harmony import */ var _styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(3110);
+/* harmony import */ var _styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_14___default = /*#__PURE__*/__webpack_require__.n(_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_14__);
 /* harmony import */ var next_i18next_serverSideTranslations__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(5460);
 /* harmony import */ var next_i18next_serverSideTranslations__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(next_i18next_serverSideTranslations__WEBPACK_IMPORTED_MODULE_6__);
 /* harmony import */ var next_i18next__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(1377);
@@ -3337,6 +3358,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Components_Forms_Choose__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(4473);
 /* harmony import */ var _Components_Forms_Write__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(7171);
 /* harmony import */ var _Components_Forms_Preview__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(8041);
+/* harmony import */ var cookies_next__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(8982);
+/* harmony import */ var cookies_next__WEBPACK_IMPORTED_MODULE_13___default = /*#__PURE__*/__webpack_require__.n(cookies_next__WEBPACK_IMPORTED_MODULE_13__);
 var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([_Components_Nav__WEBPACK_IMPORTED_MODULE_3__]);
 _Components_Nav__WEBPACK_IMPORTED_MODULE_3__ = (__webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__)[0];
 
@@ -3353,7 +3376,47 @@ _Components_Nav__WEBPACK_IMPORTED_MODULE_3__ = (__webpack_async_dependencies__.t
 
 
 
-async function getServerSideProps({ locale  }) {
+
+async function getServerSideProps({ locale , query , req , res  }) {
+    let oldCookie = (0,cookies_next__WEBPACK_IMPORTED_MODULE_13__.getCookie)("sid", {
+        req,
+        res
+    });
+    if (query.sid !== undefined) {
+        if (query.sid !== oldCookie) {
+            (0,cookies_next__WEBPACK_IMPORTED_MODULE_13__.setCookie)("sid", query.sid, {
+                req,
+                res,
+                maxAge: 60 * 6 * 24
+            });
+        } else if (query.sid === (0,cookies_next__WEBPACK_IMPORTED_MODULE_13__.getCookie)("sid", {
+            req,
+            res
+        })) {
+            oldCookie = oldCookie;
+        }
+    } else if (query.sid === undefined || query.sid === "") {
+        if (oldCookie !== undefined || oldCookie !== "") {
+            oldCookie = oldCookie;
+        }
+        if (oldCookie === undefined) {
+            return {
+                redirect: {
+                    destination: "https://twtc.com.tw/"
+                }
+            };
+        }
+    }
+    const form = new URLSearchParams();
+    form.append("sid", (0,cookies_next__WEBPACK_IMPORTED_MODULE_13__.getCookie)("sid", {
+        req,
+        res
+    }));
+    const sidForm = {
+        method: "POST"
+    };
+    sidForm.body = form;
+    const sidData = await fetch(`${process.env.API_BASE_URL}sso`, sidForm).then((response)=>response.json());
     const options = {
         method: "POST",
         headers: {
@@ -3362,11 +3425,12 @@ async function getServerSideProps({ locale  }) {
         },
         body: new URLSearchParams({
             lang: locale,
-            sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
+            event_uid: sidData.event_uid,
+            company_id: sidData.company_id
         })
     };
-    const res = await fetch(`${process.env.API_BASE_URL}getDiscountInfo`, options);
-    const infoData = await res.json();
+    const infoRes = await fetch(`${process.env.API_BASE_URL}getDiscountInfo`, options);
+    const infoData = await infoRes.json();
     //get step two價目表
     const getPriceTable = await fetch(`${process.env.API_BASE_URL}getPriceTableByGrop`, options);
     const priceData = await getPriceTable.json();
@@ -3379,7 +3443,8 @@ async function getServerSideProps({ locale  }) {
         },
         body: new URLSearchParams({
             lang: locale,
-            sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
+            event_uid: sidData.event_uid,
+            company_id: sidData.company_id
         })
     };
     const companyRes = await fetch(`${process.env.API_BASE_URL}getExhibitorCompany`, company).then((response)=>response.json());
@@ -3392,14 +3457,14 @@ async function getServerSideProps({ locale  }) {
         body: new URLSearchParams({
             lang: locale,
             application_form_id: companyRes.savadata,
-            sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
+            event_uid: sidData.event_uid,
+            company_id: sidData.company_id
         })
     };
     //step one
     const stepOneRes = await fetch(`${process.env.API_BASE_URL}getDraftDataStep1`, steps).then((response)=>response.json());
     //step two
     const stepTwoRes = await fetch(`${process.env.API_BASE_URL}getApplyHydroItems`, steps).then((response)=>response.json());
-    console.log(stepTwoRes);
     //step three
     const stepThreeRes = await fetch(`${process.env.API_BASE_URL}getApplyDiagram`, steps).then((response)=>response.json());
     return {
@@ -3412,7 +3477,8 @@ async function getServerSideProps({ locale  }) {
             company: companyRes,
             stepOne: stepOneRes,
             stepTwo: stepTwoRes,
-            stepThree: stepThreeRes
+            stepThree: stepThreeRes,
+            sidData: sidData
         }
     };
 }
@@ -3426,7 +3492,7 @@ function Apply(props) {
     const nextFormStep = ()=>setFormStep((currentStep)=>currentStep + 1);
     const prevFormStep = ()=>setFormStep((currentStep)=>currentStep - 1);
     return /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-        className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_13___default().container),
+        className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_14___default().container),
         children: [
             /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)((next_head__WEBPACK_IMPORTED_MODULE_2___default()), {
                 children: [
@@ -3458,24 +3524,28 @@ function Apply(props) {
                             company: props.company,
                             saveID: saveID,
                             dataID: savadata,
-                            jump: jumpOverStepTwo
+                            jump: jumpOverStepTwo,
+                            sid: props.sidData
                         }),
                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_Components_Forms_Choose__WEBPACK_IMPORTED_MODULE_10__/* ["default"] */ .Z, {
                             formStep: formStep,
                             nextFormStep: nextFormStep,
                             priceData: props.priceData,
                             stepTwo: props.stepTwo,
-                            dataID: savadata
+                            dataID: savadata,
+                            sid: props.sidData
                         }),
                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_Components_Forms_Write__WEBPACK_IMPORTED_MODULE_11__/* ["default"] */ .Z, {
                             formStep: formStep,
                             nextFormStep: nextFormStep,
                             stepThree: props.stepThree,
-                            dataID: savadata
+                            dataID: savadata,
+                            sid: props.sidData
                         }),
                         formStep > 2 && /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_Components_Forms_Preview__WEBPACK_IMPORTED_MODULE_12__/* ["default"] */ .Z, {
                             applicatonId: props.company.savadata,
-                            dataID: savadata
+                            dataID: savadata,
+                            sid: props.sidData
                         })
                     ]
                 })
@@ -3495,6 +3565,14 @@ __webpack_async_result__();
 
 "use strict";
 module.exports = require("@unform/web");
+
+/***/ }),
+
+/***/ 8982:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("cookies-next");
 
 /***/ }),
 

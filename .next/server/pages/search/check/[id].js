@@ -21,12 +21,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Components_Nav__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(4269);
 /* harmony import */ var _Components_Footer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(558);
 /* harmony import */ var _Components_Hero__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(3806);
-/* harmony import */ var _styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(2325);
-/* harmony import */ var _styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_7__);
+/* harmony import */ var _styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(2325);
+/* harmony import */ var _styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_8__);
 /* harmony import */ var next_i18next_serverSideTranslations__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(5460);
 /* harmony import */ var next_i18next_serverSideTranslations__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(next_i18next_serverSideTranslations__WEBPACK_IMPORTED_MODULE_5__);
 /* harmony import */ var next_i18next__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(1377);
 /* harmony import */ var next_i18next__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(next_i18next__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var cookies_next__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(8982);
+/* harmony import */ var cookies_next__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(cookies_next__WEBPACK_IMPORTED_MODULE_7__);
 var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([_Components_Nav__WEBPACK_IMPORTED_MODULE_2__]);
 _Components_Nav__WEBPACK_IMPORTED_MODULE_2__ = (__webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__)[0];
 
@@ -37,7 +39,47 @@ _Components_Nav__WEBPACK_IMPORTED_MODULE_2__ = (__webpack_async_dependencies__.t
 
 
 
-async function getServerSideProps({ locale , query  }) {
+
+async function getServerSideProps({ locale , query , req , res  }) {
+    let oldCookie = (0,cookies_next__WEBPACK_IMPORTED_MODULE_7__.getCookie)("sid", {
+        req,
+        res
+    });
+    if (query.sid !== undefined) {
+        if (query.sid !== oldCookie) {
+            (0,cookies_next__WEBPACK_IMPORTED_MODULE_7__.setCookie)("sid", query.sid, {
+                req,
+                res,
+                maxAge: 60 * 6 * 24
+            });
+        } else if (query.sid === (0,cookies_next__WEBPACK_IMPORTED_MODULE_7__.getCookie)("sid", {
+            req,
+            res
+        })) {
+            oldCookie = oldCookie;
+        }
+    } else if (query.sid === undefined || query.sid === "") {
+        if (oldCookie !== undefined || oldCookie !== "") {
+            oldCookie = oldCookie;
+        }
+        if (oldCookie === undefined) {
+            return {
+                redirect: {
+                    destination: "https://twtc.com.tw/"
+                }
+            };
+        }
+    }
+    const form = new URLSearchParams();
+    form.append("sid", (0,cookies_next__WEBPACK_IMPORTED_MODULE_7__.getCookie)("sid", {
+        req,
+        res
+    }));
+    const sidForm = {
+        method: "POST"
+    };
+    sidForm.body = form;
+    const sidData = await fetch(`${process.env.API_BASE_URL}sso`, sidForm).then((response)=>response.json());
     const options = {
         method: "POST",
         headers: {
@@ -45,7 +87,8 @@ async function getServerSideProps({ locale , query  }) {
         },
         body: new URLSearchParams({
             lang: locale,
-            sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
+            event_uid: sidData.event_uid,
+            company_id: sidData.company_id
         })
     };
     const infoRes = await fetch(`${process.env.API_BASE_URL}getDiscountInfo`, options);
@@ -58,14 +101,15 @@ async function getServerSideProps({ locale , query  }) {
                 "common"
             ]),
             info: infoData,
-            data: viewData
+            data: viewData,
+            sidData: sidData
         }
     };
 }
 function Check(props) {
     const { t  } = (0,next_i18next__WEBPACK_IMPORTED_MODULE_6__.useTranslation)();
     return /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_7___default().container),
+        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_8___default().container),
         children: [
             /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)((next_head__WEBPACK_IMPORTED_MODULE_1___default()), {
                 children: [
@@ -90,23 +134,23 @@ function Check(props) {
                         children: t("search.check")
                     }),
                     /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_7___default().checkForm),
+                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_8___default().checkForm),
                         children: [
                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("h2", {
                                 children: t("search.option")
                             }),
                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
-                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_7___default().opinionBox),
+                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_8___default().opinionBox),
                                 children: props.data.comment.hydro_comment
                             }),
                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("h2", {
                                 children: t("applyForm.stepOne.groupTwo.title")
                             }),
                             /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_7___default().formComplete),
+                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_8___default().formComplete),
                                 children: [
                                     /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_7___default().formRow),
+                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_8___default().formRow),
                                         children: [
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
                                                 children: t("applyForm.stepOne.groupTwo.companyName")
@@ -117,7 +161,7 @@ function Check(props) {
                                         ]
                                     }),
                                     /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_7___default().formRow),
+                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_8___default().formRow),
                                         children: [
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
                                                 children: t("applyForm.stepOne.groupTwo.taxID")
@@ -128,7 +172,7 @@ function Check(props) {
                                         ]
                                     }),
                                     /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_7___default().formRow),
+                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_8___default().formRow),
                                         children: [
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
                                                 children: t("applyForm.stepOne.groupTwo.contactPerson")
@@ -139,7 +183,7 @@ function Check(props) {
                                         ]
                                     }),
                                     /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_7___default().formRow),
+                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_8___default().formRow),
                                         children: [
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
                                                 children: t("applyForm.stepOne.groupTwo.phone")
@@ -150,7 +194,7 @@ function Check(props) {
                                         ]
                                     }),
                                     /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_7___default().formRow),
+                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_8___default().formRow),
                                         children: [
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
                                                 children: "E-mail"
@@ -166,10 +210,10 @@ function Check(props) {
                                 children: t("applyForm.stepOne.groupThree.title")
                             }),
                             /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_7___default().formCompleteInvoce),
+                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_8___default().formCompleteInvoce),
                                 children: [
                                     /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_7___default().formRow),
+                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_8___default().formRow),
                                         children: [
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
                                                 children: t("applyForm.stepOne.groupTwo.companyName")
@@ -180,7 +224,7 @@ function Check(props) {
                                         ]
                                     }),
                                     /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_7___default().formRow),
+                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_8___default().formRow),
                                         children: [
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
                                                 children: t("applyForm.stepOne.groupTwo.taxID")
@@ -191,7 +235,7 @@ function Check(props) {
                                         ]
                                     }),
                                     /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_7___default().formRow),
+                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_8___default().formRow),
                                         children: [
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
                                                 children: t("applyForm.stepOne.groupThree.invoiceAddress")
@@ -202,7 +246,7 @@ function Check(props) {
                                         ]
                                     }),
                                     /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_7___default().formRow),
+                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_8___default().formRow),
                                         children: [
                                             /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
                                                 children: [
@@ -221,12 +265,12 @@ function Check(props) {
                                 children: t("applyForm.stepTwo.title")
                             }),
                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_7___default().applyItem),
+                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_8___default().applyItem),
                                 children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("table", {
                                     children: [
                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("thead", {
                                             children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
-                                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_7___default().title),
+                                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_8___default().title),
                                                 children: [
                                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("th", {
                                                         children: t("applyForm.preview.groupThree.no")
@@ -249,7 +293,7 @@ function Check(props) {
                                         /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tbody", {
                                             children: [
                                                 /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
-                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_7___default().content),
+                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_8___default().content),
                                                     children: [
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
                                                             children: "1"
@@ -269,7 +313,7 @@ function Check(props) {
                                                     ]
                                                 }),
                                                 /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
-                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_7___default().content),
+                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_8___default().content),
                                                     children: [
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
                                                             children: "2"
@@ -289,7 +333,7 @@ function Check(props) {
                                                     ]
                                                 }),
                                                 /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
-                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_7___default().content),
+                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_8___default().content),
                                                     children: [
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
                                                             children: "3"
@@ -309,7 +353,7 @@ function Check(props) {
                                                     ]
                                                 }),
                                                 /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
-                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_7___default().content),
+                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_8___default().content),
                                                     children: [
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
                                                             children: "4"
@@ -329,10 +373,10 @@ function Check(props) {
                                                     ]
                                                 }),
                                                 /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
-                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_7___default().sum),
+                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_8___default().sum),
                                                     children: [
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_7___default().sumTitle),
+                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_8___default().sumTitle),
                                                             colSpan: 4,
                                                             children: t("applyForm.preview.groupThree.total")
                                                         }),
@@ -349,15 +393,15 @@ function Check(props) {
                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("h2", {
                                 children: t("applyForm.preview.groupFour.title")
                             }),
-                            /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_7___default().image),
+                            props.data.diagram_img_file !== "Y" ? /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_8___default().image),
                                 children: [
                                     /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("p", {
                                         children: [
                                             t("applyForm.preview.groupFour.file"),
                                             " ",
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("span", {
-                                                children: "JO318水電圖圖.jpg"
+                                                children: props.data.diagram_img_file
                                             })
                                         ]
                                     }),
@@ -365,6 +409,8 @@ function Check(props) {
                                         src: "https://ewsadm.taiwantradeshows.com.tw/" + props.data.diagram_img
                                     })
                                 ]
+                            }) : /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                children: t("applyForm.preview.groupFour.pending")
                             })
                         ]
                     })
@@ -377,6 +423,13 @@ function Check(props) {
 
 __webpack_async_result__();
 } catch(e) { __webpack_async_result__(e); } });
+
+/***/ }),
+
+/***/ 8982:
+/***/ ((module) => {
+
+module.exports = require("cookies-next");
 
 /***/ }),
 

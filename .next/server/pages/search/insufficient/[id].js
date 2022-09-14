@@ -67,13 +67,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Components_Nav__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(4269);
 /* harmony import */ var _Components_Footer__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(558);
 /* harmony import */ var _Components_Hero__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(3806);
-/* harmony import */ var _styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(2325);
-/* harmony import */ var _styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_10__);
+/* harmony import */ var _styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(2325);
+/* harmony import */ var _styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_11___default = /*#__PURE__*/__webpack_require__.n(_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_11__);
 /* harmony import */ var next_i18next_serverSideTranslations__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(5460);
 /* harmony import */ var next_i18next_serverSideTranslations__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(next_i18next_serverSideTranslations__WEBPACK_IMPORTED_MODULE_7__);
 /* harmony import */ var next_i18next__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(1377);
 /* harmony import */ var next_i18next__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(next_i18next__WEBPACK_IMPORTED_MODULE_8__);
 /* harmony import */ var _Components_Popup_Popup__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(9929);
+/* harmony import */ var cookies_next__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(8982);
+/* harmony import */ var cookies_next__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(cookies_next__WEBPACK_IMPORTED_MODULE_10__);
 var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([_Components_Nav__WEBPACK_IMPORTED_MODULE_4__]);
 _Components_Nav__WEBPACK_IMPORTED_MODULE_4__ = (__webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__)[0];
 
@@ -87,7 +89,48 @@ _Components_Nav__WEBPACK_IMPORTED_MODULE_4__ = (__webpack_async_dependencies__.t
 
 
 
-async function getServerSideProps({ locale , query  }) {
+
+async function getServerSideProps({ locale , query , req , res  }) {
+    let oldCookie = (0,cookies_next__WEBPACK_IMPORTED_MODULE_10__.getCookie)("sid", {
+        req,
+        res
+    });
+    if (query.sid !== undefined) {
+        if (query.sid !== oldCookie) {
+            (0,cookies_next__WEBPACK_IMPORTED_MODULE_10__.setCookie)("sid", query.sid, {
+                req,
+                res,
+                maxAge: 60 * 6 * 24
+            });
+        } else if (query.sid === (0,cookies_next__WEBPACK_IMPORTED_MODULE_10__.getCookie)("sid", {
+            req,
+            res
+        })) {
+            oldCookie = oldCookie;
+        }
+    } else if (query.sid === undefined || query.sid === "") {
+        if (oldCookie !== undefined || oldCookie !== "") {
+            oldCookie = oldCookie;
+        }
+        if (oldCookie === undefined) {
+            return {
+                redirect: {
+                    destination: "https://twtc.com.tw/"
+                }
+            };
+        }
+    }
+    const form = new URLSearchParams();
+    form.append("sid", (0,cookies_next__WEBPACK_IMPORTED_MODULE_10__.getCookie)("sid", {
+        req,
+        res
+    }));
+    const sidForm = {
+        method: "POST"
+    };
+    sidForm.body = form;
+    const sidData = await fetch(`${process.env.API_BASE_URL}sso`, sidForm).then((response)=>response.json());
+    console.log(sidData);
     const options = {
         method: "POST",
         headers: {
@@ -95,21 +138,23 @@ async function getServerSideProps({ locale , query  }) {
         },
         body: new URLSearchParams({
             lang: locale,
-            sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
+            event_uid: sidData.event_uid,
+            company_id: sidData.company_id
         })
     };
     const infoRes = await fetch(`${process.env.API_BASE_URL}getDiscountInfo`, options);
     const infoData = await infoRes.json();
     options.body.append("application_form_id", `${query.id}`);
-    const reviseData = await fetch(`${process.env.API_BASE_URL}getSecondModifyData`, options).then((response)=>response.json());
-    console.log(reviseData);
+    options.body.append("revised", "N");
+    const reviseData = await fetch(`${process.env.API_BASE_URL}getReviseData`, options).then((response)=>response.json());
     return {
         props: {
             ...await (0,next_i18next_serverSideTranslations__WEBPACK_IMPORTED_MODULE_7__.serverSideTranslations)(locale, [
                 "common"
             ]),
             info: infoData,
-            data: reviseData
+            data: reviseData,
+            sidData: sidData
         }
     };
 }
@@ -141,7 +186,8 @@ function Insufficient(props) {
         const fileInput = Array.from(formData.elements).find(({ name  })=>name === "photo");
         const form = new FormData();
         form.append("application_form_id", router.query.id);
-        form.append("sid", "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a");
+        form.append("event_uid", props.sidData.event_uid);
+        form.append("company_id", props.sidData.company_id);
         if (fileInput.files.length === 0) {
             form.append("imageData", imageSrc);
         } else {
@@ -161,7 +207,7 @@ function Insufficient(props) {
         }).catch((err)=>console.error(err));
     }
     return /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_10___default().container),
+        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_11___default().container),
         children: [
             /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)((next_head__WEBPACK_IMPORTED_MODULE_3___default()), {
                 children: [
@@ -186,7 +232,7 @@ function Insufficient(props) {
                         children: t("search.insufficient")
                     }),
                     /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("form", {
-                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_10___default().checkForm),
+                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_11___default().checkForm),
                         onChange: handleOnChange,
                         onSubmit: handleSubmit,
                         children: [
@@ -194,16 +240,16 @@ function Insufficient(props) {
                                 children: t("search.option")
                             }),
                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
-                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_10___default().opinionBox),
+                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_11___default().opinionBox),
                                 dangerouslySetInnerHTML: {
-                                    __html: props.data.comment.replace(/(?:\r\n|\r|\n)/g, "<br>")
+                                    __html: props.data.verify_comment.hydro_comment.replace(/(?:\r\n|\r|\n)/g, "<br>")
                                 }
                             }),
                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("h2", {
                                 children: t("applyForm.stepThree.groupOne.title")
                             }),
                             /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_10___default().upload),
+                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_11___default().upload),
                                 children: [
                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
                                         htmlFor: "upload-photo",
@@ -220,13 +266,13 @@ function Insufficient(props) {
                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("img", {
                                 id: "blah",
                                 src: imageSrc,
-                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_10___default().uploadImg)
+                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_11___default().uploadImg)
                             }),
                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("h2", {
                                 children: t("applyForm.stepThree.groupTwo.title")
                             }),
                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("a", {
-                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_10___default().popupToWrite),
+                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_11___default().popupToWrite),
                                 href: "https://anbon.vip/twtc_diagram/",
                                 onClick: ()=>setShow(true),
                                 target: "iframe_a",
@@ -236,7 +282,7 @@ function Insufficient(props) {
                                 children: t("applyForm.stepThree.groupThree.title")
                             }),
                             /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_10___default().write),
+                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_11___default().write),
                                 children: [
                                     /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("p", {
                                         children: [
@@ -250,17 +296,17 @@ function Insufficient(props) {
                                 ]
                             }),
                             /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_10___default().btns),
+                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_11___default().btns),
                                 children: [
                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("button", {
                                         type: "button",
-                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_10___default().cancel),
+                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_11___default().cancel),
                                         onClick: cancelSupplement,
                                         children: "取消"
                                     }),
                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("button", {
                                         type: "submit",
-                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_10___default().complete),
+                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_11___default().complete),
                                         children: "完成"
                                     })
                                 ]
@@ -296,6 +342,14 @@ function Insufficient(props) {
 
 __webpack_async_result__();
 } catch(e) { __webpack_async_result__(e); } });
+
+/***/ }),
+
+/***/ 8982:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("cookies-next");
 
 /***/ }),
 

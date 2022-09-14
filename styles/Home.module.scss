@@ -58,6 +58,9 @@
         color: #333333;
         line-height: 150%;
         font-weight: 400;
+        span {
+            word-break: break-all;
+        }
     }
 }
 .homeApply,

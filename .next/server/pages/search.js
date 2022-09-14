@@ -21,14 +21,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Components_Nav__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(4269);
 /* harmony import */ var _Components_Footer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(558);
 /* harmony import */ var _Components_Hero__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(3806);
-/* harmony import */ var _styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(3110);
-/* harmony import */ var _styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8__);
+/* harmony import */ var _styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(3110);
+/* harmony import */ var _styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_9__);
 /* harmony import */ var next_i18next_serverSideTranslations__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(5460);
 /* harmony import */ var next_i18next_serverSideTranslations__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(next_i18next_serverSideTranslations__WEBPACK_IMPORTED_MODULE_5__);
 /* harmony import */ var next_i18next__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(1377);
 /* harmony import */ var next_i18next__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(next_i18next__WEBPACK_IMPORTED_MODULE_6__);
 /* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(8130);
 /* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(_material_ui_core__WEBPACK_IMPORTED_MODULE_7__);
+/* harmony import */ var cookies_next__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(8982);
+/* harmony import */ var cookies_next__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(cookies_next__WEBPACK_IMPORTED_MODULE_8__);
 var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([_Components_Nav__WEBPACK_IMPORTED_MODULE_2__]);
 _Components_Nav__WEBPACK_IMPORTED_MODULE_2__ = (__webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__)[0];
 
@@ -40,7 +42,47 @@ _Components_Nav__WEBPACK_IMPORTED_MODULE_2__ = (__webpack_async_dependencies__.t
 
 
 
-async function getServerSideProps({ locale  }) {
+
+async function getServerSideProps({ locale , query , req , res  }) {
+    let oldCookie = (0,cookies_next__WEBPACK_IMPORTED_MODULE_8__.getCookie)("sid", {
+        req,
+        res
+    });
+    if (query.sid !== undefined) {
+        if (query.sid !== oldCookie) {
+            (0,cookies_next__WEBPACK_IMPORTED_MODULE_8__.setCookie)("sid", query.sid, {
+                req,
+                res,
+                maxAge: 60 * 6 * 24
+            });
+        } else if (query.sid === (0,cookies_next__WEBPACK_IMPORTED_MODULE_8__.getCookie)("sid", {
+            req,
+            res
+        })) {
+            oldCookie = oldCookie;
+        }
+    } else if (query.sid === undefined || query.sid === "") {
+        if (oldCookie !== undefined || oldCookie !== "") {
+            oldCookie = oldCookie;
+        }
+        if (oldCookie === undefined) {
+            return {
+                redirect: {
+                    destination: "https://twtc.com.tw/"
+                }
+            };
+        }
+    }
+    const form = new URLSearchParams();
+    form.append("sid", (0,cookies_next__WEBPACK_IMPORTED_MODULE_8__.getCookie)("sid", {
+        req,
+        res
+    }));
+    const sidForm = {
+        method: "POST"
+    };
+    sidForm.body = form;
+    const sidData = await fetch(`${process.env.API_BASE_URL}sso`, sidForm).then((response)=>response.json());
     const options = {
         method: "POST",
         headers: {
@@ -48,7 +90,8 @@ async function getServerSideProps({ locale  }) {
         },
         body: new URLSearchParams({
             lang: locale,
-            sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
+            event_uid: sidData.event_uid,
+            company_id: sidData.company_id
         })
     };
     const infoRes = await fetch(`${process.env.API_BASE_URL}getDiscountInfo`, options);
@@ -61,7 +104,8 @@ async function getServerSideProps({ locale  }) {
                 "common"
             ]),
             info: infoData,
-            searchData: searchRes
+            searchData: searchRes,
+            sidData: sidData
         }
     };
 }
@@ -91,13 +135,13 @@ function StatusTitle(props) {
     };
     const statusTitle = StatusTitleMap[props.type];
     return /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("td", {
-        className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default().state),
+        className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_9___default().state),
         type: props.type,
         children: [
             statusTitle,
             props.supplement === 1 ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_material_ui_core__WEBPACK_IMPORTED_MODULE_7__.Link, {
                 href: `/search/insufficient/${props.dataId}`,
-                className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default().documents),
+                className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_9___default().documents),
                 children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("a", {
                     children: t("search.needToSupplement")
                 })
@@ -112,7 +156,7 @@ function Search(props) {
         const removeData = e.target.parentElement.closest(".Home_content__WcTpR").getAttribute("data-key");
         const form = new FormData();
         form.append("application_form_id", removeData);
-        form.append("sid", "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a");
+        form.append("sid", props.sid);
         const data = {
             method: "POST"
         };
@@ -125,7 +169,7 @@ function Search(props) {
         }).catch((err)=>console.error(err));
     };
     return /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-        className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default().container),
+        className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_9___default().container),
         children: [
             /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)((next_head__WEBPACK_IMPORTED_MODULE_1___default()), {
                 children: [
@@ -150,12 +194,12 @@ function Search(props) {
                         children: "申請查詢"
                     }),
                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                        className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default().applyItem),
-                        children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("table", {
+                        className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_9___default().applyItem),
+                        children: props.searchData.data.length !== 0 ? /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("table", {
                             children: [
                                 /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("thead", {
                                     children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
-                                        className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default().title),
+                                        className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_9___default().title),
                                         children: [
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("th", {
                                                 children: "項次"
@@ -185,8 +229,8 @@ function Search(props) {
                                     })
                                 }),
                                 /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("tbody", {
-                                    children: props.searchData.data.length !== 0 ? props.searchData.data.map((item)=>/*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
-                                            className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default().content),
+                                    children: props.searchData.data.map((item)=>/*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
+                                            className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_9___default().content),
                                             "data-key": item.application_form_id,
                                             children: [
                                                 /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
@@ -207,11 +251,11 @@ function Search(props) {
                                                     dataId: item.application_form_id
                                                 }),
                                                 item.download_payment !== 0 ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                    className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default().download),
+                                                    className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_9___default().download),
                                                     children: t("search.download")
                                                 }) : /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {}),
                                                 item.upload_payment !== 0 ? /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("td", {
-                                                    className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default().upload),
+                                                    className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_9___default().upload),
                                                     children: [
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
                                                             htmlFor: "upload",
@@ -227,14 +271,14 @@ function Search(props) {
                                                 item.view === 1 ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
                                                     children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_material_ui_core__WEBPACK_IMPORTED_MODULE_7__.Link, {
                                                         href: `/search/check/${item.application_form_id}`,
-                                                        className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default()["delete"]),
+                                                        className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_9___default()["delete"]),
                                                         children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("a", {
                                                             children: t("search.view")
                                                         })
                                                     })
                                                 }) : /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
                                                     children: item.modify === 1 && item.cancel === 1 ? /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("td", {
-                                                        className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_8___default()["delete"]),
+                                                        className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_9___default()["delete"]),
                                                         children: [
                                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_material_ui_core__WEBPACK_IMPORTED_MODULE_7__.Link, {
                                                                 href: `/search/revise/${item.application_form_id}`,
@@ -247,14 +291,36 @@ function Search(props) {
                                                                 children: t("search.beCancel")
                                                             })
                                                         ]
-                                                    }) : /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {})
+                                                    }) : /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+                                                        children: item.modify === 0 && item.cancel === 1 ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
+                                                            className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_9___default()["delete"]),
+                                                            children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("span", {
+                                                                onClick: cancelApply,
+                                                                children: t("search.beCancel")
+                                                            })
+                                                        }) : /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+                                                            children: item.modify === 1 && item.cancel === 0 ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
+                                                                className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_9___default()["delete"]),
+                                                                children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_material_ui_core__WEBPACK_IMPORTED_MODULE_7__.Link, {
+                                                                    href: `/search/revise/${item.application_form_id}`,
+                                                                    children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("a", {
+                                                                        children: t("search.modify")
+                                                                    })
+                                                                })
+                                                            }) : /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+                                                                children: item.modify === 0 && item.cancel === 0 ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
+                                                                    className: (_styles_Home_module_scss__WEBPACK_IMPORTED_MODULE_9___default()["delete"])
+                                                                }) : /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {})
+                                                            })
+                                                        })
+                                                    })
                                                 })
                                             ]
-                                        }, item.index)) : /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                                        children: "查無資訊"
-                                    })
+                                        }, item.index))
                                 })
                             ]
+                        }) : /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                            children: "查無資訊"
                         })
                     })
                 ]
@@ -273,6 +339,13 @@ __webpack_async_result__();
 /***/ ((module) => {
 
 module.exports = require("@material-ui/core");
+
+/***/ }),
+
+/***/ 8982:
+/***/ ((module) => {
+
+module.exports = require("cookies-next");
 
 /***/ }),
 

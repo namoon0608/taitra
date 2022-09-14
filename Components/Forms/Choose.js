@@ -11,6 +11,7 @@ export default function Choose({
     priceData,
     stepTwo,
     dataID,
+    sid,
 }) {
     const { t } = useTranslation();
 
@@ -54,7 +55,8 @@ export default function Choose({
                 invoice: invoice,
                 invoice_address: address,
                 items: JSON.stringify(items),
-                sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
+                event_uid: sid.event_uid,
+                company_id: sid.company_id,
             }),
         };
         await fetch(`${process.env.customKey}setApplyHydroItems`, options)
@@ -107,7 +109,8 @@ export default function Choose({
                 items: JSON.stringify(items),
                 invoice: invoice,
                 invoice_address: data.address,
-                sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
+                event_uid: sid.event_uid,
+                company_id: sid.company_id,
             }),
         };
         await fetch(`${process.env.customKey}setApplyHydroItems`, options)

@@ -8,8 +8,41 @@ import styles from "../../../styles/Apply.module.scss";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useTranslation } from "next-i18next";
 import Popup from "../../../Components/Popup/Popup";
+import { setCookie, getCookie } from "cookies-next";
 
-export async function getServerSideProps({ locale, query }) {
+export async function getServerSideProps({ locale, query, req, res }) {
+    let oldCookie = getCookie("sid", { req, res });
+    if (query.sid !== undefined) {
+        if (query.sid !== oldCookie) {
+            setCookie("sid", query.sid, { req, res, maxAge: 60 * 6 * 24 });
+        } else if (query.sid === getCookie("sid", { req, res })) {
+            oldCookie = oldCookie;
+        }
+    } else if (query.sid === undefined || query.sid === "") {
+        if (oldCookie !== undefined || oldCookie !== "") {
+            oldCookie = oldCookie;
+        }
+        if (oldCookie === undefined) {
+            return {
+                redirect: {
+                    destination: "https://twtc.com.tw/",
+                },
+            };
+        }
+    }
+    const form = new URLSearchParams();
+    form.append("sid", getCookie("sid", { req, res }));
+
+    const sidForm = {
+        method: "POST",
+    };
+    sidForm.body = form;
+
+    const sidData = await fetch(`${process.env.API_BASE_URL}sso`, sidForm).then(
+        (response) => response.json()
+    );
+    console.log(sidData);
+
     const options = {
         method: "POST",
         headers: {
@@ -17,7 +50,8 @@ export async function getServerSideProps({ locale, query }) {
         },
         body: new URLSearchParams({
             lang: locale,
-            sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
+            event_uid: sidData.event_uid,
+            company_id: sidData.company_id,
         }),
     };
     const infoRes = await fetch(
@@ -27,18 +61,19 @@ export async function getServerSideProps({ locale, query }) {
     const infoData = await infoRes.json();
 
     options.body.append("application_form_id", `${query.id}`);
+    options.body.append("revised", "N");
 
     const reviseData = await fetch(
-        `${process.env.API_BASE_URL}getSecondModifyData`,
+        `${process.env.API_BASE_URL}getReviseData`,
         options
     ).then((response) => response.json());
-    console.log(reviseData);
 
     return {
         props: {
             ...(await serverSideTranslations(locale, ["common"])),
             info: infoData,
             data: reviseData,
+            sidData: sidData,
         },
     };
 }
@@ -78,10 +113,8 @@ export default function Insufficient(props) {
         );
         const form = new FormData();
         form.append("application_form_id", router.query.id);
-        form.append(
-            "sid",
-            "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
-        );
+        form.append("event_uid", props.sidData.event_uid);
+        form.append("company_id", props.sidData.company_id);
         if (fileInput.files.length === 0) {
             form.append("imageData", imageSrc);
         } else {
@@ -130,7 +163,7 @@ export default function Insufficient(props) {
                     <p
                         className={styles.opinionBox}
                         dangerouslySetInnerHTML={{
-                            __html: props.data.comment.replace(
+                            __html: props.data.verify_comment.hydro_comment.replace(
                                 /(?:\r\n|\r|\n)/g,
                                 "<br>"
                             ),

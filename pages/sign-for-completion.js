@@ -9,8 +9,40 @@ import { useTranslation } from "next-i18next";
 import SignaturePad from "react-signature-canvas";
 import Popup from "../Components/Popup/Popup";
 import { useRouter } from "next/router";
+import { setCookie, getCookie } from "cookies-next";
 
-export async function getServerSideProps({ locale }) {
+export async function getServerSideProps({ locale, query, req, res }) {
+    let oldCookie = getCookie("sid", { req, res });
+    if (query.sid !== undefined) {
+        if (query.sid !== oldCookie) {
+            setCookie("sid", query.sid, { req, res, maxAge: 60 * 6 * 24 });
+        } else if (query.sid === getCookie("sid", { req, res })) {
+            oldCookie = oldCookie;
+        }
+    } else if (query.sid === undefined || query.sid === "") {
+        if (oldCookie !== undefined || oldCookie !== "") {
+            oldCookie = oldCookie;
+        }
+        if (oldCookie === undefined) {
+            return {
+                redirect: {
+                    destination: "https://twtc.com.tw/",
+                },
+            };
+        }
+    }
+    const form = new URLSearchParams();
+    form.append("sid", getCookie("sid", { req, res }));
+
+    const sidForm = {
+        method: "POST",
+    };
+    sidForm.body = form;
+
+    const sidData = await fetch(`${process.env.API_BASE_URL}sso`, sidForm).then(
+        (response) => response.json()
+    );
+
     const options = {
         method: "POST",
         headers: {
@@ -18,7 +50,8 @@ export async function getServerSideProps({ locale }) {
         },
         body: new URLSearchParams({
             lang: locale,
-            sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
+            event_uid: sidData.event_uid,
+            company_id: sidData.company_id,
         }),
     };
     const infoRes = await fetch(
@@ -37,6 +70,7 @@ export async function getServerSideProps({ locale }) {
             ...(await serverSideTranslations(locale, ["common"])),
             info: infoData,
             completeData: completeData,
+            sidData: sidData,
         },
     };
 }
@@ -91,10 +125,8 @@ export default function Sign(props) {
                 const form = new FormData();
                 form.append("application_form_id", applicationList[i]);
                 form.append("imageData", imageURL);
-                form.append(
-                    "sid",
-                    "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
-                );
+                form.append("event_uid", props.sidData.event_uid);
+                form.append("company_id", props.sidData.company_id);
 
                 const options = {
                     method: "POST",

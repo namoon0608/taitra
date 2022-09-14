@@ -6,8 +6,40 @@ import styles from "../styles/Home.module.scss";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useTranslation } from "next-i18next";
 import { Link } from "@material-ui/core";
+import { setCookie, getCookie } from "cookies-next";
 
-export async function getServerSideProps({ locale }) {
+export async function getServerSideProps({ locale, query, req, res }) {
+    let oldCookie = getCookie("sid", { req, res });
+    if (query.sid !== undefined) {
+        if (query.sid !== oldCookie) {
+            setCookie("sid", query.sid, { req, res, maxAge: 60 * 6 * 24 });
+        } else if (query.sid === getCookie("sid", { req, res })) {
+            oldCookie = oldCookie;
+        }
+    } else if (query.sid === undefined || query.sid === "") {
+        if (oldCookie !== undefined || oldCookie !== "") {
+            oldCookie = oldCookie;
+        }
+        if (oldCookie === undefined) {
+            return {
+                redirect: {
+                    destination: "https://twtc.com.tw/",
+                },
+            };
+        }
+    }
+    const form = new URLSearchParams();
+    form.append("sid", getCookie("sid", { req, res }));
+
+    const sidForm = {
+        method: "POST",
+    };
+    sidForm.body = form;
+
+    const sidData = await fetch(`${process.env.API_BASE_URL}sso`, sidForm).then(
+        (response) => response.json()
+    );
+
     const options = {
         method: "POST",
         headers: {
@@ -15,7 +47,8 @@ export async function getServerSideProps({ locale }) {
         },
         body: new URLSearchParams({
             lang: locale,
-            sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
+            event_uid: sidData.event_uid,
+            company_id: sidData.company_id,
         }),
     };
     const infoRes = await fetch(
@@ -35,6 +68,7 @@ export async function getServerSideProps({ locale }) {
             ...(await serverSideTranslations(locale, ["common"])),
             info: infoData,
             searchData: searchRes,
+            sidData: sidData,
         },
     };
 }
@@ -92,10 +126,7 @@ export default function Search(props) {
             .getAttribute("data-key");
         const form = new FormData();
         form.append("application_form_id", removeData);
-        form.append(
-            "sid",
-            "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
-        );
+        form.append("sid", props.sid);
         const data = {
             method: "POST",
         };
@@ -129,22 +160,22 @@ export default function Search(props) {
             <Hero info={props.info}>
                 <h3>申請查詢</h3>
                 <div className={styles.applyItem}>
-                    <table>
-                        <thead>
-                            <tr className={styles.title}>
-                                <th>項次</th>
-                                <th>申請單號</th>
-                                <th>日期</th>
-                                <th>申請狀態</th>
-                                <th>配置圖狀態</th>
-                                <th>繳款單</th>
-                                <th>繳費證明</th>
-                                <th>操作</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {props.searchData.data.length !== 0 ? (
-                                props.searchData.data.map((item) => (
+                    {props.searchData.data.length !== 0 ? (
+                        <table>
+                            <thead>
+                                <tr className={styles.title}>
+                                    <th>項次</th>
+                                    <th>申請單號</th>
+                                    <th>日期</th>
+                                    <th>申請狀態</th>
+                                    <th>配置圖狀態</th>
+                                    <th>繳款單</th>
+                                    <th>繳費證明</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {props.searchData.data.map((item) => (
                                     <tr
                                         className={styles.content}
                                         key={item.index}
@@ -220,142 +251,113 @@ export default function Search(props) {
                                                         </span>
                                                     </td>
                                                 ) : (
-                                                    <></>
+                                                    <>
+                                                        {item.modify === 0 &&
+                                                        item.cancel === 1 ? (
+                                                            <td
+                                                                className={
+                                                                    styles.delete
+                                                                }
+                                                            >
+                                                                {/* <Link
+                                                            href={`/search/revise/${item.application_form_id}`}
+                                                        >
+                                                            <a>
+                                                                {t(
+                                                                    "search.modify"
+                                                                )}
+                                                            </a>
+                                                        </Link> */}
+                                                                <span
+                                                                    onClick={
+                                                                        cancelApply
+                                                                    }
+                                                                >
+                                                                    {t(
+                                                                        "search.beCancel"
+                                                                    )}
+                                                                </span>
+                                                            </td>
+                                                        ) : (
+                                                            <>
+                                                                {item.modify ===
+                                                                    1 &&
+                                                                item.cancel ===
+                                                                    0 ? (
+                                                                    <td
+                                                                        className={
+                                                                            styles.delete
+                                                                        }
+                                                                    >
+                                                                        <Link
+                                                                            href={`/search/revise/${item.application_form_id}`}
+                                                                        >
+                                                                            <a>
+                                                                                {t(
+                                                                                    "search.modify"
+                                                                                )}
+                                                                            </a>
+                                                                        </Link>
+                                                                        {/* <span
+                                                                    onClick={
+                                                                        cancelApply
+                                                                    }
+                                                                >
+                                                                    {t(
+                                                                        "search.beCancel"
+                                                                    )}
+                                                                </span> */}
+                                                                    </td>
+                                                                ) : (
+                                                                    <>
+                                                                        {item.modify ===
+                                                                            0 &&
+                                                                        item.cancel ===
+                                                                            0 ? (
+                                                                            <td
+                                                                                className={
+                                                                                    styles.delete
+                                                                                }
+                                                                            >
+                                                                                {/* <Link
+                                                                            href={`/search/revise/${item.application_form_id}`}
+                                                                        >
+                                                                            <a>
+                                                                                {t(
+                                                                                    "search.modify"
+                                                                                )}
+                                                                            </a>
+                                                                        </Link>
+                                                                        <span
+                                                                    onClick={
+                                                                        cancelApply
+                                                                    }
+                                                                >
+                                                                    {t(
+                                                                        "search.beCancel"
+                                                                    )}
+                                                                </span> */}
+                                                                            </td>
+                                                                        ) : (
+                                                                            <>
+
+                                                                            </>
+                                                                        )}
+                                                                    </>
+                                                                )}
+                                                            </>
+                                                        )}
+                                                    </>
                                                 )}
                                             </>
                                         )}
                                     </tr>
-                                ))
-                            ) : (
-                                <div>查無資訊</div>
-                            )}
-                            {/* <tr className={styles.content}>
-                                <td>1</td>
-                                <td>EW-FD20220001</td>
-                                <td>2022-04-05</td>
-                                <td>審核通過</td>
-                                <td className={styles.state}>已確認</td>
-                                <td className={styles.download}>下載</td>
-                                <td className={styles.upload}>
-                                    <label htmlFor="upload">上傳</label>
-                                    <input
-                                        type="file"
-                                        name="photo"
-                                        id="upload"
-                                    />
-                                </td>
-                                <td>
-                                    <Link
-                                        href={`/search/check/${1}`}
-                                        className={styles.delete}
-                                    >
-                                        <a>檢示</a>
-                                    </Link>
-                                </td>
-                            </tr>
-                            <tr className={styles.content}>
-                                <td>2</td>
-                                <td>EW-FD20220001</td>
-                                <td>2022-04-05</td>
-                                <td>通知修改</td>
-                                <td className={styles.state}>
-                                    未上傳
-                                    <Link
-                                        href={`/search/insufficient/${1}`}
-                                        className={styles.documents}
-                                    >
-                                        <a>補件</a>
-                                    </Link>
-                                </td>
-                                <td></td>
-                                <td></td>
-                                <td className={styles.delete}>
-                                    <Link href={`/search/revise/${1}`}>
-                                        <a>修改</a>
-                                    </Link>
-                                    <span>取消</span>
-                                </td>
-                            </tr>
-                            <tr className={styles.content}>
-                                <td>3</td>
-                                <td>EW-FD20220001</td>
-                                <td>2022-04-05</td>
-                                <td>通知修改</td>
-                                <td className={styles.state}>
-                                    通知補件
-                                    <Link
-                                        href={`/search/insufficient/${1}`}
-                                        className={styles.documents}
-                                    >
-                                        <a>補件</a>
-                                    </Link>
-                                </td>
-                                <td></td>
-                                <td></td>
-                                <td className={styles.delete}>
-                                    <Link href={`/search/revise/${1}`}>
-                                        <a>修改</a>
-                                    </Link>
-                                    <span>取消</span>
-                                </td>
-                            </tr>
-                            <tr className={styles.content}>
-                                <td>4</td>
-                                <td>EW-FD20220001</td>
-                                <td>2022-04-05</td>
-                                <td>審核通過</td>
-                                <td className={styles.state}>
-                                    通知補件
-                                    <Link
-                                        href={`/search/insufficient/${1}`}
-                                        className={styles.documents}
-                                    >
-                                        <a>補件</a>
-                                    </Link>
-                                </td>
-                                <td className={styles.download}>下載</td>
-                                <td className={styles.upload}>
-                                    <label htmlFor="upload2">上傳</label>
-                                    <input
-                                        type="file"
-                                        name="photo"
-                                        id="upload2"
-                                    />
-                                </td>
-                                <td>
-                                    <Link
-                                        href={`/search/check/${1}`}
-                                        className={styles.delete}
-                                    >
-                                        <a>檢示</a>
-                                    </Link>
-                                </td>
-                            </tr>
-                            <tr className={styles.content}>
-                                <td>5</td>
-                                <td>EW-FD20220001</td>
-                                <td>2022-04-05</td>
-                                <td>待審核</td>
-                                <td className={styles.state}>
-                                    待確認
-                                    <Link
-                                        href={`/search/insufficient/${1}`}
-                                        className={styles.documents}
-                                    >
-                                        <a>補件</a>
-                                    </Link>
-                                </td>
-                                <td></td>
-                                <td></td>
-                                <td className={styles.delete}>
-                                    <Link href={`/search/revise/${1}`}>
-                                        <a>修改</a>
-                                    </Link>
-                                    <span>取消</span>
-                                </td>
-                            </tr> */}
-                        </tbody>
-                    </table>
+                                ))}
+                            </tbody>
+                        </table>
+                    ) : (
+                        <div>查無資訊</div>
+                    )}
                 </div>
             </Hero>
             <Footer />

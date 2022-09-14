@@ -105,6 +105,7 @@
             border-collapse: separate;
             border-spacing: 0;
             overflow: hidden;
+            text-align: center;
             @include tablet_L() {
                 width: 750px;
             }
@@ -150,9 +151,8 @@
             }
             .sum {
                 color: #666666;
-                font-weight: 700;
+                font-weight: 400;
                 .sumTitle {
-                    text-align: right;
                     font-weight: 700;
                     color: #666666;
                 }
@@ -301,6 +301,7 @@
     margin: 0 20px;
     @include tablet_L() {
         padding: 60px 30px 80px 30px;
+        width: 90%;
     }
     h2 {
         margin: 0 0 15px 0;
@@ -447,6 +448,8 @@
         }
     }
     .form {
+        max-height: 600px;
+        overflow-y: auto;
         .image {
             p {
                 font-family: "Roboto";
@@ -729,15 +732,12 @@
                 }
             }
             p {
-                padding-left: 20px;
-                // font-size: 24px;
                 font-weight: 400;
                 font-feature-settings: "pnum" on, "lnum" on;
                 color: #333333;
                 margin: 5px 0 20px 0;
                 @include tablet_S() {
                     padding-left: 0px;
-                    font-size: 20px;
                 }
             }
         }
@@ -769,15 +769,12 @@
                 margin-bottom: 10px;
             }
             p {
-                padding-left: 20px;
-                // font-size: 24px;
                 font-weight: 400;
                 font-feature-settings: "pnum" on, "lnum" on;
                 color: #333333;
                 margin: 5px 0 20px 0;
                 @include tablet_S() {
                     padding-left: 0px;
-                    font-size: 20px;
                 }
             }
         }

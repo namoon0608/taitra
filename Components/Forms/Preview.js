@@ -9,12 +9,15 @@ export default function Preview({
     nextFormStep,
     applicatonId,
     dataID,
+    sid,
 }) {
     const { t } = useTranslation();
     const [data, setData] = useState(null);
     const [isLoading, setLoading] = useState(false);
     const router = useRouter();
     async function initProducts() {
+        // console.log(dataID);
+        // console.log(sid);
         const options = {
             method: "POST",
             headers: {
@@ -24,7 +27,8 @@ export default function Preview({
             body: new URLSearchParams({
                 lang: router.locale,
                 application_form_id: dataID,
-                sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
+                company_id: sid.company_id,
+                event_uid: sid.event_uid,
             }),
         };
         setLoading(true);
@@ -50,7 +54,8 @@ export default function Preview({
             },
             body: new URLSearchParams({
                 application_form_id: dataID,
-                sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
+                event_uid: sid.event_uid,
+                company_id: sid.company_id,
             }),
         };
         await fetch(`${process.env.customKey}sumbitApply`, options)
@@ -252,7 +257,7 @@ export default function Preview({
                     </div>
                 )}
                 <h2>{t("applyForm.preview.groupFour.title")}</h2>
-                {data.imageData_file === "" ? (
+                {data.imageData_file === "Y" ? (
                     <div>{t("applyForm.preview.groupFour.pending")}</div>
                 ) : (
                     <div className={styles.image}>
@@ -267,130 +272,6 @@ export default function Preview({
                     {t("applyForm.stepper.send")}
                 </button>
             </Form>
-            {/* <Form onSubmit={handleSubmit}>
-                <h2>{t("applyForm.preview.groupOne.title")}</h2>
-                <div className={styles.formComplete}>
-                    <div className={styles.formRow}>
-                        <label>
-                            {t("applyForm.preview.groupOne.companyName")}
-                        </label>
-                        <p>丰彤設計有限公司</p>
-                    </div>
-                    <div className={styles.formRow}>
-                        <label>{t("applyForm.preview.groupOne.taxID")}</label>
-                        <p>12653758</p>
-                    </div>
-                    <div className={styles.formRow}>
-                        <label>
-                            {t("applyForm.preview.groupOne.contactPerson")}
-                        </label>
-                        <p>張書源</p>
-                    </div>
-                    <div className={styles.formRow}>
-                        <label>{t("applyForm.preview.groupOne.phone")}</label>
-                        <p>02-28962689 分機 221</p>
-                    </div>
-                    <div className={styles.formRow}>
-                        <label>E-mail</label>
-                        <p>1fontal1999@gmail.com</p>
-                    </div>
-                </div>
-                <h2>{t("applyForm.preview.groupTwo.title")}</h2>
-                <div className={styles.formCompleteInvoce}>
-                    <div className={styles.formRow}>
-                        <label>
-                            {t("applyForm.preview.groupTwo.companyName")}
-                        </label>
-                        <p>尚立資訊有限公司</p>
-                    </div>
-                    <div className={styles.formRow}>
-                        <label>{t("applyForm.preview.groupTwo.taxID")}</label>
-                        <p>83465356</p>
-                    </div>
-                    <div className={styles.formRow}>
-                        <label>
-                            {t("applyForm.preview.groupTwo.invoiceAddress")}
-                        </label>
-                        <p>台北市南京東路四段1號2樓</p>
-                    </div>
-                    <div className={styles.formRow}>
-                        <label>
-                            {t("applyForm.preview.groupTwo.remark")}：
-                        </label>
-                        <p></p>
-                    </div>
-                </div>
-                <h2>{t("applyForm.preview.groupThree.title")}</h2>
-                <div className={styles.applyItem}>
-                    <table>
-                        <thead>
-                            <tr className={styles.title}>
-                                <th>{t("applyForm.preview.groupThree.no")}</th>
-                                <th>
-                                    {t("applyForm.preview.groupThree.item")}
-                                </th>
-                                <th>
-                                    {t("applyForm.preview.groupThree.quantity")}
-                                </th>
-                                <th>
-                                    {t(
-                                        "applyForm.preview.groupThree.unitPrice"
-                                    )}
-                                </th>
-                                <th>
-                                    {t("applyForm.preview.groupThree.itemCost")}
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr className={styles.content}>
-                                <td>1</td>
-                                <td>用電110V電源箱 - 單相 110V 15A (1,500W)</td>
-                                <td>1</td>
-                                <td>1,950</td>
-                                <td>1,950</td>
-                            </tr>
-                            <tr className={styles.content}>
-                                <td>2</td>
-                                <td>用電110V電源箱 - 單相 110V 15A (1,500W)</td>
-                                <td>1</td>
-                                <td>1,950</td>
-                                <td>1,950</td>
-                            </tr>
-                            <tr className={styles.content}>
-                                <td>3</td>
-                                <td>用電110V電源箱 - 單相 110V 15A (1,500W)</td>
-                                <td>1</td>
-                                <td>1,950</td>
-                                <td>1,950</td>
-                            </tr>
-                            <tr className={styles.content}>
-                                <td>4</td>
-                                <td>用電110V電源箱 - 單相 110V 15A (1,500W)</td>
-                                <td>1</td>
-                                <td>1,950</td>
-                                <td>1,950</td>
-                            </tr>
-                            <tr className={styles.sum}>
-                                <td className={styles.sumTitle} colSpan={4}>
-                                    {t("applyForm.preview.groupThree.total")}
-                                </td>
-                                <td>20,439</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <h2>{t("applyForm.preview.groupFour.title")}</h2>
-                <p>
-                    {t("applyForm.preview.groupFour.file")}{" "}
-                    <span>JO318水電圖圖.jpg</span>
-                </p>
-                <img src="/img/image14.png" />
-                <button type="submit" className={styles.complete}>
-                    {t("applyForm.stepper.send")}
-                </button>
-            </Form> */}
         </div>
     );
 }

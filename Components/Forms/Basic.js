@@ -12,6 +12,7 @@ export default function Basic({
     saveID,
     dataID,
     jump,
+    sid,
 }) {
     const { t } = useTranslation();
     const [number, setNumber] = useState();
@@ -47,7 +48,8 @@ export default function Basic({
                 proxy_phone: phone,
                 base_option: baseOption,
                 remark: remark,
-                sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
+                event_uid: sid.event_uid,
+                company_id: sid.company_id,
             }),
         };
         await fetch(`${process.env.customKey}setApplyForm`, options)
@@ -87,7 +89,8 @@ export default function Basic({
                 proxy_phone: data.phone,
                 base_option: baseOption,
                 remark: remark,
-                sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
+                event_uid: sid.event_uid,
+                company_id: sid.company_id,
             }),
         };
         if (baseOption === "N") {

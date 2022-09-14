@@ -10,8 +10,40 @@ import Popup from "../../../Components/Popup/Popup";
 import SlideToggle from "react-slide-toggle";
 import { StylesContext } from "@material-ui/styles";
 import { useRouter } from "next/router";
+import { setCookie, getCookie } from "cookies-next";
 
-export async function getServerSideProps({ locale, query }) {
+export async function getServerSideProps({ locale, query, req, res }) {
+    let oldCookie = getCookie("sid", { req, res });
+    if (query.sid !== undefined) {
+        if (query.sid !== oldCookie) {
+            setCookie("sid", query.sid, { req, res, maxAge: 60 * 6 * 24 });
+        } else if (query.sid === getCookie("sid", { req, res })) {
+            oldCookie = oldCookie;
+        }
+    } else if (query.sid === undefined || query.sid === "") {
+        if (oldCookie !== undefined || oldCookie !== "") {
+            oldCookie = oldCookie;
+        }
+        if (oldCookie === undefined) {
+            return {
+                redirect: {
+                    destination: "https://twtc.com.tw/",
+                },
+            };
+        }
+    }
+    const form = new URLSearchParams();
+    form.append("sid", getCookie("sid", { req, res }));
+
+    const sidForm = {
+        method: "POST",
+    };
+    sidForm.body = form;
+
+    const sidData = await fetch(`${process.env.API_BASE_URL}sso`, sidForm).then(
+        (response) => response.json()
+    );
+
     const options = {
         method: "POST",
         headers: {
@@ -19,7 +51,8 @@ export async function getServerSideProps({ locale, query }) {
         },
         body: new URLSearchParams({
             lang: locale,
-            sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
+            event_uid: sidData.event_uid,
+            company_id: sidData.company_id,
         }),
     };
     const infoRes = await fetch(
@@ -42,6 +75,7 @@ export async function getServerSideProps({ locale, query }) {
             ...(await serverSideTranslations(locale, ["common"])),
             info: infoData,
             data: reviseData,
+            sidData: sidData,
         },
     };
 }
@@ -52,102 +86,23 @@ export default function Revise(props) {
     const [isLoading, setLoading] = useState(false);
     const [show, setShow] = useState(false);
     const [preview, setPreview] = useState(false);
+    const [revise, setRevise] = useState(false);
     const [upNumber, setUpNumber] = useState();
     const [downNumber, setDownNumber] = useState();
     const router = useRouter();
+    const [reviseItems, setReviseItems] = useState([]);
 
     const initProducts = async () => {
         const form = new FormData();
         form.append("application_form_id", router.query.id);
-        form.append(
-            "sid",
-            "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
-        );
+        form.append("event_uid", props.sidData.event_uid);
+        form.append("company_id", props.sidData.company_id);
         form.append("revised", "Y");
         const options = {
             method: "POST",
-            // headers: {
-            //     "Content-Type":
-            //         "multipart/form-data; boundary=---011000010111000001101001",
-            // },
         };
         options.body = form;
-        // const form = new FormData();
-        // let items = [];
-        // const checkBoxsOne = document.querySelectorAll(
-        //     ".Form_aGroup__FN6oc input[type='checkbox']"
-        // );
-        // const checkBoxsTwo = document.querySelectorAll(
-        //     ".Form_bGroup__4aN8N input[type='checkbox']"
-        // );
-        // for (let check of checkBoxsOne) {
-        //     if (check.checked) {
-        //         items.push({ item_id: check.value, quantity: "1" });
-        //     }
-        // }
-        // for (let check of checkBoxsTwo) {
-        //     if (check.checked) {
-        //         let num = check.nextSibling.nextSibling.childNodes[1];
-        //         items.push({
-        //             item_id: check.value,
-        //             quantity: num.value,
-        //         });
-        //     }
-        // }
-        // form.append("application_form_id", router.query.id);
-        // form.append(
-        //     "proxy_company_name",
-        //     document.querySelectorAll('input[name="company"]')[0].value
-        // );
-        // form.append(
-        //     "proxy_tax_id",
-        //     document.querySelectorAll('input[name="uniformNum"]')[0].value
-        // );
-        // form.append(
-        //     "proxy_contact_person",
-        //     document.querySelectorAll('input[name="contactPerson"]')[0].value
-        // );
-        // form.append(
-        //     "proxy_email",
-        //     document.querySelectorAll('input[name="email"]')[0].value
-        // );
-        // form.append(
-        //     "proxy_phone",
-        //     document.querySelectorAll('input[name="phone"]')[0].value
-        // );
-        // form.append(
-        //     "invoice_company_name",
-        //     document.querySelectorAll('input[name="company"]')[1].value
-        // );
-        // form.append(
-        //     "invoice_address",
-        //     document.querySelector('input[name="address"]').value
-        // );
-        // form.append(
-        //     "invoice_tax_id",
-        //     document.querySelectorAll('input[name="uniformNum"]')[1].value
-        // );
-        // form.append(
-        //     "remark",
-        //     document.querySelectorAll('textarea[name="remark"]')[0].value
-        // );
-        // form.append(
-        //     "sid",
-        //     "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
-        // );
-        // form.append("items", JSON.stringify(items));
-        // const options = {
-        //     method: "POST",
-        //     headers: {
-        //         // cookie: "ci_session=8v7iclm76gcb6fsic32lodnk29j11j6b",
-        //         "Content-Type": "application/x-www-form-urlencoded",
-        //     },
-        //     body: new URLSearchParams({
-        //         lang: router.locale,
-        //         application_form_id: dataID,
-        //         sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
-        //     }),
-        // };
+
         setLoading(true);
         const result = await fetch(
             `${process.env.customKey}getReviseData`,
@@ -160,7 +115,6 @@ export default function Revise(props) {
             //     setLoading(false);
             // })
             .catch((err) => console.error(err));
-        // console.log(result);
         setData(result);
     };
 
@@ -169,14 +123,188 @@ export default function Revise(props) {
             initProducts();
         }
     }, [preview]);
+
+    useEffect(() => {
+        if (revise) {
+            initProducts();
+            setTimeout(() => {
+                setRevise(false);
+            }, "1000");
+            console.log(data);
+        }
+    }, [revise]);
+
     const close = () => {
         setShow(false);
         setPreview(false);
     };
 
-    const handleRevise = () => {
-        setShow(false);
-        setPreview(true);
+    const cancelSupplement = () => {
+        router.push("/search");
+    };
+
+    const handleSubmit = async () => {
+        const form = new FormData();
+        form.append("application_form_id", router.query.id);
+        form.append("event_uid", props.sidData.event_uid);
+        form.append("company_id", props.sidData.company_id);
+
+        const options = {
+            method: "POST",
+        };
+
+        options.body = form;
+        await fetch(`${process.env.customKey}setReviseConfirm`, options)
+            .then((response) => response.json())
+            .then((response) => {
+                console.log(response);
+                router.push("/search");
+            })
+            .catch((err) => console.error(err));
+    };
+
+    const handlePreview = async () => {
+        const form = new FormData();
+        form.append("application_form_id", router.query.id);
+        form.append(
+            "proxy_company_name",
+            document.querySelectorAll('input[name="company"]')[0].value
+        );
+        form.append(
+            "proxy_tax_id",
+            document.querySelectorAll('input[name="uniformNum"]')[0].value
+        );
+        form.append(
+            "proxy_contact_person",
+            document.querySelectorAll('input[name="contactPerson"]')[0].value
+        );
+        form.append(
+            "proxy_email",
+            document.querySelectorAll('input[name="email"]')[0].value
+        );
+        form.append(
+            "proxy_phone",
+            document.querySelectorAll('input[name="phone"]')[0].value
+        );
+        form.append(
+            "invoice_company_name",
+            document.querySelectorAll('input[name="company"]')[1].value
+        );
+        form.append(
+            "invoice_address",
+            document.querySelector('input[name="address"]').value
+        );
+        form.append(
+            "invoice_tax_id",
+            document.querySelectorAll('input[name="uniformNum"]')[1].value
+        );
+        form.append(
+            "remark",
+            document.querySelectorAll('textarea[name="remark"]')[0].value
+        );
+        form.append("event_uid", props.sidData.event_uid);
+        form.append("company_id", props.sidData.company_id);
+        form.append("items", JSON.stringify(reviseItems));
+
+        const options = {
+            method: "POST",
+            body: new URLSearchParams({
+                lang: router.locale,
+                application_form_id: router.query.id,
+            }),
+        };
+        options.body = form;
+        await fetch(`${process.env.customKey}setRevise`, options)
+            .then((response) => response.json())
+            .then((response) => {
+                console.log(response);
+                setPreview(true);
+            })
+            .catch((err) => console.error(err));
+    };
+
+    const handleRevise = async () => {
+        let items = [];
+        const form = new FormData();
+        const checkBoxsOne = document.querySelectorAll(
+            ".Apply_aGroup__d5k3g input[type='checkbox']"
+        );
+        const checkBoxsTwo = document.querySelectorAll(
+            ".Apply_bGroup__8er2v input[type='checkbox']"
+        );
+        for (let check of checkBoxsOne) {
+            if (check.checked) {
+                items.push({ item_id: check.value, quantity: "1" });
+            }
+        }
+        for (let check of checkBoxsTwo) {
+            if (check.checked) {
+                let num = check.nextSibling.nextSibling.childNodes[1];
+                items.push({
+                    item_id: check.value,
+                    quantity: num.value,
+                });
+            }
+        }
+        form.append("application_form_id", router.query.id);
+        form.append(
+            "proxy_company_name",
+            document.querySelectorAll('input[name="company"]')[0].value
+        );
+        form.append(
+            "proxy_tax_id",
+            document.querySelectorAll('input[name="uniformNum"]')[0].value
+        );
+        form.append(
+            "proxy_contact_person",
+            document.querySelectorAll('input[name="contactPerson"]')[0].value
+        );
+        form.append(
+            "proxy_email",
+            document.querySelectorAll('input[name="email"]')[0].value
+        );
+        form.append(
+            "proxy_phone",
+            document.querySelectorAll('input[name="phone"]')[0].value
+        );
+        form.append(
+            "invoice_company_name",
+            document.querySelectorAll('input[name="company"]')[1].value
+        );
+        form.append(
+            "invoice_address",
+            document.querySelector('input[name="address"]').value
+        );
+        form.append(
+            "invoice_tax_id",
+            document.querySelectorAll('input[name="uniformNum"]')[1].value
+        );
+        form.append(
+            "remark",
+            document.querySelectorAll('textarea[name="remark"]')[0].value
+        );
+        form.append("event_uid", props.sidData.event_uid);
+        form.append("company_id", props.sidData.company_id);
+        form.append("items", JSON.stringify(items));
+        setReviseItems(items);
+
+        const options = {
+            method: "POST",
+            body: new URLSearchParams({
+                lang: router.locale,
+                application_form_id: router.query.id,
+            }),
+        };
+        options.body = form;
+
+        await fetch(`${process.env.customKey}setRevise`, options)
+            .then((response) => response.json())
+            .then((response) => {
+                console.log(response);
+                setShow(false);
+                setRevise(true);
+            })
+            .catch((err) => console.error(err));
     };
 
     const active = (e) => {
@@ -358,38 +486,180 @@ export default function Revise(props) {
                                 </tr>
                             </thead>
                             <tbody>
-                                {props.data.hydro_items_trial.items.map(
-                                    (item) => (
-                                        <tr
-                                            className={styles.content}
-                                            key={item.index}
-                                        >
-                                            <td>{item.index}</td>
-                                            <td
-                                                style={{
-                                                    textAlign: "left",
-                                                    paddingLeft: "15px",
-                                                }}
-                                            >
-                                                {item.item}
+                                {data !== null ? (
+                                    <>
+                                        {data.hydro_items_trial.items.map(
+                                            (item, idx) => (
+                                                <>
+                                                    <tr
+                                                        className={
+                                                            styles.content
+                                                        }
+                                                        key={idx}
+                                                    >
+                                                        <td>{item.index}</td>
+                                                        <td
+                                                            style={{
+                                                                textAlign:
+                                                                    "left",
+                                                                paddingLeft:
+                                                                    "15px",
+                                                            }}
+                                                        >
+                                                            {item.item}
+                                                        </td>
+                                                        <td>{item.quantity}</td>
+                                                        <td>{item.price}</td>
+                                                        <td>{item.sum}</td>
+                                                    </tr>
+                                                </>
+                                            )
+                                        )}
+                                        <tr className={styles.sum}>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td className={styles.sumTitle}>
+                                                {t(
+                                                    "applyForm.preview.groupThree.total"
+                                                )}
                                             </td>
-                                            <td>{item.quantity}</td>
-                                            <td>{item.price}</td>
-                                            <td>{item.sum}</td>
+                                            <td>
+                                                {
+                                                    data.hydro_items_trial
+                                                        .total_sum
+                                                }
+                                            </td>
                                         </tr>
-                                    )
+                                        {data.discount.discount_value !== "" ? (
+                                            <>
+                                                <tr className={styles.sum}>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td
+                                                        className={
+                                                            styles.sumTitle
+                                                        }
+                                                    >
+                                                        {
+                                                            data.discount
+                                                                .discount_type
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        {
+                                                            data.discount
+                                                                .discount_price
+                                                        }
+                                                    </td>
+                                                </tr>
+                                                <tr className={styles.sum}>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td
+                                                        className={
+                                                            styles.sumTitle
+                                                        }
+                                                    >
+                                                        總價
+                                                    </td>
+                                                    <td>
+                                                        {
+                                                            data.discount
+                                                                .finally_sum
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            </>
+                                        ) : null}
+                                    </>
+                                ) : (
+                                    <>
+                                        {props.data.hydro_items_trial.items.map(
+                                            (item, idx) => (
+                                                <tr
+                                                    className={styles.content}
+                                                    key={idx}
+                                                >
+                                                    <td>{item.index}</td>
+                                                    <td
+                                                        style={{
+                                                            textAlign: "left",
+                                                            paddingLeft: "15px",
+                                                        }}
+                                                    >
+                                                        {item.item}
+                                                    </td>
+                                                    <td>{item.quantity}</td>
+                                                    <td>{item.price}</td>
+                                                    <td>{item.sum}</td>
+                                                </tr>
+                                            )
+                                        )}
+                                        <tr className={styles.sum}>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td className={styles.sumTitle}>
+                                                {t(
+                                                    "applyForm.preview.groupThree.total"
+                                                )}
+                                            </td>
+                                            <td>
+                                                {
+                                                    props.data.hydro_items_trial
+                                                        .total_sum
+                                                }
+                                            </td>
+                                        </tr>
+                                        {props.data.discount.discount_value !==
+                                        "" ? (
+                                            <>
+                                                <tr className={styles.sum}>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td
+                                                        className={
+                                                            styles.sumTitle
+                                                        }
+                                                    >
+                                                        {
+                                                            props.data.discount
+                                                                .discount_type
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        {
+                                                            props.data.discount
+                                                                .discount_price
+                                                        }
+                                                    </td>
+                                                </tr>
+                                                <tr className={styles.sum}>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td
+                                                        className={
+                                                            styles.sumTitle
+                                                        }
+                                                    >
+                                                        總價
+                                                    </td>
+                                                    <td>
+                                                        {
+                                                            props.data.discount
+                                                                .finally_sum
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            </>
+                                        ) : null}
+                                    </>
                                 )}
-                                <tr className={styles.sum}>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td className={styles.sumTitle}>
-                                        合計總金額
-                                    </td>
-                                    <td>
-                                        {props.data.hydro_items_trial.total_sum}
-                                    </td>
-                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -404,1333 +674,2663 @@ export default function Revise(props) {
                             }}
                         >
                             <h2>水電追加申請項目</h2>
-                            <div className={styles.group}>
-                                <SlideToggle
-                                    duration={1000}
-                                    collapsed={true}
-                                    whenReversedUseBackwardEase={false}
-                                    render={({
-                                        toggle,
-                                        setCollapsibleElement,
-                                        toggleState,
-                                    }) => (
-                                        <div className={styles.card}>
-                                            <div className="card-header">
-                                                <label
-                                                    className={[
-                                                        styles.dropDown,
-                                                        toggleState ===
-                                                        "COLLAPSED"
-                                                            ? styles.dropDown
-                                                            : styles.active,
-                                                    ].join(" ")}
-                                                    onClick={toggle}
-                                                >
-                                                    Ａ.用電110V電源箱
-                                                    <span>
-                                                        {toggleState ===
-                                                            "EXPANDED" ||
-                                                        toggleState ===
-                                                            "EXPANDING" ? (
-                                                            <svg
-                                                                width="16"
-                                                                height="10"
-                                                                viewBox="0 0 16 10"
-                                                                fill="none"
-                                                                xmlns="http://www.w3.org/2000/svg"
-                                                            >
-                                                                <path
-                                                                    d="M1 9L8 2L15 9"
-                                                                    stroke="white"
-                                                                    strokeWidth="2"
-                                                                />
-                                                            </svg>
-                                                        ) : (
-                                                            <svg
-                                                                width="16"
-                                                                height="10"
-                                                                viewBox="0 0 16 10"
-                                                                fill="none"
-                                                                xmlns="http://www.w3.org/2000/svg"
-                                                            >
-                                                                <path
-                                                                    d="M15 1L8 8L1 1"
-                                                                    stroke="white"
-                                                                    strokeWidth="2"
-                                                                />
-                                                            </svg>
-                                                        )}
-                                                    </span>
-                                                </label>
-                                            </div>
-                                            <div
-                                                className={styles.cardBody}
-                                                ref={setCollapsibleElement}
-                                            >
-                                                <div
-                                                    className={
-                                                        styles.dropDownContent
-                                                    }
-                                                >
-                                                    <p>
-                                                        {t(
-                                                            "applyForm.stepTwo.itemA"
-                                                        )}
-                                                    </p>
-                                                    <div
-                                                        className={
-                                                            styles.aGroup
-                                                        }
+                            {data !== null ? (
+                                <div className={styles.group}>
+                                    <SlideToggle
+                                        duration={1000}
+                                        collapsed={true}
+                                        whenReversedUseBackwardEase={false}
+                                        render={({
+                                            toggle,
+                                            setCollapsibleElement,
+                                            toggleState,
+                                        }) => (
+                                            <div className={styles.card}>
+                                                <div className="card-header">
+                                                    <label
+                                                        className={[
+                                                            styles.dropDown,
+                                                            toggleState ===
+                                                            "COLLAPSED"
+                                                                ? styles.dropDown
+                                                                : styles.active,
+                                                        ].join(" ")}
+                                                        onClick={toggle}
                                                     >
-                                                        {props.data.hydro_items[0].data.map(
-                                                            (item) => (
-                                                                <>
-                                                                    {item.chk ===
-                                                                    "Y" ? (
-                                                                        <label
-                                                                            htmlFor={
-                                                                                item.item_id
-                                                                            }
-                                                                            key={
-                                                                                item.item_id
-                                                                            }
-                                                                            className={
-                                                                                styles.checkedActive
-                                                                            }
-                                                                        >
-                                                                            <input
-                                                                                type="checkbox"
-                                                                                id={
-                                                                                    item.item_id
-                                                                                }
-                                                                                value={
-                                                                                    item.item_id
-                                                                                }
-                                                                                onChange={
-                                                                                    active
-                                                                                }
-                                                                                defaultChecked
-                                                                            />
-                                                                            {
-                                                                                item.name
-                                                                            }
-                                                                            <span>
-                                                                                {
-                                                                                    item.price
-                                                                                }
-                                                                            </span>
-                                                                        </label>
-                                                                    ) : (
-                                                                        <label
-                                                                            htmlFor={
-                                                                                item.item_id
-                                                                            }
-                                                                            key={
-                                                                                item.item_id
-                                                                            }
-                                                                        >
-                                                                            <input
-                                                                                type="checkbox"
-                                                                                id={
-                                                                                    item.item_id
-                                                                                }
-                                                                                value={
-                                                                                    item.item_id
-                                                                                }
-                                                                                onChange={
-                                                                                    active
-                                                                                }
-                                                                            />
-                                                                            {
-                                                                                item.name
-                                                                            }
-                                                                            <span>
-                                                                                {
-                                                                                    item.price
-                                                                                }
-                                                                            </span>
-                                                                        </label>
-                                                                    )}
-                                                                </>
-                                                            )
-                                                        )}
-                                                    </div>
+                                                        Ａ.用電110V電源箱
+                                                        <span>
+                                                            {toggleState ===
+                                                                "EXPANDED" ||
+                                                            toggleState ===
+                                                                "EXPANDING" ? (
+                                                                <svg
+                                                                    width="16"
+                                                                    height="10"
+                                                                    viewBox="0 0 16 10"
+                                                                    fill="none"
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                >
+                                                                    <path
+                                                                        d="M1 9L8 2L15 9"
+                                                                        stroke="white"
+                                                                        strokeWidth="2"
+                                                                    />
+                                                                </svg>
+                                                            ) : (
+                                                                <svg
+                                                                    width="16"
+                                                                    height="10"
+                                                                    viewBox="0 0 16 10"
+                                                                    fill="none"
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                >
+                                                                    <path
+                                                                        d="M15 1L8 8L1 1"
+                                                                        stroke="white"
+                                                                        strokeWidth="2"
+                                                                    />
+                                                                </svg>
+                                                            )}
+                                                        </span>
+                                                    </label>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    )}
-                                />
-                                <SlideToggle
-                                    duration={1000}
-                                    collapsed={true}
-                                    whenReversedUseBackwardEase={false}
-                                    render={({
-                                        toggle,
-                                        setCollapsibleElement,
-                                        toggleState,
-                                    }) => (
-                                        <div className={styles.card}>
-                                            <div className="card-header">
-                                                <label
-                                                    className={[
-                                                        styles.dropDown,
-                                                        toggleState ===
-                                                        "COLLAPSED"
-                                                            ? styles.dropDown
-                                                            : styles.active,
-                                                    ].join(" ")}
-                                                    onClick={toggle}
-                                                >
-                                                    B. 用電220V電源箱
-                                                    <span>
-                                                        {toggleState ===
-                                                            "EXPANDED" ||
-                                                        toggleState ===
-                                                            "EXPANDING" ? (
-                                                            <svg
-                                                                width="16"
-                                                                height="10"
-                                                                viewBox="0 0 16 10"
-                                                                fill="none"
-                                                                xmlns="http://www.w3.org/2000/svg"
-                                                            >
-                                                                <path
-                                                                    d="M1 9L8 2L15 9"
-                                                                    stroke="white"
-                                                                    strokeWidth="2"
-                                                                />
-                                                            </svg>
-                                                        ) : (
-                                                            <svg
-                                                                width="16"
-                                                                height="10"
-                                                                viewBox="0 0 16 10"
-                                                                fill="none"
-                                                                xmlns="http://www.w3.org/2000/svg"
-                                                            >
-                                                                <path
-                                                                    d="M15 1L8 8L1 1"
-                                                                    stroke="white"
-                                                                    strokeWidth="2"
-                                                                />
-                                                            </svg>
-                                                        )}
-                                                    </span>
-                                                </label>
-                                            </div>
-                                            <div
-                                                className={styles.cardBody}
-                                                ref={setCollapsibleElement}
-                                            >
                                                 <div
-                                                    className={
-                                                        styles.dropDownContent
-                                                    }
+                                                    className={styles.cardBody}
+                                                    ref={setCollapsibleElement}
                                                 >
-                                                    <p>
-                                                        {t(
-                                                            "applyForm.stepTwo.itemBCD"
-                                                        )}
-                                                    </p>
                                                     <div
                                                         className={
-                                                            styles.bGroup
+                                                            styles.dropDownContent
                                                         }
                                                     >
-                                                        {props.data.hydro_items[1].data.map(
-                                                            (item) => (
-                                                                <>
-                                                                    {item.chk ===
-                                                                    "Y" ? (
-                                                                        <label
-                                                                            htmlFor={
-                                                                                item.item_id
-                                                                            }
-                                                                            key={
-                                                                                item.item_id
-                                                                            }
-                                                                            className={
-                                                                                styles.checkedActive
-                                                                            }
-                                                                        >
-                                                                            <input
-                                                                                type="checkbox"
-                                                                                id={
-                                                                                    item.item_id
-                                                                                }
-                                                                                value={
-                                                                                    item.item_id
-                                                                                }
-                                                                                onChange={
-                                                                                    enableNextTextBox
-                                                                                }
-                                                                                defaultChecked
-                                                                            />
-                                                                            {
-                                                                                item.name
-                                                                            }
+                                                        <p>
+                                                            {t(
+                                                                "applyForm.stepTwo.itemA"
+                                                            )}
+                                                        </p>
+                                                        <div
+                                                            className={
+                                                                styles.aGroup
+                                                            }
+                                                        >
+                                                            {data.hydro_items[0].data.map(
+                                                                (item) => (
+                                                                    <>
+                                                                        {item.chk ===
+                                                                        "Y" ? (
                                                                             <label
+                                                                                htmlFor={
+                                                                                    item.item_id
+                                                                                }
+                                                                                key={
+                                                                                    item.item_id
+                                                                                }
                                                                                 className={
-                                                                                    styles.num
+                                                                                    styles.checkedActive
                                                                                 }
                                                                             >
-                                                                                {t(
-                                                                                    "applyForm.stepTwo.quantity"
-                                                                                )}
                                                                                 <input
-                                                                                    type="number"
-                                                                                    min="1"
-                                                                                    defaultValue={
-                                                                                        item.quantity
+                                                                                    type="checkbox"
+                                                                                    id={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    value={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    onChange={
+                                                                                        active
+                                                                                    }
+                                                                                    defaultChecked
+                                                                                />
+                                                                                {
+                                                                                    item.name
+                                                                                }
+                                                                                <span>
+                                                                                    {
+                                                                                        item.price
+                                                                                    }
+                                                                                </span>
+                                                                            </label>
+                                                                        ) : (
+                                                                            <label
+                                                                                htmlFor={
+                                                                                    item.item_id
+                                                                                }
+                                                                                key={
+                                                                                    item.item_id
+                                                                                }
+                                                                            >
+                                                                                <input
+                                                                                    type="checkbox"
+                                                                                    id={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    value={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    onChange={
+                                                                                        active
                                                                                     }
                                                                                 />
-                                                                            </label>
-                                                                            <span>
                                                                                 {
-                                                                                    item.prcie
+                                                                                    item.name
                                                                                 }
-
-                                                                                /
-                                                                                {t(
-                                                                                    "applyForm.stepTwo.set"
-                                                                                )}
-                                                                            </span>
-                                                                        </label>
-                                                                    ) : (
-                                                                        <label
-                                                                            htmlFor={
-                                                                                item.item_id
-                                                                            }
-                                                                            key={
-                                                                                item.item_id
-                                                                            }
-                                                                        >
-                                                                            <input
-                                                                                type="checkbox"
-                                                                                id={
-                                                                                    item.item_id
-                                                                                }
-                                                                                value={
-                                                                                    item.item_id
-                                                                                }
-                                                                                onChange={
-                                                                                    enableNextTextBox
-                                                                                }
-                                                                            />
-                                                                            {
-                                                                                item.name
-                                                                            }
-                                                                            <label
-                                                                                className={
-                                                                                    styles.num
-                                                                                }
-                                                                            >
-                                                                                {t(
-                                                                                    "applyForm.stepTwo.quantity"
-                                                                                )}
-                                                                                <input
-                                                                                    type="number"
-                                                                                    min="0"
-                                                                                    disabled
-                                                                                />
+                                                                                <span>
+                                                                                    {
+                                                                                        item.price
+                                                                                    }
+                                                                                </span>
                                                                             </label>
-                                                                            <span>
-                                                                                {
-                                                                                    item.prcie
-                                                                                }
-
-                                                                                /
-                                                                                {t(
-                                                                                    "applyForm.stepTwo.set"
-                                                                                )}
-                                                                            </span>
-                                                                        </label>
-                                                                    )}
-                                                                </>
-                                                            )
-                                                        )}
+                                                                        )}
+                                                                    </>
+                                                                )
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    )}
-                                />
-                                <SlideToggle
-                                    duration={1000}
-                                    collapsed={true}
-                                    whenReversedUseBackwardEase={false}
-                                    render={({
-                                        toggle,
-                                        setCollapsibleElement,
-                                        toggleState,
-                                    }) => (
-                                        <div className={styles.card}>
-                                            <div className="card-header">
-                                                <label
-                                                    className={[
-                                                        styles.dropDown,
-                                                        toggleState ===
-                                                        "COLLAPSED"
-                                                            ? styles.dropDown
-                                                            : styles.active,
-                                                    ].join(" ")}
-                                                    onClick={toggle}
-                                                >
-                                                    C. 用電380V電源箱
-                                                    <span>
-                                                        {toggleState ===
-                                                            "EXPANDED" ||
-                                                        toggleState ===
-                                                            "EXPANDING" ? (
-                                                            <svg
-                                                                width="16"
-                                                                height="10"
-                                                                viewBox="0 0 16 10"
-                                                                fill="none"
-                                                                xmlns="http://www.w3.org/2000/svg"
-                                                            >
-                                                                <path
-                                                                    d="M1 9L8 2L15 9"
-                                                                    stroke="white"
-                                                                    strokeWidth="2"
-                                                                />
-                                                            </svg>
-                                                        ) : (
-                                                            <svg
-                                                                width="16"
-                                                                height="10"
-                                                                viewBox="0 0 16 10"
-                                                                fill="none"
-                                                                xmlns="http://www.w3.org/2000/svg"
-                                                            >
-                                                                <path
-                                                                    d="M15 1L8 8L1 1"
-                                                                    stroke="white"
-                                                                    strokeWidth="2"
-                                                                />
-                                                            </svg>
-                                                        )}
-                                                    </span>
-                                                </label>
-                                            </div>
-                                            <div
-                                                className={styles.cardBody}
-                                                ref={setCollapsibleElement}
-                                            >
+                                        )}
+                                    />
+                                    <SlideToggle
+                                        duration={1000}
+                                        collapsed={true}
+                                        whenReversedUseBackwardEase={false}
+                                        render={({
+                                            toggle,
+                                            setCollapsibleElement,
+                                            toggleState,
+                                        }) => (
+                                            <div className={styles.card}>
+                                                <div className="card-header">
+                                                    <label
+                                                        className={[
+                                                            styles.dropDown,
+                                                            toggleState ===
+                                                            "COLLAPSED"
+                                                                ? styles.dropDown
+                                                                : styles.active,
+                                                        ].join(" ")}
+                                                        onClick={toggle}
+                                                    >
+                                                        B. 用電220V電源箱
+                                                        <span>
+                                                            {toggleState ===
+                                                                "EXPANDED" ||
+                                                            toggleState ===
+                                                                "EXPANDING" ? (
+                                                                <svg
+                                                                    width="16"
+                                                                    height="10"
+                                                                    viewBox="0 0 16 10"
+                                                                    fill="none"
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                >
+                                                                    <path
+                                                                        d="M1 9L8 2L15 9"
+                                                                        stroke="white"
+                                                                        strokeWidth="2"
+                                                                    />
+                                                                </svg>
+                                                            ) : (
+                                                                <svg
+                                                                    width="16"
+                                                                    height="10"
+                                                                    viewBox="0 0 16 10"
+                                                                    fill="none"
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                >
+                                                                    <path
+                                                                        d="M15 1L8 8L1 1"
+                                                                        stroke="white"
+                                                                        strokeWidth="2"
+                                                                    />
+                                                                </svg>
+                                                            )}
+                                                        </span>
+                                                    </label>
+                                                </div>
                                                 <div
-                                                    className={
-                                                        styles.dropDownContent
-                                                    }
+                                                    className={styles.cardBody}
+                                                    ref={setCollapsibleElement}
                                                 >
-                                                    <p>
-                                                        {t(
-                                                            "applyForm.stepTwo.itemBCD"
-                                                        )}
-                                                    </p>
                                                     <div
                                                         className={
-                                                            styles.bGroup
+                                                            styles.dropDownContent
                                                         }
                                                     >
-                                                        {props.data.hydro_items[2].data.map(
-                                                            (item) => (
-                                                                <>
-                                                                    {item.chk ===
-                                                                    "Y" ? (
-                                                                        <label
-                                                                            htmlFor={
-                                                                                item.item_id
-                                                                            }
-                                                                            key={
-                                                                                item.item_id
-                                                                            }
-                                                                            className={
-                                                                                styles.checkedActive
-                                                                            }
-                                                                        >
-                                                                            <input
-                                                                                type="checkbox"
-                                                                                id={
-                                                                                    item.item_id
-                                                                                }
-                                                                                value={
-                                                                                    item.item_id
-                                                                                }
-                                                                                onChange={
-                                                                                    enableNextTextBox
-                                                                                }
-                                                                                defaultChecked
-                                                                            />
-                                                                            {
-                                                                                item.name
-                                                                            }
+                                                        <p>
+                                                            {t(
+                                                                "applyForm.stepTwo.itemBCD"
+                                                            )}
+                                                        </p>
+                                                        <div
+                                                            className={
+                                                                styles.bGroup
+                                                            }
+                                                        >
+                                                            {data.hydro_items[1].data.map(
+                                                                (item) => (
+                                                                    <>
+                                                                        {item.chk ===
+                                                                        "Y" ? (
                                                                             <label
+                                                                                htmlFor={
+                                                                                    item.item_id
+                                                                                }
+                                                                                key={
+                                                                                    item.item_id
+                                                                                }
                                                                                 className={
-                                                                                    styles.num
+                                                                                    styles.checkedActive
                                                                                 }
                                                                             >
-                                                                                {t(
-                                                                                    "applyForm.stepTwo.quantity"
-                                                                                )}
                                                                                 <input
-                                                                                    type="number"
-                                                                                    min="1"
-                                                                                    defaultValue={
-                                                                                        item.quantity
+                                                                                    type="checkbox"
+                                                                                    id={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    value={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    onChange={
+                                                                                        enableNextTextBox
+                                                                                    }
+                                                                                    defaultChecked
+                                                                                />
+                                                                                {
+                                                                                    item.name
+                                                                                }
+                                                                                <label
+                                                                                    className={
+                                                                                        styles.num
+                                                                                    }
+                                                                                >
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.quantity"
+                                                                                    )}
+                                                                                    <input
+                                                                                        type="number"
+                                                                                        min="1"
+                                                                                        defaultValue={
+                                                                                            item.quantity
+                                                                                        }
+                                                                                    />
+                                                                                </label>
+                                                                                <span>
+                                                                                    {
+                                                                                        item.prcie
+                                                                                    }
+
+                                                                                    /
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.set"
+                                                                                    )}
+                                                                                </span>
+                                                                            </label>
+                                                                        ) : (
+                                                                            <label
+                                                                                htmlFor={
+                                                                                    item.item_id
+                                                                                }
+                                                                                key={
+                                                                                    item.item_id
+                                                                                }
+                                                                            >
+                                                                                <input
+                                                                                    type="checkbox"
+                                                                                    id={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    value={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    onChange={
+                                                                                        enableNextTextBox
                                                                                     }
                                                                                 />
-                                                                            </label>
-                                                                            <span>
                                                                                 {
-                                                                                    item.prcie
+                                                                                    item.name
                                                                                 }
+                                                                                <label
+                                                                                    className={
+                                                                                        styles.num
+                                                                                    }
+                                                                                >
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.quantity"
+                                                                                    )}
+                                                                                    <input
+                                                                                        type="number"
+                                                                                        min="0"
+                                                                                        disabled
+                                                                                    />
+                                                                                </label>
+                                                                                <span>
+                                                                                    {
+                                                                                        item.prcie
+                                                                                    }
 
-                                                                                /
-                                                                                {t(
-                                                                                    "applyForm.stepTwo.set"
-                                                                                )}
-                                                                            </span>
-                                                                        </label>
-                                                                    ) : (
-                                                                        <label
-                                                                            htmlFor={
-                                                                                item.item_id
-                                                                            }
-                                                                            key={
-                                                                                item.item_id
-                                                                            }
-                                                                        >
-                                                                            <input
-                                                                                type="checkbox"
-                                                                                id={
-                                                                                    item.item_id
-                                                                                }
-                                                                                value={
-                                                                                    item.item_id
-                                                                                }
-                                                                                onChange={
-                                                                                    enableNextTextBox
-                                                                                }
-                                                                            />
-                                                                            {
-                                                                                item.name
-                                                                            }
-                                                                            <label
-                                                                                className={
-                                                                                    styles.num
-                                                                                }
-                                                                            >
-                                                                                {t(
-                                                                                    "applyForm.stepTwo.quantity"
-                                                                                )}
-                                                                                <input
-                                                                                    type="number"
-                                                                                    min="0"
-                                                                                    disabled
-                                                                                />
+                                                                                    /
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.set"
+                                                                                    )}
+                                                                                </span>
                                                                             </label>
-                                                                            <span>
-                                                                                {
-                                                                                    item.prcie
-                                                                                }
-
-                                                                                /
-                                                                                {t(
-                                                                                    "applyForm.stepTwo.set"
-                                                                                )}
-                                                                            </span>
-                                                                        </label>
-                                                                    )}
-                                                                </>
-                                                            )
-                                                        )}
+                                                                        )}
+                                                                    </>
+                                                                )
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    )}
-                                />
-                                <SlideToggle
-                                    duration={1000}
-                                    collapsed={true}
-                                    whenReversedUseBackwardEase={false}
-                                    render={({
-                                        toggle,
-                                        setCollapsibleElement,
-                                        toggleState,
-                                    }) => (
-                                        <div className={styles.card}>
-                                            <div className="card-header">
-                                                <label
-                                                    className={[
-                                                        styles.dropDown,
-                                                        toggleState ===
-                                                        "COLLAPSED"
-                                                            ? styles.dropDown
-                                                            : styles.active,
-                                                    ].join(" ")}
-                                                    onClick={toggle}
-                                                >
-                                                    D. 用電440V電源箱
-                                                    <span>
-                                                        {toggleState ===
-                                                            "EXPANDED" ||
-                                                        toggleState ===
-                                                            "EXPANDING" ? (
-                                                            <svg
-                                                                width="16"
-                                                                height="10"
-                                                                viewBox="0 0 16 10"
-                                                                fill="none"
-                                                                xmlns="http://www.w3.org/2000/svg"
-                                                            >
-                                                                <path
-                                                                    d="M1 9L8 2L15 9"
-                                                                    stroke="white"
-                                                                    strokeWidth="2"
-                                                                />
-                                                            </svg>
-                                                        ) : (
-                                                            <svg
-                                                                width="16"
-                                                                height="10"
-                                                                viewBox="0 0 16 10"
-                                                                fill="none"
-                                                                xmlns="http://www.w3.org/2000/svg"
-                                                            >
-                                                                <path
-                                                                    d="M15 1L8 8L1 1"
-                                                                    stroke="white"
-                                                                    strokeWidth="2"
-                                                                />
-                                                            </svg>
-                                                        )}
-                                                    </span>
-                                                </label>
-                                            </div>
-                                            <div
-                                                className={styles.cardBody}
-                                                ref={setCollapsibleElement}
-                                            >
+                                        )}
+                                    />
+                                    <SlideToggle
+                                        duration={1000}
+                                        collapsed={true}
+                                        whenReversedUseBackwardEase={false}
+                                        render={({
+                                            toggle,
+                                            setCollapsibleElement,
+                                            toggleState,
+                                        }) => (
+                                            <div className={styles.card}>
+                                                <div className="card-header">
+                                                    <label
+                                                        className={[
+                                                            styles.dropDown,
+                                                            toggleState ===
+                                                            "COLLAPSED"
+                                                                ? styles.dropDown
+                                                                : styles.active,
+                                                        ].join(" ")}
+                                                        onClick={toggle}
+                                                    >
+                                                        C. 用電380V電源箱
+                                                        <span>
+                                                            {toggleState ===
+                                                                "EXPANDED" ||
+                                                            toggleState ===
+                                                                "EXPANDING" ? (
+                                                                <svg
+                                                                    width="16"
+                                                                    height="10"
+                                                                    viewBox="0 0 16 10"
+                                                                    fill="none"
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                >
+                                                                    <path
+                                                                        d="M1 9L8 2L15 9"
+                                                                        stroke="white"
+                                                                        strokeWidth="2"
+                                                                    />
+                                                                </svg>
+                                                            ) : (
+                                                                <svg
+                                                                    width="16"
+                                                                    height="10"
+                                                                    viewBox="0 0 16 10"
+                                                                    fill="none"
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                >
+                                                                    <path
+                                                                        d="M15 1L8 8L1 1"
+                                                                        stroke="white"
+                                                                        strokeWidth="2"
+                                                                    />
+                                                                </svg>
+                                                            )}
+                                                        </span>
+                                                    </label>
+                                                </div>
                                                 <div
-                                                    className={
-                                                        styles.dropDownContent
-                                                    }
+                                                    className={styles.cardBody}
+                                                    ref={setCollapsibleElement}
                                                 >
-                                                    <p>
-                                                        {t(
-                                                            "applyForm.stepTwo.itemBCD"
-                                                        )}
-                                                    </p>
                                                     <div
                                                         className={
-                                                            styles.bGroup
+                                                            styles.dropDownContent
                                                         }
                                                     >
-                                                        {props.data.hydro_items[3].data.map(
-                                                            (item) => (
-                                                                <>
-                                                                    {item.chk ===
-                                                                    "Y" ? (
-                                                                        <label
-                                                                            htmlFor={
-                                                                                item.item_id
-                                                                            }
-                                                                            key={
-                                                                                item.item_id
-                                                                            }
-                                                                            className={
-                                                                                styles.checkedActive
-                                                                            }
-                                                                        >
-                                                                            <input
-                                                                                type="checkbox"
-                                                                                id={
-                                                                                    item.item_id
-                                                                                }
-                                                                                value={
-                                                                                    item.item_id
-                                                                                }
-                                                                                onChange={
-                                                                                    enableNextTextBox
-                                                                                }
-                                                                                defaultChecked
-                                                                            />
-                                                                            {
-                                                                                item.name
-                                                                            }
+                                                        <p>
+                                                            {t(
+                                                                "applyForm.stepTwo.itemBCD"
+                                                            )}
+                                                        </p>
+                                                        <div
+                                                            className={
+                                                                styles.bGroup
+                                                            }
+                                                        >
+                                                            {data.hydro_items[2].data.map(
+                                                                (item) => (
+                                                                    <>
+                                                                        {item.chk ===
+                                                                        "Y" ? (
                                                                             <label
+                                                                                htmlFor={
+                                                                                    item.item_id
+                                                                                }
+                                                                                key={
+                                                                                    item.item_id
+                                                                                }
                                                                                 className={
-                                                                                    styles.num
+                                                                                    styles.checkedActive
                                                                                 }
                                                                             >
-                                                                                {t(
-                                                                                    "applyForm.stepTwo.quantity"
-                                                                                )}
                                                                                 <input
-                                                                                    type="number"
-                                                                                    min="1"
-                                                                                    defaultValue={
-                                                                                        item.quantity
+                                                                                    type="checkbox"
+                                                                                    id={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    value={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    onChange={
+                                                                                        enableNextTextBox
+                                                                                    }
+                                                                                    defaultChecked
+                                                                                />
+                                                                                {
+                                                                                    item.name
+                                                                                }
+                                                                                <label
+                                                                                    className={
+                                                                                        styles.num
+                                                                                    }
+                                                                                >
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.quantity"
+                                                                                    )}
+                                                                                    <input
+                                                                                        type="number"
+                                                                                        min="1"
+                                                                                        defaultValue={
+                                                                                            item.quantity
+                                                                                        }
+                                                                                    />
+                                                                                </label>
+                                                                                <span>
+                                                                                    {
+                                                                                        item.prcie
+                                                                                    }
+
+                                                                                    /
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.set"
+                                                                                    )}
+                                                                                </span>
+                                                                            </label>
+                                                                        ) : (
+                                                                            <label
+                                                                                htmlFor={
+                                                                                    item.item_id
+                                                                                }
+                                                                                key={
+                                                                                    item.item_id
+                                                                                }
+                                                                            >
+                                                                                <input
+                                                                                    type="checkbox"
+                                                                                    id={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    value={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    onChange={
+                                                                                        enableNextTextBox
                                                                                     }
                                                                                 />
-                                                                            </label>
-                                                                            <span>
                                                                                 {
-                                                                                    item.prcie
+                                                                                    item.name
                                                                                 }
+                                                                                <label
+                                                                                    className={
+                                                                                        styles.num
+                                                                                    }
+                                                                                >
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.quantity"
+                                                                                    )}
+                                                                                    <input
+                                                                                        type="number"
+                                                                                        min="0"
+                                                                                        disabled
+                                                                                    />
+                                                                                </label>
+                                                                                <span>
+                                                                                    {
+                                                                                        item.prcie
+                                                                                    }
 
-                                                                                /
-                                                                                {t(
-                                                                                    "applyForm.stepTwo.set"
-                                                                                )}
-                                                                            </span>
-                                                                        </label>
-                                                                    ) : (
-                                                                        <label
-                                                                            htmlFor={
-                                                                                item.item_id
-                                                                            }
-                                                                            key={
-                                                                                item.item_id
-                                                                            }
-                                                                        >
-                                                                            <input
-                                                                                type="checkbox"
-                                                                                id={
-                                                                                    item.item_id
-                                                                                }
-                                                                                value={
-                                                                                    item.item_id
-                                                                                }
-                                                                                onChange={
-                                                                                    enableNextTextBox
-                                                                                }
-                                                                            />
-                                                                            {
-                                                                                item.name
-                                                                            }
-                                                                            <label
-                                                                                className={
-                                                                                    styles.num
-                                                                                }
-                                                                            >
-                                                                                {t(
-                                                                                    "applyForm.stepTwo.quantity"
-                                                                                )}
-                                                                                <input
-                                                                                    type="number"
-                                                                                    min="0"
-                                                                                    disabled
-                                                                                />
+                                                                                    /
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.set"
+                                                                                    )}
+                                                                                </span>
                                                                             </label>
-                                                                            <span>
-                                                                                {
-                                                                                    item.prcie
-                                                                                }
-
-                                                                                /
-                                                                                {t(
-                                                                                    "applyForm.stepTwo.set"
-                                                                                )}
-                                                                            </span>
-                                                                        </label>
-                                                                    )}
-                                                                </>
-                                                            )
-                                                        )}
+                                                                        )}
+                                                                    </>
+                                                                )
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    )}
-                                />
-                                <SlideToggle
-                                    duration={1000}
-                                    collapsed={true}
-                                    whenReversedUseBackwardEase={false}
-                                    render={({
-                                        toggle,
-                                        setCollapsibleElement,
-                                        toggleState,
-                                    }) => (
-                                        <div className={styles.card}>
-                                            <div className="card-header">
-                                                <label
-                                                    className={[
-                                                        styles.dropDown,
-                                                        toggleState ===
-                                                        "COLLAPSED"
-                                                            ? styles.dropDown
-                                                            : styles.active,
-                                                    ].join(" ")}
-                                                    onClick={toggle}
-                                                >
-                                                    E. 24小時用電
-                                                    <span>
-                                                        {toggleState ===
-                                                            "EXPANDED" ||
-                                                        toggleState ===
-                                                            "EXPANDING" ? (
-                                                            <svg
-                                                                width="16"
-                                                                height="10"
-                                                                viewBox="0 0 16 10"
-                                                                fill="none"
-                                                                xmlns="http://www.w3.org/2000/svg"
-                                                            >
-                                                                <path
-                                                                    d="M1 9L8 2L15 9"
-                                                                    stroke="white"
-                                                                    strokeWidth="2"
-                                                                />
-                                                            </svg>
-                                                        ) : (
-                                                            <svg
-                                                                width="16"
-                                                                height="10"
-                                                                viewBox="0 0 16 10"
-                                                                fill="none"
-                                                                xmlns="http://www.w3.org/2000/svg"
-                                                            >
-                                                                <path
-                                                                    d="M15 1L8 8L1 1"
-                                                                    stroke="white"
-                                                                    strokeWidth="2"
-                                                                />
-                                                            </svg>
-                                                        )}
-                                                    </span>
-                                                </label>
-                                            </div>
-                                            <div
-                                                className={styles.cardBody}
-                                                ref={setCollapsibleElement}
-                                            >
+                                        )}
+                                    />
+                                    <SlideToggle
+                                        duration={1000}
+                                        collapsed={true}
+                                        whenReversedUseBackwardEase={false}
+                                        render={({
+                                            toggle,
+                                            setCollapsibleElement,
+                                            toggleState,
+                                        }) => (
+                                            <div className={styles.card}>
+                                                <div className="card-header">
+                                                    <label
+                                                        className={[
+                                                            styles.dropDown,
+                                                            toggleState ===
+                                                            "COLLAPSED"
+                                                                ? styles.dropDown
+                                                                : styles.active,
+                                                        ].join(" ")}
+                                                        onClick={toggle}
+                                                    >
+                                                        D. 用電440V電源箱
+                                                        <span>
+                                                            {toggleState ===
+                                                                "EXPANDED" ||
+                                                            toggleState ===
+                                                                "EXPANDING" ? (
+                                                                <svg
+                                                                    width="16"
+                                                                    height="10"
+                                                                    viewBox="0 0 16 10"
+                                                                    fill="none"
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                >
+                                                                    <path
+                                                                        d="M1 9L8 2L15 9"
+                                                                        stroke="white"
+                                                                        strokeWidth="2"
+                                                                    />
+                                                                </svg>
+                                                            ) : (
+                                                                <svg
+                                                                    width="16"
+                                                                    height="10"
+                                                                    viewBox="0 0 16 10"
+                                                                    fill="none"
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                >
+                                                                    <path
+                                                                        d="M15 1L8 8L1 1"
+                                                                        stroke="white"
+                                                                        strokeWidth="2"
+                                                                    />
+                                                                </svg>
+                                                            )}
+                                                        </span>
+                                                    </label>
+                                                </div>
                                                 <div
-                                                    className={
-                                                        styles.dropDownContent
-                                                    }
+                                                    className={styles.cardBody}
+                                                    ref={setCollapsibleElement}
                                                 >
-                                                    <p>
-                                                        {t(
-                                                            "applyForm.stepTwo.itemBCD"
-                                                        )}
-                                                    </p>
                                                     <div
                                                         className={
-                                                            styles.bGroup
+                                                            styles.dropDownContent
                                                         }
                                                     >
-                                                        {props.data.hydro_items[4].data.map(
-                                                            (item) => (
-                                                                <>
-                                                                    {item.chk ===
-                                                                    "Y" ? (
-                                                                        <label
-                                                                            htmlFor={
-                                                                                item.item_id
-                                                                            }
-                                                                            key={
-                                                                                item.item_id
-                                                                            }
-                                                                            className={
-                                                                                styles.checkedActive
-                                                                            }
-                                                                        >
-                                                                            <input
-                                                                                type="checkbox"
-                                                                                id={
-                                                                                    item.item_id
-                                                                                }
-                                                                                value={
-                                                                                    item.item_id
-                                                                                }
-                                                                                onChange={
-                                                                                    enableNextTextBox
-                                                                                }
-                                                                                defaultChecked
-                                                                            />
-                                                                            {
-                                                                                item.name
-                                                                            }
+                                                        <p>
+                                                            {t(
+                                                                "applyForm.stepTwo.itemBCD"
+                                                            )}
+                                                        </p>
+                                                        <div
+                                                            className={
+                                                                styles.bGroup
+                                                            }
+                                                        >
+                                                            {data.hydro_items[3].data.map(
+                                                                (item) => (
+                                                                    <>
+                                                                        {item.chk ===
+                                                                        "Y" ? (
                                                                             <label
+                                                                                htmlFor={
+                                                                                    item.item_id
+                                                                                }
+                                                                                key={
+                                                                                    item.item_id
+                                                                                }
                                                                                 className={
-                                                                                    styles.num
+                                                                                    styles.checkedActive
                                                                                 }
                                                                             >
-                                                                                {t(
-                                                                                    "applyForm.stepTwo.quantity"
-                                                                                )}
                                                                                 <input
-                                                                                    type="number"
-                                                                                    min="1"
-                                                                                    defaultValue={
-                                                                                        item.quantity
+                                                                                    type="checkbox"
+                                                                                    id={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    value={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    onChange={
+                                                                                        enableNextTextBox
+                                                                                    }
+                                                                                    defaultChecked
+                                                                                />
+                                                                                {
+                                                                                    item.name
+                                                                                }
+                                                                                <label
+                                                                                    className={
+                                                                                        styles.num
+                                                                                    }
+                                                                                >
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.quantity"
+                                                                                    )}
+                                                                                    <input
+                                                                                        type="number"
+                                                                                        min="1"
+                                                                                        defaultValue={
+                                                                                            item.quantity
+                                                                                        }
+                                                                                    />
+                                                                                </label>
+                                                                                <span>
+                                                                                    {
+                                                                                        item.prcie
+                                                                                    }
+
+                                                                                    /
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.set"
+                                                                                    )}
+                                                                                </span>
+                                                                            </label>
+                                                                        ) : (
+                                                                            <label
+                                                                                htmlFor={
+                                                                                    item.item_id
+                                                                                }
+                                                                                key={
+                                                                                    item.item_id
+                                                                                }
+                                                                            >
+                                                                                <input
+                                                                                    type="checkbox"
+                                                                                    id={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    value={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    onChange={
+                                                                                        enableNextTextBox
                                                                                     }
                                                                                 />
-                                                                            </label>
-                                                                            <span>
                                                                                 {
-                                                                                    item.prcie
+                                                                                    item.name
                                                                                 }
+                                                                                <label
+                                                                                    className={
+                                                                                        styles.num
+                                                                                    }
+                                                                                >
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.quantity"
+                                                                                    )}
+                                                                                    <input
+                                                                                        type="number"
+                                                                                        min="0"
+                                                                                        disabled
+                                                                                    />
+                                                                                </label>
+                                                                                <span>
+                                                                                    {
+                                                                                        item.prcie
+                                                                                    }
 
-                                                                                /
-                                                                                {t(
-                                                                                    "applyForm.stepTwo.set"
-                                                                                )}
-                                                                            </span>
-                                                                        </label>
-                                                                    ) : (
-                                                                        <label
-                                                                            htmlFor={
-                                                                                item.item_id
-                                                                            }
-                                                                            key={
-                                                                                item.item_id
-                                                                            }
-                                                                        >
-                                                                            <input
-                                                                                type="checkbox"
-                                                                                id={
-                                                                                    item.item_id
-                                                                                }
-                                                                                value={
-                                                                                    item.item_id
-                                                                                }
-                                                                                onChange={
-                                                                                    enableNextTextBox
-                                                                                }
-                                                                            />
-                                                                            {
-                                                                                item.name
-                                                                            }
-                                                                            <label
-                                                                                className={
-                                                                                    styles.num
-                                                                                }
-                                                                            >
-                                                                                {t(
-                                                                                    "applyForm.stepTwo.quantity"
-                                                                                )}
-                                                                                <input
-                                                                                    type="number"
-                                                                                    min="0"
-                                                                                    disabled
-                                                                                />
+                                                                                    /
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.set"
+                                                                                    )}
+                                                                                </span>
                                                                             </label>
-                                                                            <span>
-                                                                                {
-                                                                                    item.prcie
-                                                                                }
-
-                                                                                /
-                                                                                {t(
-                                                                                    "applyForm.stepTwo.set"
-                                                                                )}
-                                                                            </span>
-                                                                        </label>
-                                                                    )}
-                                                                </>
-                                                            )
-                                                        )}
+                                                                        )}
+                                                                    </>
+                                                                )
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    )}
-                                />
-                                <SlideToggle
-                                    duration={1000}
-                                    collapsed={true}
-                                    whenReversedUseBackwardEase={false}
-                                    render={({
-                                        toggle,
-                                        setCollapsibleElement,
-                                        toggleState,
-                                    }) => (
-                                        <div className={styles.card}>
-                                            <div className="card-header">
-                                                <label
-                                                    className={[
-                                                        styles.dropDown,
-                                                        toggleState ===
-                                                        "COLLAPSED"
-                                                            ? styles.dropDown
-                                                            : styles.active,
-                                                    ].join(" ")}
-                                                    onClick={toggle}
-                                                >
-                                                    F. 給排水管
-                                                    <span>
-                                                        {toggleState ===
-                                                            "EXPANDED" ||
-                                                        toggleState ===
-                                                            "EXPANDING" ? (
-                                                            <svg
-                                                                width="16"
-                                                                height="10"
-                                                                viewBox="0 0 16 10"
-                                                                fill="none"
-                                                                xmlns="http://www.w3.org/2000/svg"
-                                                            >
-                                                                <path
-                                                                    d="M1 9L8 2L15 9"
-                                                                    stroke="white"
-                                                                    strokeWidth="2"
-                                                                />
-                                                            </svg>
-                                                        ) : (
-                                                            <svg
-                                                                width="16"
-                                                                height="10"
-                                                                viewBox="0 0 16 10"
-                                                                fill="none"
-                                                                xmlns="http://www.w3.org/2000/svg"
-                                                            >
-                                                                <path
-                                                                    d="M15 1L8 8L1 1"
-                                                                    stroke="white"
-                                                                    strokeWidth="2"
-                                                                />
-                                                            </svg>
-                                                        )}
-                                                    </span>
-                                                </label>
-                                            </div>
-                                            <div
-                                                className={styles.cardBody}
-                                                ref={setCollapsibleElement}
-                                            >
+                                        )}
+                                    />
+                                    <SlideToggle
+                                        duration={1000}
+                                        collapsed={true}
+                                        whenReversedUseBackwardEase={false}
+                                        render={({
+                                            toggle,
+                                            setCollapsibleElement,
+                                            toggleState,
+                                        }) => (
+                                            <div className={styles.card}>
+                                                <div className="card-header">
+                                                    <label
+                                                        className={[
+                                                            styles.dropDown,
+                                                            toggleState ===
+                                                            "COLLAPSED"
+                                                                ? styles.dropDown
+                                                                : styles.active,
+                                                        ].join(" ")}
+                                                        onClick={toggle}
+                                                    >
+                                                        E. 24小時用電
+                                                        <span>
+                                                            {toggleState ===
+                                                                "EXPANDED" ||
+                                                            toggleState ===
+                                                                "EXPANDING" ? (
+                                                                <svg
+                                                                    width="16"
+                                                                    height="10"
+                                                                    viewBox="0 0 16 10"
+                                                                    fill="none"
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                >
+                                                                    <path
+                                                                        d="M1 9L8 2L15 9"
+                                                                        stroke="white"
+                                                                        strokeWidth="2"
+                                                                    />
+                                                                </svg>
+                                                            ) : (
+                                                                <svg
+                                                                    width="16"
+                                                                    height="10"
+                                                                    viewBox="0 0 16 10"
+                                                                    fill="none"
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                >
+                                                                    <path
+                                                                        d="M15 1L8 8L1 1"
+                                                                        stroke="white"
+                                                                        strokeWidth="2"
+                                                                    />
+                                                                </svg>
+                                                            )}
+                                                        </span>
+                                                    </label>
+                                                </div>
                                                 <div
-                                                    className={
-                                                        styles.dropDownContent
-                                                    }
+                                                    className={styles.cardBody}
+                                                    ref={setCollapsibleElement}
                                                 >
-                                                    <p>
-                                                        {t(
-                                                            "applyForm.stepTwo.itemE"
-                                                        )}
-                                                    </p>
                                                     <div
                                                         className={
-                                                            styles.bGroup
+                                                            styles.dropDownContent
                                                         }
                                                     >
-                                                        {props.data.hydro_items[5].data.map(
-                                                            (item) => (
-                                                                <>
-                                                                    {item.chk ===
-                                                                    "Y" ? (
-                                                                        <label
-                                                                            htmlFor={
-                                                                                item.item_id
-                                                                            }
-                                                                            key={
-                                                                                item.item_id
-                                                                            }
-                                                                            className={
-                                                                                styles.checkedActive
-                                                                            }
-                                                                        >
-                                                                            <input
-                                                                                type="checkbox"
-                                                                                id={
-                                                                                    item.item_id
-                                                                                }
-                                                                                value={
-                                                                                    item.item_id
-                                                                                }
-                                                                                onChange={
-                                                                                    enableNextTextBox
-                                                                                }
-                                                                                defaultChecked
-                                                                            />
-                                                                            {
-                                                                                item.name
-                                                                            }
+                                                        <p>
+                                                            {t(
+                                                                "applyForm.stepTwo.itemBCD"
+                                                            )}
+                                                        </p>
+                                                        <div
+                                                            className={
+                                                                styles.bGroup
+                                                            }
+                                                        >
+                                                            {data.hydro_items[4].data.map(
+                                                                (item) => (
+                                                                    <>
+                                                                        {item.chk ===
+                                                                        "Y" ? (
                                                                             <label
+                                                                                htmlFor={
+                                                                                    item.item_id
+                                                                                }
+                                                                                key={
+                                                                                    item.item_id
+                                                                                }
                                                                                 className={
-                                                                                    styles.num
+                                                                                    styles.checkedActive
                                                                                 }
                                                                             >
-                                                                                {t(
-                                                                                    "applyForm.stepTwo.quantity"
-                                                                                )}
                                                                                 <input
-                                                                                    type="number"
-                                                                                    min="1"
-                                                                                    defaultValue={
-                                                                                        item.quantity
+                                                                                    type="checkbox"
+                                                                                    id={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    value={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    onChange={
+                                                                                        enableNextTextBox
+                                                                                    }
+                                                                                    defaultChecked
+                                                                                />
+                                                                                {
+                                                                                    item.name
+                                                                                }
+                                                                                <label
+                                                                                    className={
+                                                                                        styles.num
+                                                                                    }
+                                                                                >
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.quantity"
+                                                                                    )}
+                                                                                    <input
+                                                                                        type="number"
+                                                                                        min="1"
+                                                                                        defaultValue={
+                                                                                            item.quantity
+                                                                                        }
+                                                                                    />
+                                                                                </label>
+                                                                                <span>
+                                                                                    {
+                                                                                        item.prcie
+                                                                                    }
+
+                                                                                    /
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.set"
+                                                                                    )}
+                                                                                </span>
+                                                                            </label>
+                                                                        ) : (
+                                                                            <label
+                                                                                htmlFor={
+                                                                                    item.item_id
+                                                                                }
+                                                                                key={
+                                                                                    item.item_id
+                                                                                }
+                                                                            >
+                                                                                <input
+                                                                                    type="checkbox"
+                                                                                    id={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    value={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    onChange={
+                                                                                        enableNextTextBox
                                                                                     }
                                                                                 />
-                                                                            </label>
-                                                                            <span>
                                                                                 {
-                                                                                    item.prcie
+                                                                                    item.name
                                                                                 }
+                                                                                <label
+                                                                                    className={
+                                                                                        styles.num
+                                                                                    }
+                                                                                >
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.quantity"
+                                                                                    )}
+                                                                                    <input
+                                                                                        type="number"
+                                                                                        min="0"
+                                                                                        disabled
+                                                                                    />
+                                                                                </label>
+                                                                                <span>
+                                                                                    {
+                                                                                        item.prcie
+                                                                                    }
 
-                                                                                /
-                                                                                {t(
-                                                                                    "applyForm.stepTwo.set"
-                                                                                )}
-                                                                            </span>
-                                                                        </label>
-                                                                    ) : (
-                                                                        <label
-                                                                            htmlFor={
-                                                                                item.item_id
-                                                                            }
-                                                                            key={
-                                                                                item.item_id
-                                                                            }
-                                                                        >
-                                                                            <input
-                                                                                type="checkbox"
-                                                                                id={
-                                                                                    item.item_id
-                                                                                }
-                                                                                value={
-                                                                                    item.item_id
-                                                                                }
-                                                                                onChange={
-                                                                                    enableNextTextBox
-                                                                                }
-                                                                            />
-                                                                            {
-                                                                                item.name
-                                                                            }
-                                                                            <label
-                                                                                className={
-                                                                                    styles.num
-                                                                                }
-                                                                            >
-                                                                                {t(
-                                                                                    "applyForm.stepTwo.quantity"
-                                                                                )}
-                                                                                <input
-                                                                                    type="number"
-                                                                                    min="0"
-                                                                                    disabled
-                                                                                />
+                                                                                    /
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.set"
+                                                                                    )}
+                                                                                </span>
                                                                             </label>
-                                                                            <span>
-                                                                                {
-                                                                                    item.prcie
-                                                                                }
-
-                                                                                /
-                                                                                {t(
-                                                                                    "applyForm.stepTwo.set"
-                                                                                )}
-                                                                            </span>
-                                                                        </label>
-                                                                    )}
-                                                                </>
-                                                            )
-                                                        )}
+                                                                        )}
+                                                                    </>
+                                                                )
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    )}
-                                />
-                                <SlideToggle
-                                    duration={1000}
-                                    collapsed={true}
-                                    whenReversedUseBackwardEase={false}
-                                    render={({
-                                        toggle,
-                                        setCollapsibleElement,
-                                        toggleState,
-                                    }) => (
-                                        <div className={styles.card}>
-                                            <div className="card-header">
-                                                <label
-                                                    className={[
-                                                        styles.dropDown,
-                                                        toggleState ===
-                                                        "COLLAPSED"
-                                                            ? styles.dropDown
-                                                            : styles.active,
-                                                    ].join(" ")}
-                                                    onClick={toggle}
-                                                >
-                                                    G. 壓縮空氣
-                                                    <span>
-                                                        {toggleState ===
-                                                            "EXPANDED" ||
-                                                        toggleState ===
-                                                            "EXPANDING" ? (
-                                                            <svg
-                                                                width="16"
-                                                                height="10"
-                                                                viewBox="0 0 16 10"
-                                                                fill="none"
-                                                                xmlns="http://www.w3.org/2000/svg"
-                                                            >
-                                                                <path
-                                                                    d="M1 9L8 2L15 9"
-                                                                    stroke="white"
-                                                                    strokeWidth="2"
-                                                                />
-                                                            </svg>
-                                                        ) : (
-                                                            <svg
-                                                                width="16"
-                                                                height="10"
-                                                                viewBox="0 0 16 10"
-                                                                fill="none"
-                                                                xmlns="http://www.w3.org/2000/svg"
-                                                            >
-                                                                <path
-                                                                    d="M15 1L8 8L1 1"
-                                                                    stroke="white"
-                                                                    strokeWidth="2"
-                                                                />
-                                                            </svg>
-                                                        )}
-                                                    </span>
-                                                </label>
-                                            </div>
-                                            <div
-                                                className={styles.cardBody}
-                                                ref={setCollapsibleElement}
-                                            >
+                                        )}
+                                    />
+                                    <SlideToggle
+                                        duration={1000}
+                                        collapsed={true}
+                                        whenReversedUseBackwardEase={false}
+                                        render={({
+                                            toggle,
+                                            setCollapsibleElement,
+                                            toggleState,
+                                        }) => (
+                                            <div className={styles.card}>
+                                                <div className="card-header">
+                                                    <label
+                                                        className={[
+                                                            styles.dropDown,
+                                                            toggleState ===
+                                                            "COLLAPSED"
+                                                                ? styles.dropDown
+                                                                : styles.active,
+                                                        ].join(" ")}
+                                                        onClick={toggle}
+                                                    >
+                                                        F. 給排水管
+                                                        <span>
+                                                            {toggleState ===
+                                                                "EXPANDED" ||
+                                                            toggleState ===
+                                                                "EXPANDING" ? (
+                                                                <svg
+                                                                    width="16"
+                                                                    height="10"
+                                                                    viewBox="0 0 16 10"
+                                                                    fill="none"
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                >
+                                                                    <path
+                                                                        d="M1 9L8 2L15 9"
+                                                                        stroke="white"
+                                                                        strokeWidth="2"
+                                                                    />
+                                                                </svg>
+                                                            ) : (
+                                                                <svg
+                                                                    width="16"
+                                                                    height="10"
+                                                                    viewBox="0 0 16 10"
+                                                                    fill="none"
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                >
+                                                                    <path
+                                                                        d="M15 1L8 8L1 1"
+                                                                        stroke="white"
+                                                                        strokeWidth="2"
+                                                                    />
+                                                                </svg>
+                                                            )}
+                                                        </span>
+                                                    </label>
+                                                </div>
                                                 <div
-                                                    className={
-                                                        styles.dropDownContent
-                                                    }
+                                                    className={styles.cardBody}
+                                                    ref={setCollapsibleElement}
                                                 >
-                                                    <p>
-                                                        {t(
-                                                            "applyForm.stepTwo.itemF"
-                                                        )}
-                                                    </p>
                                                     <div
                                                         className={
-                                                            styles.bGroup
+                                                            styles.dropDownContent
                                                         }
                                                     >
-                                                        {props.data.hydro_items[6].data.map(
-                                                            (item) => (
-                                                                <>
-                                                                    {item.chk ===
-                                                                    "Y" ? (
-                                                                        <label
-                                                                            htmlFor={
-                                                                                item.item_id
-                                                                            }
-                                                                            key={
-                                                                                item.item_id
-                                                                            }
-                                                                            className={
-                                                                                styles.checkedActive
-                                                                            }
-                                                                        >
-                                                                            <input
-                                                                                type="checkbox"
-                                                                                id={
-                                                                                    item.item_id
-                                                                                }
-                                                                                value={
-                                                                                    item.item_id
-                                                                                }
-                                                                                onChange={
-                                                                                    enableNextTextBox
-                                                                                }
-                                                                                defaultChecked
-                                                                            />
-                                                                            {
-                                                                                item.name
-                                                                            }
+                                                        <p>
+                                                            {t(
+                                                                "applyForm.stepTwo.itemE"
+                                                            )}
+                                                        </p>
+                                                        <div
+                                                            className={
+                                                                styles.bGroup
+                                                            }
+                                                        >
+                                                            {data.hydro_items[5].data.map(
+                                                                (item) => (
+                                                                    <>
+                                                                        {item.chk ===
+                                                                        "Y" ? (
                                                                             <label
+                                                                                htmlFor={
+                                                                                    item.item_id
+                                                                                }
+                                                                                key={
+                                                                                    item.item_id
+                                                                                }
                                                                                 className={
-                                                                                    styles.num
+                                                                                    styles.checkedActive
                                                                                 }
                                                                             >
-                                                                                {t(
-                                                                                    "applyForm.stepTwo.quantity"
-                                                                                )}
                                                                                 <input
-                                                                                    type="number"
-                                                                                    min="1"
-                                                                                    defaultValue={
-                                                                                        item.quantity
+                                                                                    type="checkbox"
+                                                                                    id={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    value={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    onChange={
+                                                                                        enableNextTextBox
+                                                                                    }
+                                                                                    defaultChecked
+                                                                                />
+                                                                                {
+                                                                                    item.name
+                                                                                }
+                                                                                <label
+                                                                                    className={
+                                                                                        styles.num
+                                                                                    }
+                                                                                >
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.quantity"
+                                                                                    )}
+                                                                                    <input
+                                                                                        type="number"
+                                                                                        min="1"
+                                                                                        defaultValue={
+                                                                                            item.quantity
+                                                                                        }
+                                                                                    />
+                                                                                </label>
+                                                                                <span>
+                                                                                    {
+                                                                                        item.prcie
+                                                                                    }
+
+                                                                                    /
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.set"
+                                                                                    )}
+                                                                                </span>
+                                                                            </label>
+                                                                        ) : (
+                                                                            <label
+                                                                                htmlFor={
+                                                                                    item.item_id
+                                                                                }
+                                                                                key={
+                                                                                    item.item_id
+                                                                                }
+                                                                            >
+                                                                                <input
+                                                                                    type="checkbox"
+                                                                                    id={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    value={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    onChange={
+                                                                                        enableNextTextBox
                                                                                     }
                                                                                 />
-                                                                            </label>
-                                                                            <span>
                                                                                 {
-                                                                                    item.prcie
+                                                                                    item.name
                                                                                 }
+                                                                                <label
+                                                                                    className={
+                                                                                        styles.num
+                                                                                    }
+                                                                                >
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.quantity"
+                                                                                    )}
+                                                                                    <input
+                                                                                        type="number"
+                                                                                        min="0"
+                                                                                        disabled
+                                                                                    />
+                                                                                </label>
+                                                                                <span>
+                                                                                    {
+                                                                                        item.prcie
+                                                                                    }
 
-                                                                                /
-                                                                                {t(
-                                                                                    "applyForm.stepTwo.set"
-                                                                                )}
-                                                                            </span>
-                                                                        </label>
-                                                                    ) : (
-                                                                        <label
-                                                                            htmlFor={
-                                                                                item.item_id
-                                                                            }
-                                                                            key={
-                                                                                item.item_id
-                                                                            }
-                                                                        >
-                                                                            <input
-                                                                                type="checkbox"
-                                                                                id={
-                                                                                    item.item_id
-                                                                                }
-                                                                                value={
-                                                                                    item.item_id
-                                                                                }
-                                                                                onChange={
-                                                                                    enableNextTextBox
-                                                                                }
-                                                                            />
-                                                                            {
-                                                                                item.name
-                                                                            }
-                                                                            <label
-                                                                                className={
-                                                                                    styles.num
-                                                                                }
-                                                                            >
-                                                                                {t(
-                                                                                    "applyForm.stepTwo.quantity"
-                                                                                )}
-                                                                                <input
-                                                                                    type="number"
-                                                                                    min="0"
-                                                                                    disabled
-                                                                                />
+                                                                                    /
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.set"
+                                                                                    )}
+                                                                                </span>
                                                                             </label>
-                                                                            <span>
-                                                                                {
-                                                                                    item.prcie
-                                                                                }
-
-                                                                                /
-                                                                                {t(
-                                                                                    "applyForm.stepTwo.set"
-                                                                                )}
-                                                                            </span>
-                                                                        </label>
-                                                                    )}
-                                                                </>
-                                                            )
-                                                        )}
+                                                                        )}
+                                                                    </>
+                                                                )
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    )}
-                                />
-                            </div>
+                                        )}
+                                    />
+                                    <SlideToggle
+                                        duration={1000}
+                                        collapsed={true}
+                                        whenReversedUseBackwardEase={false}
+                                        render={({
+                                            toggle,
+                                            setCollapsibleElement,
+                                            toggleState,
+                                        }) => (
+                                            <div className={styles.card}>
+                                                <div className="card-header">
+                                                    <label
+                                                        className={[
+                                                            styles.dropDown,
+                                                            toggleState ===
+                                                            "COLLAPSED"
+                                                                ? styles.dropDown
+                                                                : styles.active,
+                                                        ].join(" ")}
+                                                        onClick={toggle}
+                                                    >
+                                                        G. 壓縮空氣
+                                                        <span>
+                                                            {toggleState ===
+                                                                "EXPANDED" ||
+                                                            toggleState ===
+                                                                "EXPANDING" ? (
+                                                                <svg
+                                                                    width="16"
+                                                                    height="10"
+                                                                    viewBox="0 0 16 10"
+                                                                    fill="none"
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                >
+                                                                    <path
+                                                                        d="M1 9L8 2L15 9"
+                                                                        stroke="white"
+                                                                        strokeWidth="2"
+                                                                    />
+                                                                </svg>
+                                                            ) : (
+                                                                <svg
+                                                                    width="16"
+                                                                    height="10"
+                                                                    viewBox="0 0 16 10"
+                                                                    fill="none"
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                >
+                                                                    <path
+                                                                        d="M15 1L8 8L1 1"
+                                                                        stroke="white"
+                                                                        strokeWidth="2"
+                                                                    />
+                                                                </svg>
+                                                            )}
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                                <div
+                                                    className={styles.cardBody}
+                                                    ref={setCollapsibleElement}
+                                                >
+                                                    <div
+                                                        className={
+                                                            styles.dropDownContent
+                                                        }
+                                                    >
+                                                        <p>
+                                                            {t(
+                                                                "applyForm.stepTwo.itemF"
+                                                            )}
+                                                        </p>
+                                                        <div
+                                                            className={
+                                                                styles.bGroup
+                                                            }
+                                                        >
+                                                            {data.hydro_items[6].data.map(
+                                                                (item) => (
+                                                                    <>
+                                                                        {item.chk ===
+                                                                        "Y" ? (
+                                                                            <label
+                                                                                htmlFor={
+                                                                                    item.item_id
+                                                                                }
+                                                                                key={
+                                                                                    item.item_id
+                                                                                }
+                                                                                className={
+                                                                                    styles.checkedActive
+                                                                                }
+                                                                            >
+                                                                                <input
+                                                                                    type="checkbox"
+                                                                                    id={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    value={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    onChange={
+                                                                                        enableNextTextBox
+                                                                                    }
+                                                                                    defaultChecked
+                                                                                />
+                                                                                {
+                                                                                    item.name
+                                                                                }
+                                                                                <label
+                                                                                    className={
+                                                                                        styles.num
+                                                                                    }
+                                                                                >
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.quantity"
+                                                                                    )}
+                                                                                    <input
+                                                                                        type="number"
+                                                                                        min="1"
+                                                                                        defaultValue={
+                                                                                            item.quantity
+                                                                                        }
+                                                                                    />
+                                                                                </label>
+                                                                                <span>
+                                                                                    {
+                                                                                        item.prcie
+                                                                                    }
+
+                                                                                    /
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.set"
+                                                                                    )}
+                                                                                </span>
+                                                                            </label>
+                                                                        ) : (
+                                                                            <label
+                                                                                htmlFor={
+                                                                                    item.item_id
+                                                                                }
+                                                                                key={
+                                                                                    item.item_id
+                                                                                }
+                                                                            >
+                                                                                <input
+                                                                                    type="checkbox"
+                                                                                    id={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    value={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    onChange={
+                                                                                        enableNextTextBox
+                                                                                    }
+                                                                                />
+                                                                                {
+                                                                                    item.name
+                                                                                }
+                                                                                <label
+                                                                                    className={
+                                                                                        styles.num
+                                                                                    }
+                                                                                >
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.quantity"
+                                                                                    )}
+                                                                                    <input
+                                                                                        type="number"
+                                                                                        min="0"
+                                                                                        disabled
+                                                                                    />
+                                                                                </label>
+                                                                                <span>
+                                                                                    {
+                                                                                        item.prcie
+                                                                                    }
+
+                                                                                    /
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.set"
+                                                                                    )}
+                                                                                </span>
+                                                                            </label>
+                                                                        )}
+                                                                    </>
+                                                                )
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    />
+                                </div>
+                            ) : (
+                                <div className={styles.group}>
+                                    <SlideToggle
+                                        duration={1000}
+                                        collapsed={true}
+                                        whenReversedUseBackwardEase={false}
+                                        render={({
+                                            toggle,
+                                            setCollapsibleElement,
+                                            toggleState,
+                                        }) => (
+                                            <div className={styles.card}>
+                                                <div className="card-header">
+                                                    <label
+                                                        className={[
+                                                            styles.dropDown,
+                                                            toggleState ===
+                                                            "COLLAPSED"
+                                                                ? styles.dropDown
+                                                                : styles.active,
+                                                        ].join(" ")}
+                                                        onClick={toggle}
+                                                    >
+                                                        Ａ.用電110V電源箱
+                                                        <span>
+                                                            {toggleState ===
+                                                                "EXPANDED" ||
+                                                            toggleState ===
+                                                                "EXPANDING" ? (
+                                                                <svg
+                                                                    width="16"
+                                                                    height="10"
+                                                                    viewBox="0 0 16 10"
+                                                                    fill="none"
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                >
+                                                                    <path
+                                                                        d="M1 9L8 2L15 9"
+                                                                        stroke="white"
+                                                                        strokeWidth="2"
+                                                                    />
+                                                                </svg>
+                                                            ) : (
+                                                                <svg
+                                                                    width="16"
+                                                                    height="10"
+                                                                    viewBox="0 0 16 10"
+                                                                    fill="none"
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                >
+                                                                    <path
+                                                                        d="M15 1L8 8L1 1"
+                                                                        stroke="white"
+                                                                        strokeWidth="2"
+                                                                    />
+                                                                </svg>
+                                                            )}
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                                <div
+                                                    className={styles.cardBody}
+                                                    ref={setCollapsibleElement}
+                                                >
+                                                    <div
+                                                        className={
+                                                            styles.dropDownContent
+                                                        }
+                                                    >
+                                                        <p>
+                                                            {t(
+                                                                "applyForm.stepTwo.itemA"
+                                                            )}
+                                                        </p>
+                                                        <div
+                                                            className={
+                                                                styles.aGroup
+                                                            }
+                                                        >
+                                                            {props.data.hydro_items[0].data.map(
+                                                                (item) => (
+                                                                    <>
+                                                                        {item.chk ===
+                                                                        "Y" ? (
+                                                                            <label
+                                                                                htmlFor={
+                                                                                    item.item_id
+                                                                                }
+                                                                                key={
+                                                                                    item.item_id
+                                                                                }
+                                                                                className={
+                                                                                    styles.checkedActive
+                                                                                }
+                                                                            >
+                                                                                <input
+                                                                                    type="checkbox"
+                                                                                    id={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    value={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    onChange={
+                                                                                        active
+                                                                                    }
+                                                                                    defaultChecked
+                                                                                />
+                                                                                {
+                                                                                    item.name
+                                                                                }
+                                                                                <span>
+                                                                                    {
+                                                                                        item.price
+                                                                                    }
+                                                                                </span>
+                                                                            </label>
+                                                                        ) : (
+                                                                            <label
+                                                                                htmlFor={
+                                                                                    item.item_id
+                                                                                }
+                                                                                key={
+                                                                                    item.item_id
+                                                                                }
+                                                                            >
+                                                                                <input
+                                                                                    type="checkbox"
+                                                                                    id={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    value={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    onChange={
+                                                                                        active
+                                                                                    }
+                                                                                />
+                                                                                {
+                                                                                    item.name
+                                                                                }
+                                                                                <span>
+                                                                                    {
+                                                                                        item.price
+                                                                                    }
+                                                                                </span>
+                                                                            </label>
+                                                                        )}
+                                                                    </>
+                                                                )
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    />
+                                    <SlideToggle
+                                        duration={1000}
+                                        collapsed={true}
+                                        whenReversedUseBackwardEase={false}
+                                        render={({
+                                            toggle,
+                                            setCollapsibleElement,
+                                            toggleState,
+                                        }) => (
+                                            <div className={styles.card}>
+                                                <div className="card-header">
+                                                    <label
+                                                        className={[
+                                                            styles.dropDown,
+                                                            toggleState ===
+                                                            "COLLAPSED"
+                                                                ? styles.dropDown
+                                                                : styles.active,
+                                                        ].join(" ")}
+                                                        onClick={toggle}
+                                                    >
+                                                        B. 用電220V電源箱
+                                                        <span>
+                                                            {toggleState ===
+                                                                "EXPANDED" ||
+                                                            toggleState ===
+                                                                "EXPANDING" ? (
+                                                                <svg
+                                                                    width="16"
+                                                                    height="10"
+                                                                    viewBox="0 0 16 10"
+                                                                    fill="none"
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                >
+                                                                    <path
+                                                                        d="M1 9L8 2L15 9"
+                                                                        stroke="white"
+                                                                        strokeWidth="2"
+                                                                    />
+                                                                </svg>
+                                                            ) : (
+                                                                <svg
+                                                                    width="16"
+                                                                    height="10"
+                                                                    viewBox="0 0 16 10"
+                                                                    fill="none"
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                >
+                                                                    <path
+                                                                        d="M15 1L8 8L1 1"
+                                                                        stroke="white"
+                                                                        strokeWidth="2"
+                                                                    />
+                                                                </svg>
+                                                            )}
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                                <div
+                                                    className={styles.cardBody}
+                                                    ref={setCollapsibleElement}
+                                                >
+                                                    <div
+                                                        className={
+                                                            styles.dropDownContent
+                                                        }
+                                                    >
+                                                        <p>
+                                                            {t(
+                                                                "applyForm.stepTwo.itemBCD"
+                                                            )}
+                                                        </p>
+                                                        <div
+                                                            className={
+                                                                styles.bGroup
+                                                            }
+                                                        >
+                                                            {props.data.hydro_items[1].data.map(
+                                                                (item) => (
+                                                                    <>
+                                                                        {item.chk ===
+                                                                        "Y" ? (
+                                                                            <label
+                                                                                htmlFor={
+                                                                                    item.item_id
+                                                                                }
+                                                                                key={
+                                                                                    item.item_id
+                                                                                }
+                                                                                className={
+                                                                                    styles.checkedActive
+                                                                                }
+                                                                            >
+                                                                                <input
+                                                                                    type="checkbox"
+                                                                                    id={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    value={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    onChange={
+                                                                                        enableNextTextBox
+                                                                                    }
+                                                                                    defaultChecked
+                                                                                />
+                                                                                {
+                                                                                    item.name
+                                                                                }
+                                                                                <label
+                                                                                    className={
+                                                                                        styles.num
+                                                                                    }
+                                                                                >
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.quantity"
+                                                                                    )}
+                                                                                    <input
+                                                                                        type="number"
+                                                                                        min="1"
+                                                                                        defaultValue={
+                                                                                            item.quantity
+                                                                                        }
+                                                                                    />
+                                                                                </label>
+                                                                                <span>
+                                                                                    {
+                                                                                        item.prcie
+                                                                                    }
+
+                                                                                    /
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.set"
+                                                                                    )}
+                                                                                </span>
+                                                                            </label>
+                                                                        ) : (
+                                                                            <label
+                                                                                htmlFor={
+                                                                                    item.item_id
+                                                                                }
+                                                                                key={
+                                                                                    item.item_id
+                                                                                }
+                                                                            >
+                                                                                <input
+                                                                                    type="checkbox"
+                                                                                    id={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    value={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    onChange={
+                                                                                        enableNextTextBox
+                                                                                    }
+                                                                                />
+                                                                                {
+                                                                                    item.name
+                                                                                }
+                                                                                <label
+                                                                                    className={
+                                                                                        styles.num
+                                                                                    }
+                                                                                >
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.quantity"
+                                                                                    )}
+                                                                                    <input
+                                                                                        type="number"
+                                                                                        min="0"
+                                                                                        disabled
+                                                                                    />
+                                                                                </label>
+                                                                                <span>
+                                                                                    {
+                                                                                        item.prcie
+                                                                                    }
+
+                                                                                    /
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.set"
+                                                                                    )}
+                                                                                </span>
+                                                                            </label>
+                                                                        )}
+                                                                    </>
+                                                                )
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    />
+                                    <SlideToggle
+                                        duration={1000}
+                                        collapsed={true}
+                                        whenReversedUseBackwardEase={false}
+                                        render={({
+                                            toggle,
+                                            setCollapsibleElement,
+                                            toggleState,
+                                        }) => (
+                                            <div className={styles.card}>
+                                                <div className="card-header">
+                                                    <label
+                                                        className={[
+                                                            styles.dropDown,
+                                                            toggleState ===
+                                                            "COLLAPSED"
+                                                                ? styles.dropDown
+                                                                : styles.active,
+                                                        ].join(" ")}
+                                                        onClick={toggle}
+                                                    >
+                                                        C. 用電380V電源箱
+                                                        <span>
+                                                            {toggleState ===
+                                                                "EXPANDED" ||
+                                                            toggleState ===
+                                                                "EXPANDING" ? (
+                                                                <svg
+                                                                    width="16"
+                                                                    height="10"
+                                                                    viewBox="0 0 16 10"
+                                                                    fill="none"
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                >
+                                                                    <path
+                                                                        d="M1 9L8 2L15 9"
+                                                                        stroke="white"
+                                                                        strokeWidth="2"
+                                                                    />
+                                                                </svg>
+                                                            ) : (
+                                                                <svg
+                                                                    width="16"
+                                                                    height="10"
+                                                                    viewBox="0 0 16 10"
+                                                                    fill="none"
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                >
+                                                                    <path
+                                                                        d="M15 1L8 8L1 1"
+                                                                        stroke="white"
+                                                                        strokeWidth="2"
+                                                                    />
+                                                                </svg>
+                                                            )}
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                                <div
+                                                    className={styles.cardBody}
+                                                    ref={setCollapsibleElement}
+                                                >
+                                                    <div
+                                                        className={
+                                                            styles.dropDownContent
+                                                        }
+                                                    >
+                                                        <p>
+                                                            {t(
+                                                                "applyForm.stepTwo.itemBCD"
+                                                            )}
+                                                        </p>
+                                                        <div
+                                                            className={
+                                                                styles.bGroup
+                                                            }
+                                                        >
+                                                            {props.data.hydro_items[2].data.map(
+                                                                (item) => (
+                                                                    <>
+                                                                        {item.chk ===
+                                                                        "Y" ? (
+                                                                            <label
+                                                                                htmlFor={
+                                                                                    item.item_id
+                                                                                }
+                                                                                key={
+                                                                                    item.item_id
+                                                                                }
+                                                                                className={
+                                                                                    styles.checkedActive
+                                                                                }
+                                                                            >
+                                                                                <input
+                                                                                    type="checkbox"
+                                                                                    id={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    value={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    onChange={
+                                                                                        enableNextTextBox
+                                                                                    }
+                                                                                    defaultChecked
+                                                                                />
+                                                                                {
+                                                                                    item.name
+                                                                                }
+                                                                                <label
+                                                                                    className={
+                                                                                        styles.num
+                                                                                    }
+                                                                                >
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.quantity"
+                                                                                    )}
+                                                                                    <input
+                                                                                        type="number"
+                                                                                        min="1"
+                                                                                        defaultValue={
+                                                                                            item.quantity
+                                                                                        }
+                                                                                    />
+                                                                                </label>
+                                                                                <span>
+                                                                                    {
+                                                                                        item.prcie
+                                                                                    }
+
+                                                                                    /
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.set"
+                                                                                    )}
+                                                                                </span>
+                                                                            </label>
+                                                                        ) : (
+                                                                            <label
+                                                                                htmlFor={
+                                                                                    item.item_id
+                                                                                }
+                                                                                key={
+                                                                                    item.item_id
+                                                                                }
+                                                                            >
+                                                                                <input
+                                                                                    type="checkbox"
+                                                                                    id={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    value={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    onChange={
+                                                                                        enableNextTextBox
+                                                                                    }
+                                                                                />
+                                                                                {
+                                                                                    item.name
+                                                                                }
+                                                                                <label
+                                                                                    className={
+                                                                                        styles.num
+                                                                                    }
+                                                                                >
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.quantity"
+                                                                                    )}
+                                                                                    <input
+                                                                                        type="number"
+                                                                                        min="0"
+                                                                                        disabled
+                                                                                    />
+                                                                                </label>
+                                                                                <span>
+                                                                                    {
+                                                                                        item.prcie
+                                                                                    }
+
+                                                                                    /
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.set"
+                                                                                    )}
+                                                                                </span>
+                                                                            </label>
+                                                                        )}
+                                                                    </>
+                                                                )
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    />
+                                    <SlideToggle
+                                        duration={1000}
+                                        collapsed={true}
+                                        whenReversedUseBackwardEase={false}
+                                        render={({
+                                            toggle,
+                                            setCollapsibleElement,
+                                            toggleState,
+                                        }) => (
+                                            <div className={styles.card}>
+                                                <div className="card-header">
+                                                    <label
+                                                        className={[
+                                                            styles.dropDown,
+                                                            toggleState ===
+                                                            "COLLAPSED"
+                                                                ? styles.dropDown
+                                                                : styles.active,
+                                                        ].join(" ")}
+                                                        onClick={toggle}
+                                                    >
+                                                        D. 用電440V電源箱
+                                                        <span>
+                                                            {toggleState ===
+                                                                "EXPANDED" ||
+                                                            toggleState ===
+                                                                "EXPANDING" ? (
+                                                                <svg
+                                                                    width="16"
+                                                                    height="10"
+                                                                    viewBox="0 0 16 10"
+                                                                    fill="none"
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                >
+                                                                    <path
+                                                                        d="M1 9L8 2L15 9"
+                                                                        stroke="white"
+                                                                        strokeWidth="2"
+                                                                    />
+                                                                </svg>
+                                                            ) : (
+                                                                <svg
+                                                                    width="16"
+                                                                    height="10"
+                                                                    viewBox="0 0 16 10"
+                                                                    fill="none"
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                >
+                                                                    <path
+                                                                        d="M15 1L8 8L1 1"
+                                                                        stroke="white"
+                                                                        strokeWidth="2"
+                                                                    />
+                                                                </svg>
+                                                            )}
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                                <div
+                                                    className={styles.cardBody}
+                                                    ref={setCollapsibleElement}
+                                                >
+                                                    <div
+                                                        className={
+                                                            styles.dropDownContent
+                                                        }
+                                                    >
+                                                        <p>
+                                                            {t(
+                                                                "applyForm.stepTwo.itemBCD"
+                                                            )}
+                                                        </p>
+                                                        <div
+                                                            className={
+                                                                styles.bGroup
+                                                            }
+                                                        >
+                                                            {props.data.hydro_items[3].data.map(
+                                                                (item) => (
+                                                                    <>
+                                                                        {item.chk ===
+                                                                        "Y" ? (
+                                                                            <label
+                                                                                htmlFor={
+                                                                                    item.item_id
+                                                                                }
+                                                                                key={
+                                                                                    item.item_id
+                                                                                }
+                                                                                className={
+                                                                                    styles.checkedActive
+                                                                                }
+                                                                            >
+                                                                                <input
+                                                                                    type="checkbox"
+                                                                                    id={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    value={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    onChange={
+                                                                                        enableNextTextBox
+                                                                                    }
+                                                                                    defaultChecked
+                                                                                />
+                                                                                {
+                                                                                    item.name
+                                                                                }
+                                                                                <label
+                                                                                    className={
+                                                                                        styles.num
+                                                                                    }
+                                                                                >
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.quantity"
+                                                                                    )}
+                                                                                    <input
+                                                                                        type="number"
+                                                                                        min="1"
+                                                                                        defaultValue={
+                                                                                            item.quantity
+                                                                                        }
+                                                                                    />
+                                                                                </label>
+                                                                                <span>
+                                                                                    {
+                                                                                        item.prcie
+                                                                                    }
+
+                                                                                    /
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.set"
+                                                                                    )}
+                                                                                </span>
+                                                                            </label>
+                                                                        ) : (
+                                                                            <label
+                                                                                htmlFor={
+                                                                                    item.item_id
+                                                                                }
+                                                                                key={
+                                                                                    item.item_id
+                                                                                }
+                                                                            >
+                                                                                <input
+                                                                                    type="checkbox"
+                                                                                    id={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    value={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    onChange={
+                                                                                        enableNextTextBox
+                                                                                    }
+                                                                                />
+                                                                                {
+                                                                                    item.name
+                                                                                }
+                                                                                <label
+                                                                                    className={
+                                                                                        styles.num
+                                                                                    }
+                                                                                >
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.quantity"
+                                                                                    )}
+                                                                                    <input
+                                                                                        type="number"
+                                                                                        min="0"
+                                                                                        disabled
+                                                                                    />
+                                                                                </label>
+                                                                                <span>
+                                                                                    {
+                                                                                        item.prcie
+                                                                                    }
+
+                                                                                    /
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.set"
+                                                                                    )}
+                                                                                </span>
+                                                                            </label>
+                                                                        )}
+                                                                    </>
+                                                                )
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    />
+                                    <SlideToggle
+                                        duration={1000}
+                                        collapsed={true}
+                                        whenReversedUseBackwardEase={false}
+                                        render={({
+                                            toggle,
+                                            setCollapsibleElement,
+                                            toggleState,
+                                        }) => (
+                                            <div className={styles.card}>
+                                                <div className="card-header">
+                                                    <label
+                                                        className={[
+                                                            styles.dropDown,
+                                                            toggleState ===
+                                                            "COLLAPSED"
+                                                                ? styles.dropDown
+                                                                : styles.active,
+                                                        ].join(" ")}
+                                                        onClick={toggle}
+                                                    >
+                                                        E. 24小時用電
+                                                        <span>
+                                                            {toggleState ===
+                                                                "EXPANDED" ||
+                                                            toggleState ===
+                                                                "EXPANDING" ? (
+                                                                <svg
+                                                                    width="16"
+                                                                    height="10"
+                                                                    viewBox="0 0 16 10"
+                                                                    fill="none"
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                >
+                                                                    <path
+                                                                        d="M1 9L8 2L15 9"
+                                                                        stroke="white"
+                                                                        strokeWidth="2"
+                                                                    />
+                                                                </svg>
+                                                            ) : (
+                                                                <svg
+                                                                    width="16"
+                                                                    height="10"
+                                                                    viewBox="0 0 16 10"
+                                                                    fill="none"
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                >
+                                                                    <path
+                                                                        d="M15 1L8 8L1 1"
+                                                                        stroke="white"
+                                                                        strokeWidth="2"
+                                                                    />
+                                                                </svg>
+                                                            )}
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                                <div
+                                                    className={styles.cardBody}
+                                                    ref={setCollapsibleElement}
+                                                >
+                                                    <div
+                                                        className={
+                                                            styles.dropDownContent
+                                                        }
+                                                    >
+                                                        <p>
+                                                            {t(
+                                                                "applyForm.stepTwo.itemBCD"
+                                                            )}
+                                                        </p>
+                                                        <div
+                                                            className={
+                                                                styles.bGroup
+                                                            }
+                                                        >
+                                                            {props.data.hydro_items[4].data.map(
+                                                                (item) => (
+                                                                    <>
+                                                                        {item.chk ===
+                                                                        "Y" ? (
+                                                                            <label
+                                                                                htmlFor={
+                                                                                    item.item_id
+                                                                                }
+                                                                                key={
+                                                                                    item.item_id
+                                                                                }
+                                                                                className={
+                                                                                    styles.checkedActive
+                                                                                }
+                                                                            >
+                                                                                <input
+                                                                                    type="checkbox"
+                                                                                    id={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    value={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    onChange={
+                                                                                        enableNextTextBox
+                                                                                    }
+                                                                                    defaultChecked
+                                                                                />
+                                                                                {
+                                                                                    item.name
+                                                                                }
+                                                                                <label
+                                                                                    className={
+                                                                                        styles.num
+                                                                                    }
+                                                                                >
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.quantity"
+                                                                                    )}
+                                                                                    <input
+                                                                                        type="number"
+                                                                                        min="1"
+                                                                                        defaultValue={
+                                                                                            item.quantity
+                                                                                        }
+                                                                                    />
+                                                                                </label>
+                                                                                <span>
+                                                                                    {
+                                                                                        item.prcie
+                                                                                    }
+
+                                                                                    /
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.set"
+                                                                                    )}
+                                                                                </span>
+                                                                            </label>
+                                                                        ) : (
+                                                                            <label
+                                                                                htmlFor={
+                                                                                    item.item_id
+                                                                                }
+                                                                                key={
+                                                                                    item.item_id
+                                                                                }
+                                                                            >
+                                                                                <input
+                                                                                    type="checkbox"
+                                                                                    id={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    value={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    onChange={
+                                                                                        enableNextTextBox
+                                                                                    }
+                                                                                />
+                                                                                {
+                                                                                    item.name
+                                                                                }
+                                                                                <label
+                                                                                    className={
+                                                                                        styles.num
+                                                                                    }
+                                                                                >
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.quantity"
+                                                                                    )}
+                                                                                    <input
+                                                                                        type="number"
+                                                                                        min="0"
+                                                                                        disabled
+                                                                                    />
+                                                                                </label>
+                                                                                <span>
+                                                                                    {
+                                                                                        item.prcie
+                                                                                    }
+
+                                                                                    /
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.set"
+                                                                                    )}
+                                                                                </span>
+                                                                            </label>
+                                                                        )}
+                                                                    </>
+                                                                )
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    />
+                                    <SlideToggle
+                                        duration={1000}
+                                        collapsed={true}
+                                        whenReversedUseBackwardEase={false}
+                                        render={({
+                                            toggle,
+                                            setCollapsibleElement,
+                                            toggleState,
+                                        }) => (
+                                            <div className={styles.card}>
+                                                <div className="card-header">
+                                                    <label
+                                                        className={[
+                                                            styles.dropDown,
+                                                            toggleState ===
+                                                            "COLLAPSED"
+                                                                ? styles.dropDown
+                                                                : styles.active,
+                                                        ].join(" ")}
+                                                        onClick={toggle}
+                                                    >
+                                                        F. 給排水管
+                                                        <span>
+                                                            {toggleState ===
+                                                                "EXPANDED" ||
+                                                            toggleState ===
+                                                                "EXPANDING" ? (
+                                                                <svg
+                                                                    width="16"
+                                                                    height="10"
+                                                                    viewBox="0 0 16 10"
+                                                                    fill="none"
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                >
+                                                                    <path
+                                                                        d="M1 9L8 2L15 9"
+                                                                        stroke="white"
+                                                                        strokeWidth="2"
+                                                                    />
+                                                                </svg>
+                                                            ) : (
+                                                                <svg
+                                                                    width="16"
+                                                                    height="10"
+                                                                    viewBox="0 0 16 10"
+                                                                    fill="none"
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                >
+                                                                    <path
+                                                                        d="M15 1L8 8L1 1"
+                                                                        stroke="white"
+                                                                        strokeWidth="2"
+                                                                    />
+                                                                </svg>
+                                                            )}
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                                <div
+                                                    className={styles.cardBody}
+                                                    ref={setCollapsibleElement}
+                                                >
+                                                    <div
+                                                        className={
+                                                            styles.dropDownContent
+                                                        }
+                                                    >
+                                                        <p>
+                                                            {t(
+                                                                "applyForm.stepTwo.itemE"
+                                                            )}
+                                                        </p>
+                                                        <div
+                                                            className={
+                                                                styles.bGroup
+                                                            }
+                                                        >
+                                                            {props.data.hydro_items[5].data.map(
+                                                                (item) => (
+                                                                    <>
+                                                                        {item.chk ===
+                                                                        "Y" ? (
+                                                                            <label
+                                                                                htmlFor={
+                                                                                    item.item_id
+                                                                                }
+                                                                                key={
+                                                                                    item.item_id
+                                                                                }
+                                                                                className={
+                                                                                    styles.checkedActive
+                                                                                }
+                                                                            >
+                                                                                <input
+                                                                                    type="checkbox"
+                                                                                    id={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    value={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    onChange={
+                                                                                        enableNextTextBox
+                                                                                    }
+                                                                                    defaultChecked
+                                                                                />
+                                                                                {
+                                                                                    item.name
+                                                                                }
+                                                                                <label
+                                                                                    className={
+                                                                                        styles.num
+                                                                                    }
+                                                                                >
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.quantity"
+                                                                                    )}
+                                                                                    <input
+                                                                                        type="number"
+                                                                                        min="1"
+                                                                                        defaultValue={
+                                                                                            item.quantity
+                                                                                        }
+                                                                                    />
+                                                                                </label>
+                                                                                <span>
+                                                                                    {
+                                                                                        item.prcie
+                                                                                    }
+
+                                                                                    /
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.set"
+                                                                                    )}
+                                                                                </span>
+                                                                            </label>
+                                                                        ) : (
+                                                                            <label
+                                                                                htmlFor={
+                                                                                    item.item_id
+                                                                                }
+                                                                                key={
+                                                                                    item.item_id
+                                                                                }
+                                                                            >
+                                                                                <input
+                                                                                    type="checkbox"
+                                                                                    id={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    value={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    onChange={
+                                                                                        enableNextTextBox
+                                                                                    }
+                                                                                />
+                                                                                {
+                                                                                    item.name
+                                                                                }
+                                                                                <label
+                                                                                    className={
+                                                                                        styles.num
+                                                                                    }
+                                                                                >
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.quantity"
+                                                                                    )}
+                                                                                    <input
+                                                                                        type="number"
+                                                                                        min="0"
+                                                                                        disabled
+                                                                                    />
+                                                                                </label>
+                                                                                <span>
+                                                                                    {
+                                                                                        item.prcie
+                                                                                    }
+
+                                                                                    /
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.set"
+                                                                                    )}
+                                                                                </span>
+                                                                            </label>
+                                                                        )}
+                                                                    </>
+                                                                )
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    />
+                                    <SlideToggle
+                                        duration={1000}
+                                        collapsed={true}
+                                        whenReversedUseBackwardEase={false}
+                                        render={({
+                                            toggle,
+                                            setCollapsibleElement,
+                                            toggleState,
+                                        }) => (
+                                            <div className={styles.card}>
+                                                <div className="card-header">
+                                                    <label
+                                                        className={[
+                                                            styles.dropDown,
+                                                            toggleState ===
+                                                            "COLLAPSED"
+                                                                ? styles.dropDown
+                                                                : styles.active,
+                                                        ].join(" ")}
+                                                        onClick={toggle}
+                                                    >
+                                                        G. 壓縮空氣
+                                                        <span>
+                                                            {toggleState ===
+                                                                "EXPANDED" ||
+                                                            toggleState ===
+                                                                "EXPANDING" ? (
+                                                                <svg
+                                                                    width="16"
+                                                                    height="10"
+                                                                    viewBox="0 0 16 10"
+                                                                    fill="none"
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                >
+                                                                    <path
+                                                                        d="M1 9L8 2L15 9"
+                                                                        stroke="white"
+                                                                        strokeWidth="2"
+                                                                    />
+                                                                </svg>
+                                                            ) : (
+                                                                <svg
+                                                                    width="16"
+                                                                    height="10"
+                                                                    viewBox="0 0 16 10"
+                                                                    fill="none"
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                >
+                                                                    <path
+                                                                        d="M15 1L8 8L1 1"
+                                                                        stroke="white"
+                                                                        strokeWidth="2"
+                                                                    />
+                                                                </svg>
+                                                            )}
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                                <div
+                                                    className={styles.cardBody}
+                                                    ref={setCollapsibleElement}
+                                                >
+                                                    <div
+                                                        className={
+                                                            styles.dropDownContent
+                                                        }
+                                                    >
+                                                        <p>
+                                                            {t(
+                                                                "applyForm.stepTwo.itemF"
+                                                            )}
+                                                        </p>
+                                                        <div
+                                                            className={
+                                                                styles.bGroup
+                                                            }
+                                                        >
+                                                            {props.data.hydro_items[6].data.map(
+                                                                (item) => (
+                                                                    <>
+                                                                        {item.chk ===
+                                                                        "Y" ? (
+                                                                            <label
+                                                                                htmlFor={
+                                                                                    item.item_id
+                                                                                }
+                                                                                key={
+                                                                                    item.item_id
+                                                                                }
+                                                                                className={
+                                                                                    styles.checkedActive
+                                                                                }
+                                                                            >
+                                                                                <input
+                                                                                    type="checkbox"
+                                                                                    id={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    value={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    onChange={
+                                                                                        enableNextTextBox
+                                                                                    }
+                                                                                    defaultChecked
+                                                                                />
+                                                                                {
+                                                                                    item.name
+                                                                                }
+                                                                                <label
+                                                                                    className={
+                                                                                        styles.num
+                                                                                    }
+                                                                                >
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.quantity"
+                                                                                    )}
+                                                                                    <input
+                                                                                        type="number"
+                                                                                        min="1"
+                                                                                        defaultValue={
+                                                                                            item.quantity
+                                                                                        }
+                                                                                    />
+                                                                                </label>
+                                                                                <span>
+                                                                                    {
+                                                                                        item.prcie
+                                                                                    }
+
+                                                                                    /
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.set"
+                                                                                    )}
+                                                                                </span>
+                                                                            </label>
+                                                                        ) : (
+                                                                            <label
+                                                                                htmlFor={
+                                                                                    item.item_id
+                                                                                }
+                                                                                key={
+                                                                                    item.item_id
+                                                                                }
+                                                                            >
+                                                                                <input
+                                                                                    type="checkbox"
+                                                                                    id={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    value={
+                                                                                        item.item_id
+                                                                                    }
+                                                                                    onChange={
+                                                                                        enableNextTextBox
+                                                                                    }
+                                                                                />
+                                                                                {
+                                                                                    item.name
+                                                                                }
+                                                                                <label
+                                                                                    className={
+                                                                                        styles.num
+                                                                                    }
+                                                                                >
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.quantity"
+                                                                                    )}
+                                                                                    <input
+                                                                                        type="number"
+                                                                                        min="0"
+                                                                                        disabled
+                                                                                    />
+                                                                                </label>
+                                                                                <span>
+                                                                                    {
+                                                                                        item.prcie
+                                                                                    }
+
+                                                                                    /
+                                                                                    {t(
+                                                                                        "applyForm.stepTwo.set"
+                                                                                    )}
+                                                                                </span>
+                                                                            </label>
+                                                                        )}
+                                                                    </>
+                                                                )
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    />
+                                </div>
+                            )}
 
                             <div className={styles.btns}>
                                 <button
@@ -2069,7 +3669,10 @@ export default function Revise(props) {
                                 >
                                     取消
                                 </button>
-                                <button className={styles.complete}>
+                                <button
+                                    className={styles.complete}
+                                    onClick={handleSubmit}
+                                >
                                     完成
                                 </button>
                             </div>
@@ -2077,8 +3680,15 @@ export default function Revise(props) {
                     </Popup>
                 ) : null}
                 <div className={styles.btns}>
-                    <button className={styles.cancel}>取消</button>
-                    <button className={styles.complete}>完成</button>
+                    <button
+                        className={styles.cancel}
+                        onClick={cancelSupplement}
+                    >
+                        取消
+                    </button>
+                    <button className={styles.complete} onClick={handlePreview}>
+                        完成
+                    </button>
                 </div>
             </Hero>
             <Footer />

@@ -65,8 +65,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Components_Nav__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(4269);
 /* harmony import */ var _Components_Footer__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(558);
 /* harmony import */ var _Components_Hero__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(3806);
-/* harmony import */ var _styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(2325);
-/* harmony import */ var _styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default = /*#__PURE__*/__webpack_require__.n(_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12__);
+/* harmony import */ var _styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(2325);
+/* harmony import */ var _styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default = /*#__PURE__*/__webpack_require__.n(_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13__);
 /* harmony import */ var next_i18next_serverSideTranslations__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(5460);
 /* harmony import */ var next_i18next_serverSideTranslations__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(next_i18next_serverSideTranslations__WEBPACK_IMPORTED_MODULE_6__);
 /* harmony import */ var next_i18next__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(1377);
@@ -78,6 +78,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _material_ui_styles__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(_material_ui_styles__WEBPACK_IMPORTED_MODULE_10__);
 /* harmony import */ var next_router__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(1853);
 /* harmony import */ var next_router__WEBPACK_IMPORTED_MODULE_11___default = /*#__PURE__*/__webpack_require__.n(next_router__WEBPACK_IMPORTED_MODULE_11__);
+/* harmony import */ var cookies_next__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(8982);
+/* harmony import */ var cookies_next__WEBPACK_IMPORTED_MODULE_12___default = /*#__PURE__*/__webpack_require__.n(cookies_next__WEBPACK_IMPORTED_MODULE_12__);
 var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([_Components_Nav__WEBPACK_IMPORTED_MODULE_3__]);
 _Components_Nav__WEBPACK_IMPORTED_MODULE_3__ = (__webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__)[0];
 
@@ -93,7 +95,47 @@ _Components_Nav__WEBPACK_IMPORTED_MODULE_3__ = (__webpack_async_dependencies__.t
 
 
 
-async function getServerSideProps({ locale , query  }) {
+
+async function getServerSideProps({ locale , query , req , res  }) {
+    let oldCookie = (0,cookies_next__WEBPACK_IMPORTED_MODULE_12__.getCookie)("sid", {
+        req,
+        res
+    });
+    if (query.sid !== undefined) {
+        if (query.sid !== oldCookie) {
+            (0,cookies_next__WEBPACK_IMPORTED_MODULE_12__.setCookie)("sid", query.sid, {
+                req,
+                res,
+                maxAge: 60 * 6 * 24
+            });
+        } else if (query.sid === (0,cookies_next__WEBPACK_IMPORTED_MODULE_12__.getCookie)("sid", {
+            req,
+            res
+        })) {
+            oldCookie = oldCookie;
+        }
+    } else if (query.sid === undefined || query.sid === "") {
+        if (oldCookie !== undefined || oldCookie !== "") {
+            oldCookie = oldCookie;
+        }
+        if (oldCookie === undefined) {
+            return {
+                redirect: {
+                    destination: "https://twtc.com.tw/"
+                }
+            };
+        }
+    }
+    const form = new URLSearchParams();
+    form.append("sid", (0,cookies_next__WEBPACK_IMPORTED_MODULE_12__.getCookie)("sid", {
+        req,
+        res
+    }));
+    const sidForm = {
+        method: "POST"
+    };
+    sidForm.body = form;
+    const sidData = await fetch(`${process.env.API_BASE_URL}sso`, sidForm).then((response)=>response.json());
     const options = {
         method: "POST",
         headers: {
@@ -101,7 +143,8 @@ async function getServerSideProps({ locale , query  }) {
         },
         body: new URLSearchParams({
             lang: locale,
-            sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
+            event_uid: sidData.event_uid,
+            company_id: sidData.company_id
         })
     };
     const infoRes = await fetch(`${process.env.API_BASE_URL}getDiscountInfo`, options);
@@ -116,7 +159,8 @@ async function getServerSideProps({ locale , query  }) {
                 "common"
             ]),
             info: infoData,
-            data: reviseData
+            data: reviseData,
+            sidData: sidData
         }
     };
 }
@@ -126,94 +170,21 @@ function Revise(props) {
     const { 0: isLoading , 1: setLoading  } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
     const { 0: show , 1: setShow  } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
     const { 0: preview , 1: setPreview  } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
+    const { 0: revise , 1: setRevise  } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
     const { 0: upNumber , 1: setUpNumber  } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)();
     const { 0: downNumber , 1: setDownNumber  } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)();
     const router = (0,next_router__WEBPACK_IMPORTED_MODULE_11__.useRouter)();
+    const { 0: reviseItems , 1: setReviseItems  } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)([]);
     const initProducts = async ()=>{
         const form = new FormData();
         form.append("application_form_id", router.query.id);
-        form.append("sid", "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a");
+        form.append("event_uid", props.sidData.event_uid);
+        form.append("company_id", props.sidData.company_id);
         form.append("revised", "Y");
         const options = {
             method: "POST"
         };
         options.body = form;
-        // const form = new FormData();
-        // let items = [];
-        // const checkBoxsOne = document.querySelectorAll(
-        //     ".Form_aGroup__FN6oc input[type='checkbox']"
-        // );
-        // const checkBoxsTwo = document.querySelectorAll(
-        //     ".Form_bGroup__4aN8N input[type='checkbox']"
-        // );
-        // for (let check of checkBoxsOne) {
-        //     if (check.checked) {
-        //         items.push({ item_id: check.value, quantity: "1" });
-        //     }
-        // }
-        // for (let check of checkBoxsTwo) {
-        //     if (check.checked) {
-        //         let num = check.nextSibling.nextSibling.childNodes[1];
-        //         items.push({
-        //             item_id: check.value,
-        //             quantity: num.value,
-        //         });
-        //     }
-        // }
-        // form.append("application_form_id", router.query.id);
-        // form.append(
-        //     "proxy_company_name",
-        //     document.querySelectorAll('input[name="company"]')[0].value
-        // );
-        // form.append(
-        //     "proxy_tax_id",
-        //     document.querySelectorAll('input[name="uniformNum"]')[0].value
-        // );
-        // form.append(
-        //     "proxy_contact_person",
-        //     document.querySelectorAll('input[name="contactPerson"]')[0].value
-        // );
-        // form.append(
-        //     "proxy_email",
-        //     document.querySelectorAll('input[name="email"]')[0].value
-        // );
-        // form.append(
-        //     "proxy_phone",
-        //     document.querySelectorAll('input[name="phone"]')[0].value
-        // );
-        // form.append(
-        //     "invoice_company_name",
-        //     document.querySelectorAll('input[name="company"]')[1].value
-        // );
-        // form.append(
-        //     "invoice_address",
-        //     document.querySelector('input[name="address"]').value
-        // );
-        // form.append(
-        //     "invoice_tax_id",
-        //     document.querySelectorAll('input[name="uniformNum"]')[1].value
-        // );
-        // form.append(
-        //     "remark",
-        //     document.querySelectorAll('textarea[name="remark"]')[0].value
-        // );
-        // form.append(
-        //     "sid",
-        //     "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a"
-        // );
-        // form.append("items", JSON.stringify(items));
-        // const options = {
-        //     method: "POST",
-        //     headers: {
-        //         // cookie: "ci_session=8v7iclm76gcb6fsic32lodnk29j11j6b",
-        //         "Content-Type": "application/x-www-form-urlencoded",
-        //     },
-        //     body: new URLSearchParams({
-        //         lang: router.locale,
-        //         application_form_id: dataID,
-        //         sid: "b481cb1bcb3f18baeb07562c6c7f915b28b804d09c90d0b495945f164eacca2a",
-        //     }),
-        // };
         setLoading(true);
         const result = await fetch(`${"https://ewsadm.taiwantradeshows.com.tw/api/"}getReviseData`, options).then((response)=>response.json())// .then((response) => {
         //     setData(response);
@@ -221,7 +192,6 @@ function Revise(props) {
         //     setLoading(false);
         // })
         .catch((err)=>console.error(err));
-        // console.log(result);
         setData(result);
     };
     (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(()=>{
@@ -231,17 +201,119 @@ function Revise(props) {
     }, [
         preview
     ]);
+    (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(()=>{
+        if (revise) {
+            initProducts();
+            setTimeout(()=>{
+                setRevise(false);
+            }, "1000");
+            console.log(data);
+        }
+    }, [
+        revise
+    ]);
     const close = ()=>{
         setShow(false);
         setPreview(false);
     };
-    const handleRevise = ()=>{
-        setShow(false);
-        setPreview(true);
+    const cancelSupplement = ()=>{
+        router.push("/search");
+    };
+    const handleSubmit = async ()=>{
+        const form = new FormData();
+        form.append("application_form_id", router.query.id);
+        form.append("event_uid", props.sidData.event_uid);
+        form.append("company_id", props.sidData.company_id);
+        const options = {
+            method: "POST"
+        };
+        options.body = form;
+        await fetch(`${"https://ewsadm.taiwantradeshows.com.tw/api/"}setReviseConfirm`, options).then((response)=>response.json()).then((response)=>{
+            console.log(response);
+            router.push("/search");
+        }).catch((err)=>console.error(err));
+    };
+    const handlePreview = async ()=>{
+        const form = new FormData();
+        form.append("application_form_id", router.query.id);
+        form.append("proxy_company_name", document.querySelectorAll('input[name="company"]')[0].value);
+        form.append("proxy_tax_id", document.querySelectorAll('input[name="uniformNum"]')[0].value);
+        form.append("proxy_contact_person", document.querySelectorAll('input[name="contactPerson"]')[0].value);
+        form.append("proxy_email", document.querySelectorAll('input[name="email"]')[0].value);
+        form.append("proxy_phone", document.querySelectorAll('input[name="phone"]')[0].value);
+        form.append("invoice_company_name", document.querySelectorAll('input[name="company"]')[1].value);
+        form.append("invoice_address", document.querySelector('input[name="address"]').value);
+        form.append("invoice_tax_id", document.querySelectorAll('input[name="uniformNum"]')[1].value);
+        form.append("remark", document.querySelectorAll('textarea[name="remark"]')[0].value);
+        form.append("event_uid", props.sidData.event_uid);
+        form.append("company_id", props.sidData.company_id);
+        form.append("items", JSON.stringify(reviseItems));
+        const options = {
+            method: "POST",
+            body: new URLSearchParams({
+                lang: router.locale,
+                application_form_id: router.query.id
+            })
+        };
+        options.body = form;
+        await fetch(`${"https://ewsadm.taiwantradeshows.com.tw/api/"}setRevise`, options).then((response)=>response.json()).then((response)=>{
+            console.log(response);
+            setPreview(true);
+        }).catch((err)=>console.error(err));
+    };
+    const handleRevise = async ()=>{
+        let items = [];
+        const form = new FormData();
+        const checkBoxsOne = document.querySelectorAll(".Apply_aGroup__d5k3g input[type='checkbox']");
+        const checkBoxsTwo = document.querySelectorAll(".Apply_bGroup__8er2v input[type='checkbox']");
+        for (let check of checkBoxsOne){
+            if (check.checked) {
+                items.push({
+                    item_id: check.value,
+                    quantity: "1"
+                });
+            }
+        }
+        for (let check1 of checkBoxsTwo){
+            if (check1.checked) {
+                let num = check1.nextSibling.nextSibling.childNodes[1];
+                items.push({
+                    item_id: check1.value,
+                    quantity: num.value
+                });
+            }
+        }
+        form.append("application_form_id", router.query.id);
+        form.append("proxy_company_name", document.querySelectorAll('input[name="company"]')[0].value);
+        form.append("proxy_tax_id", document.querySelectorAll('input[name="uniformNum"]')[0].value);
+        form.append("proxy_contact_person", document.querySelectorAll('input[name="contactPerson"]')[0].value);
+        form.append("proxy_email", document.querySelectorAll('input[name="email"]')[0].value);
+        form.append("proxy_phone", document.querySelectorAll('input[name="phone"]')[0].value);
+        form.append("invoice_company_name", document.querySelectorAll('input[name="company"]')[1].value);
+        form.append("invoice_address", document.querySelector('input[name="address"]').value);
+        form.append("invoice_tax_id", document.querySelectorAll('input[name="uniformNum"]')[1].value);
+        form.append("remark", document.querySelectorAll('textarea[name="remark"]')[0].value);
+        form.append("event_uid", props.sidData.event_uid);
+        form.append("company_id", props.sidData.company_id);
+        form.append("items", JSON.stringify(items));
+        setReviseItems(items);
+        const options = {
+            method: "POST",
+            body: new URLSearchParams({
+                lang: router.locale,
+                application_form_id: router.query.id
+            })
+        };
+        options.body = form;
+        await fetch(`${"https://ewsadm.taiwantradeshows.com.tw/api/"}setRevise`, options).then((response)=>response.json()).then((response)=>{
+            console.log(response);
+            setShow(false);
+            setRevise(true);
+        }).catch((err)=>console.error(err));
     };
     const active = (e)=>{
         if (e.target.checked) {
-            e.target.parentNode.className = (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().checkedActive);
+            e.target.parentNode.className = (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().checkedActive);
         } else {
             e.target.parentNode.className = "";
         }
@@ -251,7 +323,7 @@ function Revise(props) {
             e.target.nextSibling.nextSibling.childNodes[1].removeAttribute("disabled");
             e.target.nextSibling.nextSibling.childNodes[1].min = 1;
             e.target.nextSibling.nextSibling.childNodes[1].value = 1;
-            e.target.parentNode.className = (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().checkedActive);
+            e.target.parentNode.className = (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().checkedActive);
         } else {
             e.target.nextSibling.nextSibling.childNodes[1].setAttribute("disabled", "");
             e.target.nextSibling.nextSibling.childNodes[1].value = 0;
@@ -259,7 +331,7 @@ function Revise(props) {
         }
     };
     return /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().container),
+        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().container),
         children: [
             /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)((next_head__WEBPACK_IMPORTED_MODULE_2___default()), {
                 children: [
@@ -284,22 +356,22 @@ function Revise(props) {
                         children: t("search.revise")
                     }),
                     /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().checkForm),
+                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().checkForm),
                         children: [
                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("h2", {
                                 children: t("search.option")
                             }),
                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
-                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().opinionBox)
+                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().opinionBox)
                             }),
                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("h2", {
                                 children: "代理或裝潢公司基本資料"
                             }),
                             /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().form),
+                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().form),
                                 children: [
                                     /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().formRow),
+                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().formRow),
                                         children: [
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
                                                 children: "公司名稱"
@@ -313,7 +385,7 @@ function Revise(props) {
                                         ]
                                     }),
                                     /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().formRow),
+                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().formRow),
                                         children: [
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
                                                 children: "統一編號"
@@ -329,7 +401,7 @@ function Revise(props) {
                                         ]
                                     }),
                                     /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().formRow),
+                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().formRow),
                                         children: [
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
                                                 children: "聯絡人"
@@ -343,7 +415,7 @@ function Revise(props) {
                                         ]
                                     }),
                                     /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().formRow),
+                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().formRow),
                                         children: [
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
                                                 children: "聯絡電話"
@@ -357,7 +429,7 @@ function Revise(props) {
                                         ]
                                     }),
                                     /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().formRow),
+                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().formRow),
                                         children: [
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
                                                 children: "電子郵件"
@@ -375,10 +447,10 @@ function Revise(props) {
                                 children: "開立發票資訊"
                             }),
                             /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().form),
+                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().form),
                                 children: [
                                     /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().formRow),
+                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().formRow),
                                         children: [
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
                                                 children: "公司名稱"
@@ -392,7 +464,7 @@ function Revise(props) {
                                         ]
                                     }),
                                     /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().formRow),
+                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().formRow),
                                         children: [
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
                                                 children: "統一編號"
@@ -408,7 +480,7 @@ function Revise(props) {
                                         ]
                                     }),
                                     /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().formRow),
+                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().formRow),
                                         children: [
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
                                                 children: "發票寄送地址"
@@ -423,8 +495,8 @@ function Revise(props) {
                                     }),
                                     /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
                                         className: [
-                                            (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().formRow),
-                                            (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().prepare)
+                                            (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().formRow),
+                                            (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().prepare)
                                         ].join(" "),
                                         children: [
                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
@@ -440,23 +512,23 @@ function Revise(props) {
                                 ]
                             }),
                             /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("h2", {
-                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().reviseTitle),
+                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().reviseTitle),
                                 children: [
                                     "水電追加申請項目",
                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("button", {
-                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().revise),
+                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().revise),
                                         onClick: ()=>setShow(true),
                                         children: "修改"
                                     })
                                 ]
                             }),
                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().applyItem),
+                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().applyItem),
                                 children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("table", {
                                     children: [
                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("thead", {
                                             children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
-                                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().title),
+                                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().title),
                                                 children: [
                                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("th", {
                                                         style: {
@@ -491,48 +563,162 @@ function Revise(props) {
                                                 ]
                                             })
                                         }),
-                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tbody", {
-                                            children: [
-                                                props.data.hydro_items_trial.items.map((item)=>/*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
-                                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().content),
+                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("tbody", {
+                                            children: data !== null ? /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+                                                children: [
+                                                    data.hydro_items_trial.items.map((item, idx)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+                                                            children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
+                                                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().content),
+                                                                children: [
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
+                                                                        children: item.index
+                                                                    }),
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
+                                                                        style: {
+                                                                            textAlign: "left",
+                                                                            paddingLeft: "15px"
+                                                                        },
+                                                                        children: item.item
+                                                                    }),
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
+                                                                        children: item.quantity
+                                                                    }),
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
+                                                                        children: item.price
+                                                                    }),
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
+                                                                        children: item.sum
+                                                                    })
+                                                                ]
+                                                            }, idx)
+                                                        })),
+                                                    /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
+                                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().sum),
                                                         children: [
+                                                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {}),
+                                                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {}),
+                                                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {}),
                                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                                children: item.index
+                                                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().sumTitle),
+                                                                children: t("applyForm.preview.groupThree.total")
                                                             }),
                                                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                                style: {
-                                                                    textAlign: "left",
-                                                                    paddingLeft: "15px"
-                                                                },
-                                                                children: item.item
-                                                            }),
-                                                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                                children: item.quantity
-                                                            }),
-                                                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                                children: item.price
-                                                            }),
-                                                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                                children: item.sum
+                                                                children: data.hydro_items_trial.total_sum
                                                             })
                                                         ]
-                                                    }, item.index)),
-                                                /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
-                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().sum),
-                                                    children: [
-                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {}),
-                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {}),
-                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {}),
-                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().sumTitle),
-                                                            children: "合計總金額"
-                                                        }),
-                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                            children: props.data.hydro_items_trial.total_sum
-                                                        })
-                                                    ]
-                                                })
-                                            ]
+                                                    }),
+                                                    data.discount.discount_value !== "" ? /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+                                                        children: [
+                                                            /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
+                                                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().sum),
+                                                                children: [
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {}),
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {}),
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {}),
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
+                                                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().sumTitle),
+                                                                        children: data.discount.discount_type
+                                                                    }),
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
+                                                                        children: data.discount.discount_price
+                                                                    })
+                                                                ]
+                                                            }),
+                                                            /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
+                                                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().sum),
+                                                                children: [
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {}),
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {}),
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {}),
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
+                                                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().sumTitle),
+                                                                        children: "總價"
+                                                                    }),
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
+                                                                        children: data.discount.finally_sum
+                                                                    })
+                                                                ]
+                                                            })
+                                                        ]
+                                                    }) : null
+                                                ]
+                                            }) : /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+                                                children: [
+                                                    props.data.hydro_items_trial.items.map((item, idx)=>/*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
+                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().content),
+                                                            children: [
+                                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
+                                                                    children: item.index
+                                                                }),
+                                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
+                                                                    style: {
+                                                                        textAlign: "left",
+                                                                        paddingLeft: "15px"
+                                                                    },
+                                                                    children: item.item
+                                                                }),
+                                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
+                                                                    children: item.quantity
+                                                                }),
+                                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
+                                                                    children: item.price
+                                                                }),
+                                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
+                                                                    children: item.sum
+                                                                })
+                                                            ]
+                                                        }, idx)),
+                                                    /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
+                                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().sum),
+                                                        children: [
+                                                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {}),
+                                                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {}),
+                                                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {}),
+                                                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
+                                                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().sumTitle),
+                                                                children: t("applyForm.preview.groupThree.total")
+                                                            }),
+                                                            /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
+                                                                children: props.data.hydro_items_trial.total_sum
+                                                            })
+                                                        ]
+                                                    }),
+                                                    props.data.discount.discount_value !== "" ? /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+                                                        children: [
+                                                            /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
+                                                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().sum),
+                                                                children: [
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {}),
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {}),
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {}),
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
+                                                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().sumTitle),
+                                                                        children: props.data.discount.discount_type
+                                                                    }),
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
+                                                                        children: props.data.discount.discount_price
+                                                                    })
+                                                                ]
+                                                            }),
+                                                            /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
+                                                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().sum),
+                                                                children: [
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {}),
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {}),
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {}),
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
+                                                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().sumTitle),
+                                                                        children: "總價"
+                                                                    }),
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
+                                                                        children: props.data.discount.finally_sum
+                                                                    })
+                                                                ]
+                                                            })
+                                                        ]
+                                                    }) : null
+                                                ]
+                                            })
                                         })
                                     ]
                                 })
@@ -542,7 +728,7 @@ function Revise(props) {
                     show ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_Components_Popup_Popup__WEBPACK_IMPORTED_MODULE_8__/* ["default"] */ .Z, {
                         close: close,
                         children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().applyCheckBox),
+                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().applyCheckBox),
                             onClick: (e)=>{
                                 // do not close modal if anything inside modal content is clicked
                                 e.stopPropagation();
@@ -551,22 +737,22 @@ function Revise(props) {
                                 /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("h2", {
                                     children: "水電追加申請項目"
                                 }),
-                                /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().group),
+                                data !== null ? /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().group),
                                     children: [
                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx((react_slide_toggle__WEBPACK_IMPORTED_MODULE_9___default()), {
                                             duration: 1000,
                                             collapsed: true,
                                             whenReversedUseBackwardEase: false,
                                             render: ({ toggle , setCollapsibleElement , toggleState ,  })=>/*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().card),
+                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().card),
                                                     children: [
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
                                                             className: "card-header",
                                                             children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
                                                                 className: [
-                                                                    (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().dropDown),
-                                                                    toggleState === "COLLAPSED" ? (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().dropDown) : (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().active), 
+                                                                    (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().dropDown),
+                                                                    toggleState === "COLLAPSED" ? (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().dropDown) : (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().active), 
                                                                 ].join(" "),
                                                                 onClick: toggle,
                                                                 children: [
@@ -600,20 +786,20 @@ function Revise(props) {
                                                             })
                                                         }),
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().cardBody),
+                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().cardBody),
                                                             ref: setCollapsibleElement,
                                                             children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().dropDownContent),
+                                                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().dropDownContent),
                                                                 children: [
                                                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
                                                                         children: t("applyForm.stepTwo.itemA")
                                                                     }),
                                                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                                                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().aGroup),
-                                                                        children: props.data.hydro_items[0].data.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+                                                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().aGroup),
+                                                                        children: data.hydro_items[0].data.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
                                                                                 children: item.chk === "Y" ? /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
                                                                                     htmlFor: item.item_id,
-                                                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().checkedActive),
+                                                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().checkedActive),
                                                                                     children: [
                                                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
                                                                                             type: "checkbox",
@@ -655,14 +841,14 @@ function Revise(props) {
                                             collapsed: true,
                                             whenReversedUseBackwardEase: false,
                                             render: ({ toggle , setCollapsibleElement , toggleState ,  })=>/*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().card),
+                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().card),
                                                     children: [
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
                                                             className: "card-header",
                                                             children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
                                                                 className: [
-                                                                    (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().dropDown),
-                                                                    toggleState === "COLLAPSED" ? (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().dropDown) : (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().active), 
+                                                                    (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().dropDown),
+                                                                    toggleState === "COLLAPSED" ? (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().dropDown) : (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().active), 
                                                                 ].join(" "),
                                                                 onClick: toggle,
                                                                 children: [
@@ -696,20 +882,20 @@ function Revise(props) {
                                                             })
                                                         }),
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().cardBody),
+                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().cardBody),
                                                             ref: setCollapsibleElement,
                                                             children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().dropDownContent),
+                                                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().dropDownContent),
                                                                 children: [
                                                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
                                                                         children: t("applyForm.stepTwo.itemBCD")
                                                                     }),
                                                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                                                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().bGroup),
-                                                                        children: props.data.hydro_items[1].data.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+                                                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().bGroup),
+                                                                        children: data.hydro_items[1].data.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
                                                                                 children: item.chk === "Y" ? /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
                                                                                     htmlFor: item.item_id,
-                                                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().checkedActive),
+                                                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().checkedActive),
                                                                                     children: [
                                                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
                                                                                             type: "checkbox",
@@ -720,7 +906,7 @@ function Revise(props) {
                                                                                         }),
                                                                                         item.name,
                                                                                         /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().num),
+                                                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().num),
                                                                                             children: [
                                                                                                 t("applyForm.stepTwo.quantity"),
                                                                                                 /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
@@ -749,7 +935,7 @@ function Revise(props) {
                                                                                         }),
                                                                                         item.name,
                                                                                         /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().num),
+                                                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().num),
                                                                                             children: [
                                                                                                 t("applyForm.stepTwo.quantity"),
                                                                                                 /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
@@ -781,14 +967,14 @@ function Revise(props) {
                                             collapsed: true,
                                             whenReversedUseBackwardEase: false,
                                             render: ({ toggle , setCollapsibleElement , toggleState ,  })=>/*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().card),
+                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().card),
                                                     children: [
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
                                                             className: "card-header",
                                                             children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
                                                                 className: [
-                                                                    (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().dropDown),
-                                                                    toggleState === "COLLAPSED" ? (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().dropDown) : (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().active), 
+                                                                    (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().dropDown),
+                                                                    toggleState === "COLLAPSED" ? (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().dropDown) : (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().active), 
                                                                 ].join(" "),
                                                                 onClick: toggle,
                                                                 children: [
@@ -822,20 +1008,20 @@ function Revise(props) {
                                                             })
                                                         }),
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().cardBody),
+                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().cardBody),
                                                             ref: setCollapsibleElement,
                                                             children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().dropDownContent),
+                                                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().dropDownContent),
                                                                 children: [
                                                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
                                                                         children: t("applyForm.stepTwo.itemBCD")
                                                                     }),
                                                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                                                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().bGroup),
-                                                                        children: props.data.hydro_items[2].data.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+                                                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().bGroup),
+                                                                        children: data.hydro_items[2].data.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
                                                                                 children: item.chk === "Y" ? /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
                                                                                     htmlFor: item.item_id,
-                                                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().checkedActive),
+                                                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().checkedActive),
                                                                                     children: [
                                                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
                                                                                             type: "checkbox",
@@ -846,7 +1032,7 @@ function Revise(props) {
                                                                                         }),
                                                                                         item.name,
                                                                                         /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().num),
+                                                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().num),
                                                                                             children: [
                                                                                                 t("applyForm.stepTwo.quantity"),
                                                                                                 /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
@@ -875,7 +1061,7 @@ function Revise(props) {
                                                                                         }),
                                                                                         item.name,
                                                                                         /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().num),
+                                                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().num),
                                                                                             children: [
                                                                                                 t("applyForm.stepTwo.quantity"),
                                                                                                 /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
@@ -907,14 +1093,14 @@ function Revise(props) {
                                             collapsed: true,
                                             whenReversedUseBackwardEase: false,
                                             render: ({ toggle , setCollapsibleElement , toggleState ,  })=>/*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().card),
+                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().card),
                                                     children: [
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
                                                             className: "card-header",
                                                             children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
                                                                 className: [
-                                                                    (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().dropDown),
-                                                                    toggleState === "COLLAPSED" ? (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().dropDown) : (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().active), 
+                                                                    (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().dropDown),
+                                                                    toggleState === "COLLAPSED" ? (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().dropDown) : (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().active), 
                                                                 ].join(" "),
                                                                 onClick: toggle,
                                                                 children: [
@@ -948,20 +1134,20 @@ function Revise(props) {
                                                             })
                                                         }),
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().cardBody),
+                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().cardBody),
                                                             ref: setCollapsibleElement,
                                                             children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().dropDownContent),
+                                                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().dropDownContent),
                                                                 children: [
                                                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
                                                                         children: t("applyForm.stepTwo.itemBCD")
                                                                     }),
                                                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                                                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().bGroup),
-                                                                        children: props.data.hydro_items[3].data.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+                                                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().bGroup),
+                                                                        children: data.hydro_items[3].data.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
                                                                                 children: item.chk === "Y" ? /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
                                                                                     htmlFor: item.item_id,
-                                                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().checkedActive),
+                                                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().checkedActive),
                                                                                     children: [
                                                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
                                                                                             type: "checkbox",
@@ -972,7 +1158,7 @@ function Revise(props) {
                                                                                         }),
                                                                                         item.name,
                                                                                         /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().num),
+                                                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().num),
                                                                                             children: [
                                                                                                 t("applyForm.stepTwo.quantity"),
                                                                                                 /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
@@ -1001,7 +1187,7 @@ function Revise(props) {
                                                                                         }),
                                                                                         item.name,
                                                                                         /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().num),
+                                                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().num),
                                                                                             children: [
                                                                                                 t("applyForm.stepTwo.quantity"),
                                                                                                 /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
@@ -1033,14 +1219,14 @@ function Revise(props) {
                                             collapsed: true,
                                             whenReversedUseBackwardEase: false,
                                             render: ({ toggle , setCollapsibleElement , toggleState ,  })=>/*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().card),
+                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().card),
                                                     children: [
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
                                                             className: "card-header",
                                                             children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
                                                                 className: [
-                                                                    (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().dropDown),
-                                                                    toggleState === "COLLAPSED" ? (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().dropDown) : (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().active), 
+                                                                    (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().dropDown),
+                                                                    toggleState === "COLLAPSED" ? (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().dropDown) : (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().active), 
                                                                 ].join(" "),
                                                                 onClick: toggle,
                                                                 children: [
@@ -1074,20 +1260,20 @@ function Revise(props) {
                                                             })
                                                         }),
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().cardBody),
+                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().cardBody),
                                                             ref: setCollapsibleElement,
                                                             children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().dropDownContent),
+                                                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().dropDownContent),
                                                                 children: [
                                                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
                                                                         children: t("applyForm.stepTwo.itemBCD")
                                                                     }),
                                                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                                                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().bGroup),
-                                                                        children: props.data.hydro_items[4].data.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+                                                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().bGroup),
+                                                                        children: data.hydro_items[4].data.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
                                                                                 children: item.chk === "Y" ? /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
                                                                                     htmlFor: item.item_id,
-                                                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().checkedActive),
+                                                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().checkedActive),
                                                                                     children: [
                                                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
                                                                                             type: "checkbox",
@@ -1098,7 +1284,7 @@ function Revise(props) {
                                                                                         }),
                                                                                         item.name,
                                                                                         /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().num),
+                                                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().num),
                                                                                             children: [
                                                                                                 t("applyForm.stepTwo.quantity"),
                                                                                                 /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
@@ -1127,7 +1313,7 @@ function Revise(props) {
                                                                                         }),
                                                                                         item.name,
                                                                                         /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().num),
+                                                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().num),
                                                                                             children: [
                                                                                                 t("applyForm.stepTwo.quantity"),
                                                                                                 /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
@@ -1159,14 +1345,14 @@ function Revise(props) {
                                             collapsed: true,
                                             whenReversedUseBackwardEase: false,
                                             render: ({ toggle , setCollapsibleElement , toggleState ,  })=>/*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().card),
+                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().card),
                                                     children: [
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
                                                             className: "card-header",
                                                             children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
                                                                 className: [
-                                                                    (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().dropDown),
-                                                                    toggleState === "COLLAPSED" ? (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().dropDown) : (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().active), 
+                                                                    (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().dropDown),
+                                                                    toggleState === "COLLAPSED" ? (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().dropDown) : (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().active), 
                                                                 ].join(" "),
                                                                 onClick: toggle,
                                                                 children: [
@@ -1200,20 +1386,20 @@ function Revise(props) {
                                                             })
                                                         }),
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().cardBody),
+                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().cardBody),
                                                             ref: setCollapsibleElement,
                                                             children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().dropDownContent),
+                                                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().dropDownContent),
                                                                 children: [
                                                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
                                                                         children: t("applyForm.stepTwo.itemE")
                                                                     }),
                                                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                                                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().bGroup),
-                                                                        children: props.data.hydro_items[5].data.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+                                                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().bGroup),
+                                                                        children: data.hydro_items[5].data.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
                                                                                 children: item.chk === "Y" ? /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
                                                                                     htmlFor: item.item_id,
-                                                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().checkedActive),
+                                                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().checkedActive),
                                                                                     children: [
                                                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
                                                                                             type: "checkbox",
@@ -1224,7 +1410,7 @@ function Revise(props) {
                                                                                         }),
                                                                                         item.name,
                                                                                         /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().num),
+                                                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().num),
                                                                                             children: [
                                                                                                 t("applyForm.stepTwo.quantity"),
                                                                                                 /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
@@ -1253,7 +1439,7 @@ function Revise(props) {
                                                                                         }),
                                                                                         item.name,
                                                                                         /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().num),
+                                                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().num),
                                                                                             children: [
                                                                                                 t("applyForm.stepTwo.quantity"),
                                                                                                 /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
@@ -1285,14 +1471,14 @@ function Revise(props) {
                                             collapsed: true,
                                             whenReversedUseBackwardEase: false,
                                             render: ({ toggle , setCollapsibleElement , toggleState ,  })=>/*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().card),
+                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().card),
                                                     children: [
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
                                                             className: "card-header",
                                                             children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
                                                                 className: [
-                                                                    (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().dropDown),
-                                                                    toggleState === "COLLAPSED" ? (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().dropDown) : (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().active), 
+                                                                    (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().dropDown),
+                                                                    toggleState === "COLLAPSED" ? (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().dropDown) : (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().active), 
                                                                 ].join(" "),
                                                                 onClick: toggle,
                                                                 children: [
@@ -1326,20 +1512,20 @@ function Revise(props) {
                                                             })
                                                         }),
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().cardBody),
+                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().cardBody),
                                                             ref: setCollapsibleElement,
                                                             children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().dropDownContent),
+                                                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().dropDownContent),
                                                                 children: [
                                                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
                                                                         children: t("applyForm.stepTwo.itemF")
                                                                     }),
                                                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                                                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().bGroup),
-                                                                        children: props.data.hydro_items[6].data.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+                                                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().bGroup),
+                                                                        children: data.hydro_items[6].data.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
                                                                                 children: item.chk === "Y" ? /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
                                                                                     htmlFor: item.item_id,
-                                                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().checkedActive),
+                                                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().checkedActive),
                                                                                     children: [
                                                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
                                                                                             type: "checkbox",
@@ -1350,7 +1536,7 @@ function Revise(props) {
                                                                                         }),
                                                                                         item.name,
                                                                                         /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().num),
+                                                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().num),
                                                                                             children: [
                                                                                                 t("applyForm.stepTwo.quantity"),
                                                                                                 /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
@@ -1379,7 +1565,863 @@ function Revise(props) {
                                                                                         }),
                                                                                         item.name,
                                                                                         /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
-                                                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().num),
+                                                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().num),
+                                                                                            children: [
+                                                                                                t("applyForm.stepTwo.quantity"),
+                                                                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                                                                    type: "number",
+                                                                                                    min: "0",
+                                                                                                    disabled: true
+                                                                                                })
+                                                                                            ]
+                                                                                        }),
+                                                                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("span", {
+                                                                                            children: [
+                                                                                                item.prcie,
+                                                                                                "/",
+                                                                                                t("applyForm.stepTwo.set")
+                                                                                            ]
+                                                                                        })
+                                                                                    ]
+                                                                                }, item.item_id)
+                                                                            }))
+                                                                    })
+                                                                ]
+                                                            })
+                                                        })
+                                                    ]
+                                                })
+                                        })
+                                    ]
+                                }) : /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().group),
+                                    children: [
+                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx((react_slide_toggle__WEBPACK_IMPORTED_MODULE_9___default()), {
+                                            duration: 1000,
+                                            collapsed: true,
+                                            whenReversedUseBackwardEase: false,
+                                            render: ({ toggle , setCollapsibleElement , toggleState ,  })=>/*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().card),
+                                                    children: [
+                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                                            className: "card-header",
+                                                            children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                className: [
+                                                                    (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().dropDown),
+                                                                    toggleState === "COLLAPSED" ? (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().dropDown) : (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().active), 
+                                                                ].join(" "),
+                                                                onClick: toggle,
+                                                                children: [
+                                                                    "Ａ.用電110V電源箱",
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("span", {
+                                                                        children: toggleState === "EXPANDED" || toggleState === "EXPANDING" ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("svg", {
+                                                                            width: "16",
+                                                                            height: "10",
+                                                                            viewBox: "0 0 16 10",
+                                                                            fill: "none",
+                                                                            xmlns: "http://www.w3.org/2000/svg",
+                                                                            children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("path", {
+                                                                                d: "M1 9L8 2L15 9",
+                                                                                stroke: "white",
+                                                                                strokeWidth: "2"
+                                                                            })
+                                                                        }) : /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("svg", {
+                                                                            width: "16",
+                                                                            height: "10",
+                                                                            viewBox: "0 0 16 10",
+                                                                            fill: "none",
+                                                                            xmlns: "http://www.w3.org/2000/svg",
+                                                                            children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("path", {
+                                                                                d: "M15 1L8 8L1 1",
+                                                                                stroke: "white",
+                                                                                strokeWidth: "2"
+                                                                            })
+                                                                        })
+                                                                    })
+                                                                ]
+                                                            })
+                                                        }),
+                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().cardBody),
+                                                            ref: setCollapsibleElement,
+                                                            children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                                                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().dropDownContent),
+                                                                children: [
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
+                                                                        children: t("applyForm.stepTwo.itemA")
+                                                                    }),
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().aGroup),
+                                                                        children: props.data.hydro_items[0].data.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+                                                                                children: item.chk === "Y" ? /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                                    htmlFor: item.item_id,
+                                                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().checkedActive),
+                                                                                    children: [
+                                                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                                                            type: "checkbox",
+                                                                                            id: item.item_id,
+                                                                                            value: item.item_id,
+                                                                                            onChange: active,
+                                                                                            defaultChecked: true
+                                                                                        }),
+                                                                                        item.name,
+                                                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("span", {
+                                                                                            children: item.price
+                                                                                        })
+                                                                                    ]
+                                                                                }, item.item_id) : /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                                    htmlFor: item.item_id,
+                                                                                    children: [
+                                                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                                                            type: "checkbox",
+                                                                                            id: item.item_id,
+                                                                                            value: item.item_id,
+                                                                                            onChange: active
+                                                                                        }),
+                                                                                        item.name,
+                                                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("span", {
+                                                                                            children: item.price
+                                                                                        })
+                                                                                    ]
+                                                                                }, item.item_id)
+                                                                            }))
+                                                                    })
+                                                                ]
+                                                            })
+                                                        })
+                                                    ]
+                                                })
+                                        }),
+                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx((react_slide_toggle__WEBPACK_IMPORTED_MODULE_9___default()), {
+                                            duration: 1000,
+                                            collapsed: true,
+                                            whenReversedUseBackwardEase: false,
+                                            render: ({ toggle , setCollapsibleElement , toggleState ,  })=>/*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().card),
+                                                    children: [
+                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                                            className: "card-header",
+                                                            children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                className: [
+                                                                    (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().dropDown),
+                                                                    toggleState === "COLLAPSED" ? (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().dropDown) : (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().active), 
+                                                                ].join(" "),
+                                                                onClick: toggle,
+                                                                children: [
+                                                                    "B. 用電220V電源箱",
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("span", {
+                                                                        children: toggleState === "EXPANDED" || toggleState === "EXPANDING" ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("svg", {
+                                                                            width: "16",
+                                                                            height: "10",
+                                                                            viewBox: "0 0 16 10",
+                                                                            fill: "none",
+                                                                            xmlns: "http://www.w3.org/2000/svg",
+                                                                            children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("path", {
+                                                                                d: "M1 9L8 2L15 9",
+                                                                                stroke: "white",
+                                                                                strokeWidth: "2"
+                                                                            })
+                                                                        }) : /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("svg", {
+                                                                            width: "16",
+                                                                            height: "10",
+                                                                            viewBox: "0 0 16 10",
+                                                                            fill: "none",
+                                                                            xmlns: "http://www.w3.org/2000/svg",
+                                                                            children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("path", {
+                                                                                d: "M15 1L8 8L1 1",
+                                                                                stroke: "white",
+                                                                                strokeWidth: "2"
+                                                                            })
+                                                                        })
+                                                                    })
+                                                                ]
+                                                            })
+                                                        }),
+                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().cardBody),
+                                                            ref: setCollapsibleElement,
+                                                            children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                                                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().dropDownContent),
+                                                                children: [
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
+                                                                        children: t("applyForm.stepTwo.itemBCD")
+                                                                    }),
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().bGroup),
+                                                                        children: props.data.hydro_items[1].data.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+                                                                                children: item.chk === "Y" ? /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                                    htmlFor: item.item_id,
+                                                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().checkedActive),
+                                                                                    children: [
+                                                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                                                            type: "checkbox",
+                                                                                            id: item.item_id,
+                                                                                            value: item.item_id,
+                                                                                            onChange: enableNextTextBox,
+                                                                                            defaultChecked: true
+                                                                                        }),
+                                                                                        item.name,
+                                                                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().num),
+                                                                                            children: [
+                                                                                                t("applyForm.stepTwo.quantity"),
+                                                                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                                                                    type: "number",
+                                                                                                    min: "1",
+                                                                                                    defaultValue: item.quantity
+                                                                                                })
+                                                                                            ]
+                                                                                        }),
+                                                                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("span", {
+                                                                                            children: [
+                                                                                                item.prcie,
+                                                                                                "/",
+                                                                                                t("applyForm.stepTwo.set")
+                                                                                            ]
+                                                                                        })
+                                                                                    ]
+                                                                                }, item.item_id) : /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                                    htmlFor: item.item_id,
+                                                                                    children: [
+                                                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                                                            type: "checkbox",
+                                                                                            id: item.item_id,
+                                                                                            value: item.item_id,
+                                                                                            onChange: enableNextTextBox
+                                                                                        }),
+                                                                                        item.name,
+                                                                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().num),
+                                                                                            children: [
+                                                                                                t("applyForm.stepTwo.quantity"),
+                                                                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                                                                    type: "number",
+                                                                                                    min: "0",
+                                                                                                    disabled: true
+                                                                                                })
+                                                                                            ]
+                                                                                        }),
+                                                                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("span", {
+                                                                                            children: [
+                                                                                                item.prcie,
+                                                                                                "/",
+                                                                                                t("applyForm.stepTwo.set")
+                                                                                            ]
+                                                                                        })
+                                                                                    ]
+                                                                                }, item.item_id)
+                                                                            }))
+                                                                    })
+                                                                ]
+                                                            })
+                                                        })
+                                                    ]
+                                                })
+                                        }),
+                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx((react_slide_toggle__WEBPACK_IMPORTED_MODULE_9___default()), {
+                                            duration: 1000,
+                                            collapsed: true,
+                                            whenReversedUseBackwardEase: false,
+                                            render: ({ toggle , setCollapsibleElement , toggleState ,  })=>/*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().card),
+                                                    children: [
+                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                                            className: "card-header",
+                                                            children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                className: [
+                                                                    (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().dropDown),
+                                                                    toggleState === "COLLAPSED" ? (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().dropDown) : (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().active), 
+                                                                ].join(" "),
+                                                                onClick: toggle,
+                                                                children: [
+                                                                    "C. 用電380V電源箱",
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("span", {
+                                                                        children: toggleState === "EXPANDED" || toggleState === "EXPANDING" ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("svg", {
+                                                                            width: "16",
+                                                                            height: "10",
+                                                                            viewBox: "0 0 16 10",
+                                                                            fill: "none",
+                                                                            xmlns: "http://www.w3.org/2000/svg",
+                                                                            children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("path", {
+                                                                                d: "M1 9L8 2L15 9",
+                                                                                stroke: "white",
+                                                                                strokeWidth: "2"
+                                                                            })
+                                                                        }) : /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("svg", {
+                                                                            width: "16",
+                                                                            height: "10",
+                                                                            viewBox: "0 0 16 10",
+                                                                            fill: "none",
+                                                                            xmlns: "http://www.w3.org/2000/svg",
+                                                                            children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("path", {
+                                                                                d: "M15 1L8 8L1 1",
+                                                                                stroke: "white",
+                                                                                strokeWidth: "2"
+                                                                            })
+                                                                        })
+                                                                    })
+                                                                ]
+                                                            })
+                                                        }),
+                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().cardBody),
+                                                            ref: setCollapsibleElement,
+                                                            children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                                                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().dropDownContent),
+                                                                children: [
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
+                                                                        children: t("applyForm.stepTwo.itemBCD")
+                                                                    }),
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().bGroup),
+                                                                        children: props.data.hydro_items[2].data.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+                                                                                children: item.chk === "Y" ? /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                                    htmlFor: item.item_id,
+                                                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().checkedActive),
+                                                                                    children: [
+                                                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                                                            type: "checkbox",
+                                                                                            id: item.item_id,
+                                                                                            value: item.item_id,
+                                                                                            onChange: enableNextTextBox,
+                                                                                            defaultChecked: true
+                                                                                        }),
+                                                                                        item.name,
+                                                                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().num),
+                                                                                            children: [
+                                                                                                t("applyForm.stepTwo.quantity"),
+                                                                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                                                                    type: "number",
+                                                                                                    min: "1",
+                                                                                                    defaultValue: item.quantity
+                                                                                                })
+                                                                                            ]
+                                                                                        }),
+                                                                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("span", {
+                                                                                            children: [
+                                                                                                item.prcie,
+                                                                                                "/",
+                                                                                                t("applyForm.stepTwo.set")
+                                                                                            ]
+                                                                                        })
+                                                                                    ]
+                                                                                }, item.item_id) : /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                                    htmlFor: item.item_id,
+                                                                                    children: [
+                                                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                                                            type: "checkbox",
+                                                                                            id: item.item_id,
+                                                                                            value: item.item_id,
+                                                                                            onChange: enableNextTextBox
+                                                                                        }),
+                                                                                        item.name,
+                                                                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().num),
+                                                                                            children: [
+                                                                                                t("applyForm.stepTwo.quantity"),
+                                                                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                                                                    type: "number",
+                                                                                                    min: "0",
+                                                                                                    disabled: true
+                                                                                                })
+                                                                                            ]
+                                                                                        }),
+                                                                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("span", {
+                                                                                            children: [
+                                                                                                item.prcie,
+                                                                                                "/",
+                                                                                                t("applyForm.stepTwo.set")
+                                                                                            ]
+                                                                                        })
+                                                                                    ]
+                                                                                }, item.item_id)
+                                                                            }))
+                                                                    })
+                                                                ]
+                                                            })
+                                                        })
+                                                    ]
+                                                })
+                                        }),
+                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx((react_slide_toggle__WEBPACK_IMPORTED_MODULE_9___default()), {
+                                            duration: 1000,
+                                            collapsed: true,
+                                            whenReversedUseBackwardEase: false,
+                                            render: ({ toggle , setCollapsibleElement , toggleState ,  })=>/*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().card),
+                                                    children: [
+                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                                            className: "card-header",
+                                                            children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                className: [
+                                                                    (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().dropDown),
+                                                                    toggleState === "COLLAPSED" ? (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().dropDown) : (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().active), 
+                                                                ].join(" "),
+                                                                onClick: toggle,
+                                                                children: [
+                                                                    "D. 用電440V電源箱",
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("span", {
+                                                                        children: toggleState === "EXPANDED" || toggleState === "EXPANDING" ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("svg", {
+                                                                            width: "16",
+                                                                            height: "10",
+                                                                            viewBox: "0 0 16 10",
+                                                                            fill: "none",
+                                                                            xmlns: "http://www.w3.org/2000/svg",
+                                                                            children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("path", {
+                                                                                d: "M1 9L8 2L15 9",
+                                                                                stroke: "white",
+                                                                                strokeWidth: "2"
+                                                                            })
+                                                                        }) : /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("svg", {
+                                                                            width: "16",
+                                                                            height: "10",
+                                                                            viewBox: "0 0 16 10",
+                                                                            fill: "none",
+                                                                            xmlns: "http://www.w3.org/2000/svg",
+                                                                            children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("path", {
+                                                                                d: "M15 1L8 8L1 1",
+                                                                                stroke: "white",
+                                                                                strokeWidth: "2"
+                                                                            })
+                                                                        })
+                                                                    })
+                                                                ]
+                                                            })
+                                                        }),
+                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().cardBody),
+                                                            ref: setCollapsibleElement,
+                                                            children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                                                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().dropDownContent),
+                                                                children: [
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
+                                                                        children: t("applyForm.stepTwo.itemBCD")
+                                                                    }),
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().bGroup),
+                                                                        children: props.data.hydro_items[3].data.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+                                                                                children: item.chk === "Y" ? /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                                    htmlFor: item.item_id,
+                                                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().checkedActive),
+                                                                                    children: [
+                                                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                                                            type: "checkbox",
+                                                                                            id: item.item_id,
+                                                                                            value: item.item_id,
+                                                                                            onChange: enableNextTextBox,
+                                                                                            defaultChecked: true
+                                                                                        }),
+                                                                                        item.name,
+                                                                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().num),
+                                                                                            children: [
+                                                                                                t("applyForm.stepTwo.quantity"),
+                                                                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                                                                    type: "number",
+                                                                                                    min: "1",
+                                                                                                    defaultValue: item.quantity
+                                                                                                })
+                                                                                            ]
+                                                                                        }),
+                                                                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("span", {
+                                                                                            children: [
+                                                                                                item.prcie,
+                                                                                                "/",
+                                                                                                t("applyForm.stepTwo.set")
+                                                                                            ]
+                                                                                        })
+                                                                                    ]
+                                                                                }, item.item_id) : /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                                    htmlFor: item.item_id,
+                                                                                    children: [
+                                                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                                                            type: "checkbox",
+                                                                                            id: item.item_id,
+                                                                                            value: item.item_id,
+                                                                                            onChange: enableNextTextBox
+                                                                                        }),
+                                                                                        item.name,
+                                                                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().num),
+                                                                                            children: [
+                                                                                                t("applyForm.stepTwo.quantity"),
+                                                                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                                                                    type: "number",
+                                                                                                    min: "0",
+                                                                                                    disabled: true
+                                                                                                })
+                                                                                            ]
+                                                                                        }),
+                                                                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("span", {
+                                                                                            children: [
+                                                                                                item.prcie,
+                                                                                                "/",
+                                                                                                t("applyForm.stepTwo.set")
+                                                                                            ]
+                                                                                        })
+                                                                                    ]
+                                                                                }, item.item_id)
+                                                                            }))
+                                                                    })
+                                                                ]
+                                                            })
+                                                        })
+                                                    ]
+                                                })
+                                        }),
+                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx((react_slide_toggle__WEBPACK_IMPORTED_MODULE_9___default()), {
+                                            duration: 1000,
+                                            collapsed: true,
+                                            whenReversedUseBackwardEase: false,
+                                            render: ({ toggle , setCollapsibleElement , toggleState ,  })=>/*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().card),
+                                                    children: [
+                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                                            className: "card-header",
+                                                            children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                className: [
+                                                                    (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().dropDown),
+                                                                    toggleState === "COLLAPSED" ? (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().dropDown) : (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().active), 
+                                                                ].join(" "),
+                                                                onClick: toggle,
+                                                                children: [
+                                                                    "E. 24小時用電",
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("span", {
+                                                                        children: toggleState === "EXPANDED" || toggleState === "EXPANDING" ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("svg", {
+                                                                            width: "16",
+                                                                            height: "10",
+                                                                            viewBox: "0 0 16 10",
+                                                                            fill: "none",
+                                                                            xmlns: "http://www.w3.org/2000/svg",
+                                                                            children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("path", {
+                                                                                d: "M1 9L8 2L15 9",
+                                                                                stroke: "white",
+                                                                                strokeWidth: "2"
+                                                                            })
+                                                                        }) : /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("svg", {
+                                                                            width: "16",
+                                                                            height: "10",
+                                                                            viewBox: "0 0 16 10",
+                                                                            fill: "none",
+                                                                            xmlns: "http://www.w3.org/2000/svg",
+                                                                            children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("path", {
+                                                                                d: "M15 1L8 8L1 1",
+                                                                                stroke: "white",
+                                                                                strokeWidth: "2"
+                                                                            })
+                                                                        })
+                                                                    })
+                                                                ]
+                                                            })
+                                                        }),
+                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().cardBody),
+                                                            ref: setCollapsibleElement,
+                                                            children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                                                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().dropDownContent),
+                                                                children: [
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
+                                                                        children: t("applyForm.stepTwo.itemBCD")
+                                                                    }),
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().bGroup),
+                                                                        children: props.data.hydro_items[4].data.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+                                                                                children: item.chk === "Y" ? /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                                    htmlFor: item.item_id,
+                                                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().checkedActive),
+                                                                                    children: [
+                                                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                                                            type: "checkbox",
+                                                                                            id: item.item_id,
+                                                                                            value: item.item_id,
+                                                                                            onChange: enableNextTextBox,
+                                                                                            defaultChecked: true
+                                                                                        }),
+                                                                                        item.name,
+                                                                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().num),
+                                                                                            children: [
+                                                                                                t("applyForm.stepTwo.quantity"),
+                                                                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                                                                    type: "number",
+                                                                                                    min: "1",
+                                                                                                    defaultValue: item.quantity
+                                                                                                })
+                                                                                            ]
+                                                                                        }),
+                                                                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("span", {
+                                                                                            children: [
+                                                                                                item.prcie,
+                                                                                                "/",
+                                                                                                t("applyForm.stepTwo.set")
+                                                                                            ]
+                                                                                        })
+                                                                                    ]
+                                                                                }, item.item_id) : /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                                    htmlFor: item.item_id,
+                                                                                    children: [
+                                                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                                                            type: "checkbox",
+                                                                                            id: item.item_id,
+                                                                                            value: item.item_id,
+                                                                                            onChange: enableNextTextBox
+                                                                                        }),
+                                                                                        item.name,
+                                                                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().num),
+                                                                                            children: [
+                                                                                                t("applyForm.stepTwo.quantity"),
+                                                                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                                                                    type: "number",
+                                                                                                    min: "0",
+                                                                                                    disabled: true
+                                                                                                })
+                                                                                            ]
+                                                                                        }),
+                                                                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("span", {
+                                                                                            children: [
+                                                                                                item.prcie,
+                                                                                                "/",
+                                                                                                t("applyForm.stepTwo.set")
+                                                                                            ]
+                                                                                        })
+                                                                                    ]
+                                                                                }, item.item_id)
+                                                                            }))
+                                                                    })
+                                                                ]
+                                                            })
+                                                        })
+                                                    ]
+                                                })
+                                        }),
+                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx((react_slide_toggle__WEBPACK_IMPORTED_MODULE_9___default()), {
+                                            duration: 1000,
+                                            collapsed: true,
+                                            whenReversedUseBackwardEase: false,
+                                            render: ({ toggle , setCollapsibleElement , toggleState ,  })=>/*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().card),
+                                                    children: [
+                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                                            className: "card-header",
+                                                            children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                className: [
+                                                                    (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().dropDown),
+                                                                    toggleState === "COLLAPSED" ? (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().dropDown) : (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().active), 
+                                                                ].join(" "),
+                                                                onClick: toggle,
+                                                                children: [
+                                                                    "F. 給排水管",
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("span", {
+                                                                        children: toggleState === "EXPANDED" || toggleState === "EXPANDING" ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("svg", {
+                                                                            width: "16",
+                                                                            height: "10",
+                                                                            viewBox: "0 0 16 10",
+                                                                            fill: "none",
+                                                                            xmlns: "http://www.w3.org/2000/svg",
+                                                                            children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("path", {
+                                                                                d: "M1 9L8 2L15 9",
+                                                                                stroke: "white",
+                                                                                strokeWidth: "2"
+                                                                            })
+                                                                        }) : /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("svg", {
+                                                                            width: "16",
+                                                                            height: "10",
+                                                                            viewBox: "0 0 16 10",
+                                                                            fill: "none",
+                                                                            xmlns: "http://www.w3.org/2000/svg",
+                                                                            children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("path", {
+                                                                                d: "M15 1L8 8L1 1",
+                                                                                stroke: "white",
+                                                                                strokeWidth: "2"
+                                                                            })
+                                                                        })
+                                                                    })
+                                                                ]
+                                                            })
+                                                        }),
+                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().cardBody),
+                                                            ref: setCollapsibleElement,
+                                                            children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                                                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().dropDownContent),
+                                                                children: [
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
+                                                                        children: t("applyForm.stepTwo.itemE")
+                                                                    }),
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().bGroup),
+                                                                        children: props.data.hydro_items[5].data.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+                                                                                children: item.chk === "Y" ? /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                                    htmlFor: item.item_id,
+                                                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().checkedActive),
+                                                                                    children: [
+                                                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                                                            type: "checkbox",
+                                                                                            id: item.item_id,
+                                                                                            value: item.item_id,
+                                                                                            onChange: enableNextTextBox,
+                                                                                            defaultChecked: true
+                                                                                        }),
+                                                                                        item.name,
+                                                                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().num),
+                                                                                            children: [
+                                                                                                t("applyForm.stepTwo.quantity"),
+                                                                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                                                                    type: "number",
+                                                                                                    min: "1",
+                                                                                                    defaultValue: item.quantity
+                                                                                                })
+                                                                                            ]
+                                                                                        }),
+                                                                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("span", {
+                                                                                            children: [
+                                                                                                item.prcie,
+                                                                                                "/",
+                                                                                                t("applyForm.stepTwo.set")
+                                                                                            ]
+                                                                                        })
+                                                                                    ]
+                                                                                }, item.item_id) : /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                                    htmlFor: item.item_id,
+                                                                                    children: [
+                                                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                                                            type: "checkbox",
+                                                                                            id: item.item_id,
+                                                                                            value: item.item_id,
+                                                                                            onChange: enableNextTextBox
+                                                                                        }),
+                                                                                        item.name,
+                                                                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().num),
+                                                                                            children: [
+                                                                                                t("applyForm.stepTwo.quantity"),
+                                                                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                                                                    type: "number",
+                                                                                                    min: "0",
+                                                                                                    disabled: true
+                                                                                                })
+                                                                                            ]
+                                                                                        }),
+                                                                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("span", {
+                                                                                            children: [
+                                                                                                item.prcie,
+                                                                                                "/",
+                                                                                                t("applyForm.stepTwo.set")
+                                                                                            ]
+                                                                                        })
+                                                                                    ]
+                                                                                }, item.item_id)
+                                                                            }))
+                                                                    })
+                                                                ]
+                                                            })
+                                                        })
+                                                    ]
+                                                })
+                                        }),
+                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx((react_slide_toggle__WEBPACK_IMPORTED_MODULE_9___default()), {
+                                            duration: 1000,
+                                            collapsed: true,
+                                            whenReversedUseBackwardEase: false,
+                                            render: ({ toggle , setCollapsibleElement , toggleState ,  })=>/*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().card),
+                                                    children: [
+                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                                            className: "card-header",
+                                                            children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                className: [
+                                                                    (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().dropDown),
+                                                                    toggleState === "COLLAPSED" ? (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().dropDown) : (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().active), 
+                                                                ].join(" "),
+                                                                onClick: toggle,
+                                                                children: [
+                                                                    "G. 壓縮空氣",
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("span", {
+                                                                        children: toggleState === "EXPANDED" || toggleState === "EXPANDING" ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("svg", {
+                                                                            width: "16",
+                                                                            height: "10",
+                                                                            viewBox: "0 0 16 10",
+                                                                            fill: "none",
+                                                                            xmlns: "http://www.w3.org/2000/svg",
+                                                                            children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("path", {
+                                                                                d: "M1 9L8 2L15 9",
+                                                                                stroke: "white",
+                                                                                strokeWidth: "2"
+                                                                            })
+                                                                        }) : /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("svg", {
+                                                                            width: "16",
+                                                                            height: "10",
+                                                                            viewBox: "0 0 16 10",
+                                                                            fill: "none",
+                                                                            xmlns: "http://www.w3.org/2000/svg",
+                                                                            children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("path", {
+                                                                                d: "M15 1L8 8L1 1",
+                                                                                stroke: "white",
+                                                                                strokeWidth: "2"
+                                                                            })
+                                                                        })
+                                                                    })
+                                                                ]
+                                                            })
+                                                        }),
+                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().cardBody),
+                                                            ref: setCollapsibleElement,
+                                                            children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
+                                                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().dropDownContent),
+                                                                children: [
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("p", {
+                                                                        children: t("applyForm.stepTwo.itemF")
+                                                                    }),
+                                                                    /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
+                                                                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().bGroup),
+                                                                        children: props.data.hydro_items[6].data.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+                                                                                children: item.chk === "Y" ? /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                                    htmlFor: item.item_id,
+                                                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().checkedActive),
+                                                                                    children: [
+                                                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                                                            type: "checkbox",
+                                                                                            id: item.item_id,
+                                                                                            value: item.item_id,
+                                                                                            onChange: enableNextTextBox,
+                                                                                            defaultChecked: true
+                                                                                        }),
+                                                                                        item.name,
+                                                                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().num),
+                                                                                            children: [
+                                                                                                t("applyForm.stepTwo.quantity"),
+                                                                                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                                                                    type: "number",
+                                                                                                    min: "1",
+                                                                                                    defaultValue: item.quantity
+                                                                                                })
+                                                                                            ]
+                                                                                        }),
+                                                                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("span", {
+                                                                                            children: [
+                                                                                                item.prcie,
+                                                                                                "/",
+                                                                                                t("applyForm.stepTwo.set")
+                                                                                            ]
+                                                                                        })
+                                                                                    ]
+                                                                                }, item.item_id) : /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                                    htmlFor: item.item_id,
+                                                                                    children: [
+                                                                                        /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
+                                                                                            type: "checkbox",
+                                                                                            id: item.item_id,
+                                                                                            value: item.item_id,
+                                                                                            onChange: enableNextTextBox
+                                                                                        }),
+                                                                                        item.name,
+                                                                                        /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
+                                                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().num),
                                                                                             children: [
                                                                                                 t("applyForm.stepTwo.quantity"),
                                                                                                 /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("input", {
@@ -1409,15 +2451,15 @@ function Revise(props) {
                                     ]
                                 }),
                                 /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().btns),
+                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().btns),
                                     children: [
                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("button", {
-                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().cancel),
+                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().cancel),
                                             onClick: close,
                                             children: "取消"
                                         }),
                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("button", {
-                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().complete),
+                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().complete),
                                             onClick: handleRevise,
                                             children: "完成"
                                         })
@@ -1429,23 +2471,23 @@ function Revise(props) {
                     preview ? /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(_Components_Popup_Popup__WEBPACK_IMPORTED_MODULE_8__/* ["default"] */ .Z, {
                         close: close,
                         children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().applyCheckBox),
+                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().applyCheckBox),
                             onClick: (e)=>{
                                 // do not close modal if anything inside modal content is clicked
                                 e.stopPropagation();
                             },
                             children: [
                                 /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().form),
+                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().form),
                                     children: [
                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("h2", {
                                             children: t("applyForm.preview.groupOne.title")
                                         }),
                                         /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().formComplete),
+                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().formComplete),
                                             children: [
                                                 /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().formRow),
+                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().formRow),
                                                     children: [
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
                                                             children: t("applyForm.preview.groupOne.companyName")
@@ -1456,7 +2498,7 @@ function Revise(props) {
                                                     ]
                                                 }),
                                                 /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().formRow),
+                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().formRow),
                                                     children: [
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
                                                             children: t("applyForm.preview.groupOne.taxID")
@@ -1467,7 +2509,7 @@ function Revise(props) {
                                                     ]
                                                 }),
                                                 /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().formRow),
+                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().formRow),
                                                     children: [
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
                                                             children: t("applyForm.preview.groupOne.contactPerson")
@@ -1478,7 +2520,7 @@ function Revise(props) {
                                                     ]
                                                 }),
                                                 /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().formRow),
+                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().formRow),
                                                     children: [
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
                                                             children: t("applyForm.preview.groupOne.phone")
@@ -1489,7 +2531,7 @@ function Revise(props) {
                                                     ]
                                                 }),
                                                 /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().formRow),
+                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().formRow),
                                                     children: [
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
                                                             children: "E-mail"
@@ -1505,10 +2547,10 @@ function Revise(props) {
                                             children: t("applyForm.preview.groupTwo.title")
                                         }),
                                         /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().formCompleteInvoce),
+                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().formCompleteInvoce),
                                             children: [
                                                 /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().formRow),
+                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().formRow),
                                                     children: [
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
                                                             children: t("applyForm.preview.groupTwo.companyName")
@@ -1519,7 +2561,7 @@ function Revise(props) {
                                                     ]
                                                 }),
                                                 /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().formRow),
+                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().formRow),
                                                     children: [
                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("label", {
                                                             children: t("applyForm.preview.groupTwo.taxID")
@@ -1533,7 +2575,7 @@ function Revise(props) {
                                                     ]
                                                 }),
                                                 /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().formRow),
+                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().formRow),
                                                     children: [
                                                         /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
                                                             children: [
@@ -1547,7 +2589,7 @@ function Revise(props) {
                                                     ]
                                                 }),
                                                 /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().formRow),
+                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().formRow),
                                                     children: [
                                                         /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", {
                                                             children: [
@@ -1570,12 +2612,12 @@ function Revise(props) {
                                             children: t("applyForm.preview.groupThree.title")
                                         }),
                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("div", {
-                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().applyItem),
+                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().applyItem),
                                             children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("table", {
                                                 children: [
                                                     /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("thead", {
                                                         children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
-                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().title),
+                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().title),
                                                             children: [
                                                                 /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("th", {
                                                                     children: t("applyForm.preview.groupThree.no")
@@ -1600,7 +2642,7 @@ function Revise(props) {
                                                             children: [
                                                                 data.hydro_items_trial.items.map((item)=>/*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
                                                                         children: /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
-                                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().content),
+                                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().content),
                                                                             children: [
                                                                                 /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
                                                                                     children: item.index
@@ -1625,13 +2667,13 @@ function Revise(props) {
                                                                         }, item.index)
                                                                     })),
                                                                 /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
-                                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().sum),
+                                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().sum),
                                                                     children: [
                                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {}),
                                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {}),
                                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {}),
                                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().sumTitle),
+                                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().sumTitle),
                                                                             children: t("applyForm.preview.groupThree.total")
                                                                         }),
                                                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
@@ -1642,13 +2684,13 @@ function Revise(props) {
                                                                 data.discount.discount_value !== "" ? /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
                                                                     children: [
                                                                         /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
-                                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().sum),
+                                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().sum),
                                                                             children: [
                                                                                 /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {}),
                                                                                 /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {}),
                                                                                 /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {}),
                                                                                 /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().sumTitle),
+                                                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().sumTitle),
                                                                                     children: data.discount.discount_type
                                                                                 }),
                                                                                 /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
@@ -1657,13 +2699,13 @@ function Revise(props) {
                                                                             ]
                                                                         }),
                                                                         /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("tr", {
-                                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().sum),
+                                                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().sum),
                                                                             children: [
                                                                                 /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {}),
                                                                                 /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {}),
                                                                                 /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {}),
                                                                                 /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
-                                                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().sumTitle),
+                                                                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().sumTitle),
                                                                                     children: "總價"
                                                                                 }),
                                                                                 /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("td", {
@@ -1684,15 +2726,16 @@ function Revise(props) {
                                     ]
                                 }),
                                 /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().btns),
+                                    className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().btns),
                                     children: [
                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("button", {
-                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().cancel),
+                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().cancel),
                                             onClick: close,
                                             children: "取消"
                                         }),
                                         /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("button", {
-                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().complete),
+                                            className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().complete),
+                                            onClick: handleSubmit,
                                             children: "完成"
                                         })
                                     ]
@@ -1701,14 +2744,16 @@ function Revise(props) {
                         })
                     }) : null,
                     /*#__PURE__*/ (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", {
-                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().btns),
+                        className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().btns),
                         children: [
                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("button", {
-                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().cancel),
+                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().cancel),
+                                onClick: cancelSupplement,
                                 children: "取消"
                             }),
                             /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("button", {
-                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_12___default().complete),
+                                className: (_styles_Apply_module_scss__WEBPACK_IMPORTED_MODULE_13___default().complete),
+                                onClick: handlePreview,
                                 children: "完成"
                             })
                         ]
@@ -1730,6 +2775,14 @@ __webpack_async_result__();
 
 "use strict";
 module.exports = require("@material-ui/styles");
+
+/***/ }),
+
+/***/ 8982:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("cookies-next");
 
 /***/ }),
 
