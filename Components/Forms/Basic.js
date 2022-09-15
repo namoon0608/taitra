@@ -281,7 +281,7 @@ export default function Basic({
                 </Form>
             ) : (
                 <Form onSubmit={handleSubmit}>
-                    <h2>{t("applyForm.stepOne.groupTwo.title")}</h2>
+                    <h2>{t("applyForm.stepOne.staffOnSite")}</h2>
                     <div className={styles.form}>
                         <div className={styles.formRow}>
                             <Input
@@ -298,7 +298,7 @@ export default function Basic({
                                 maxLength={30}
                             />
                         </div>
-                        <div className={styles.formRow}>
+                        {/* <div className={styles.formRow}>
                             <Input
                                 name="uniformNum"
                                 label={t("applyForm.stepOne.groupTwo.taxID")}
@@ -316,7 +316,7 @@ export default function Basic({
                                     )
                                 }
                             />
-                        </div>
+                        </div> */}
                         <div className={styles.formRow}>
                             <Input
                                 name="contactPerson"

@@ -156,6 +156,7 @@ export default function Choose({
                         field.required = true;
                     }
                 } else if (radio.value === "1") {
+                    console.log("dfsfa");
                     invoiceRequired[0].style.display = "none";
                     for (let field of requiredField) {
                         field.value = "";
@@ -2477,7 +2478,6 @@ export default function Choose({
                                         )}
                                         id="company"
                                         maxLength={30}
-                                        required
                                     />
                                 </div>
                                 <div>
@@ -2501,7 +2501,6 @@ export default function Choose({
                                                 )
                                             )
                                         }
-                                        required
                                     />
                                 </div>
                                 <div>
@@ -2516,7 +2515,6 @@ export default function Choose({
                                         )}
                                         id="contactPerson"
                                         maxLength={20}
-                                        required
                                     />
                                 </div>
                                 <div>
@@ -2531,7 +2529,6 @@ export default function Choose({
                                         )}
                                         id="phone"
                                         maxLength={20}
-                                        required
                                     />
                                 </div>
                                 <div>
@@ -2546,7 +2543,6 @@ export default function Choose({
                                         )}
                                         id="address"
                                         maxLength="30"
-                                        required
                                     />
                                 </div>
                             </div>
