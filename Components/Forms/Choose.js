@@ -50,9 +50,27 @@ export default function Choose({
         let phone;
         let tax_id;
         const radios = document.querySelectorAll('input[name="drone"]');
+        const invoiceRequired = document.getElementsByClassName(
+            "Form_address__LoRLg"
+        );
+        const requiredField = document.querySelectorAll(
+            ".Form_address__LoRLg input"
+        );
         for (let radio of radios) {
             if (radio.checked) {
                 invoice = radio.value;
+                if (radio.value === "2") {
+                    invoiceRequired[0].style.display = "grid";
+                    for (let field of requiredField) {
+                        field.required = true;
+                    }
+                } else if (radio.value === "1") {
+                    invoiceRequired[0].style.display = "none";
+                    for (let field of requiredField) {
+                        field.value = "";
+                        field.required = false;
+                    }
+                }
             }
         }
         if (invoice === "1") {
@@ -67,6 +85,8 @@ export default function Choose({
             company = document.getElementById("company").value;
             phone = document.getElementById("phone").value;
             tax_id = document.getElementById("uniformNum").value;
+            console.log(contact_person);
+            console.log(tax_id);
         }
 
         let items = [];
@@ -118,11 +138,30 @@ export default function Choose({
     };
 
     async function handleSubmit(data) {
+        console.log(data);
         let invoice = "";
         const radios = document.querySelectorAll('input[name="drone"]');
+        const invoiceRequired = document.getElementsByClassName(
+            "Form_address__LoRLg"
+        );
+        const requiredField = document.querySelectorAll(
+            ".Form_address__LoRLg input"
+        );
         for (let radio of radios) {
             if (radio.checked) {
                 invoice = radio.value;
+                if (radio.value === "2") {
+                    invoiceRequired[0].style.display = "grid";
+                    for (let field of requiredField) {
+                        field.required = true;
+                    }
+                } else if (radio.value === "1") {
+                    invoiceRequired[0].style.display = "none";
+                    for (let field of requiredField) {
+                        field.value = "";
+                        field.required = false;
+                    }
+                }
             }
         }
         let items = [];
@@ -156,10 +195,10 @@ export default function Choose({
                 items: JSON.stringify(items),
                 invoice: invoice,
                 proxy_address: data.address,
-                proxy_contact_person: data.contact_person,
+                proxy_contact_person: data.contactPerson,
                 proxy_phone: data.phone,
                 proxy_company_name: data.company,
-                proxy_tax_id: data.tax_id,
+                proxy_tax_id: data.uniformNum,
                 event_uid: sid.event_uid,
                 company_id: sid.company_id,
             }),
@@ -1061,8 +1100,6 @@ export default function Choose({
                             )}
                             style={{
                                 display: "none",
-                                gridTemplateColumns: "1fr 1fr",
-                                gap: "20px",
                             }}
                         >
                             <div>
@@ -1131,7 +1168,7 @@ export default function Choose({
                                     required
                                 />
                             </div>
-                            <div style={{ gridColumn: "1/3" }}>
+                            <div>
                                 <Input
                                     name="address"
                                     label={t(
@@ -2426,8 +2463,6 @@ export default function Choose({
                                 ].join(" ")}
                                 style={{
                                     display: "none",
-                                    gridTemplateColumns: "1fr 1fr",
-                                    gap: "20px",
                                 }}
                             >
                                 <div>
@@ -2499,7 +2534,7 @@ export default function Choose({
                                         required
                                     />
                                 </div>
-                                <div style={{ gridColumn: "1/3" }}>
+                                <div>
                                     <Input
                                         name="address"
                                         label={t(
@@ -2523,8 +2558,6 @@ export default function Choose({
                                 ].join(" ")}
                                 style={{
                                     display: "grid",
-                                    gridTemplateColumns: "1fr 1fr",
-                                    gap: "20px",
                                 }}
                             >
                                 <div>
@@ -2538,6 +2571,9 @@ export default function Choose({
                                             "applyForm.stepOne.groupTwo.companyPlaceHolder"
                                         )}
                                         id="company"
+                                        defaultValue={
+                                            stepTwo.invoice.invoice_company
+                                        }
                                         maxLength={30}
                                         required
                                     />
@@ -2553,6 +2589,9 @@ export default function Choose({
                                             "applyForm.stepOne.groupTwo.taxIdPlaceHolder"
                                         )}
                                         id="uniformNum"
+                                        defaultValue={
+                                            stepTwo.invoice.invoice_taxid
+                                        }
                                         maxLength={8}
                                         value={number}
                                         onChange={(e) =>
@@ -2577,6 +2616,10 @@ export default function Choose({
                                             "applyForm.stepOne.groupTwo.contactPersonPlaceHolder"
                                         )}
                                         id="contactPerson"
+                                        defaultValue={
+                                            stepTwo.invoice
+                                                .invoice_contact_person
+                                        }
                                         maxLength={20}
                                         required
                                     />
@@ -2592,11 +2635,14 @@ export default function Choose({
                                             "applyForm.stepOne.groupTwo.phonePlaceHolder"
                                         )}
                                         id="phone"
+                                        defaultValue={
+                                            stepTwo.invoice.invoice_phone
+                                        }
                                         maxLength={20}
                                         required
                                     />
                                 </div>
-                                <div style={{ gridColumn: "1/3" }}>
+                                <div>
                                     <Input
                                         name="address"
                                         label={t(
@@ -2608,6 +2654,9 @@ export default function Choose({
                                         )}
                                         id="address"
                                         maxLength="30"
+                                        defaultValue={
+                                            stepTwo.invoice.invoice_address
+                                        }
                                         required
                                     />
                                 </div>

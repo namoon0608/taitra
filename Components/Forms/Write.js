@@ -93,6 +93,7 @@ export default function Write({
 
     function handleOnChange(changeEvent) {
         const later = document.querySelector("input[name=cbox1]");
+        const imgShow = document.getElementById("blah");
         const reader = new FileReader();
 
         reader.onload = function (onLoadEvent) {
@@ -103,10 +104,12 @@ export default function Write({
         if (changeEvent.target.files !== null) {
             reader.readAsDataURL(changeEvent.target.files[0]);
             later.checked = false;
+            imgShow.style.display = "block";
             setGoNext(false);
         } else if (later.checked) {
             setGoNext(false);
             setImageSrc("");
+            imgShow.style.display = "none";
         } else if (changeEvent.target.files === null) {
             setGoNext(true);
         }

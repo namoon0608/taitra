@@ -157,79 +157,136 @@ export default function Check(props) {
                     </div>
                     <h2>{t("applyForm.stepTwo.title")}</h2>
                     <div className={styles.applyItem}>
-                        <table>
-                            <thead>
-                                <tr className={styles.title}>
-                                    <th>
-                                        {t("applyForm.preview.groupThree.no")}
-                                    </th>
-                                    <th>
-                                        {t("applyForm.preview.groupThree.item")}
-                                    </th>
-                                    <th>
-                                        {t(
-                                            "applyForm.preview.groupThree.quantity"
-                                        )}
-                                    </th>
-                                    <th>
-                                        {t(
-                                            "applyForm.preview.groupThree.unitPrice"
-                                        )}
-                                    </th>
-                                    <th>
-                                        {t(
-                                            "applyForm.preview.groupThree.itemCost"
-                                        )}
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr className={styles.content}>
-                                    <td>1</td>
-                                    <td>
-                                        用電110V電源箱 - 單相 110V 15A (1,500W)
-                                    </td>
-                                    <td>1</td>
-                                    <td>1,950</td>
-                                    <td>1,950</td>
-                                </tr>
-                                <tr className={styles.content}>
-                                    <td>2</td>
-                                    <td>
-                                        用電110V電源箱 - 單相 110V 15A (1,500W)
-                                    </td>
-                                    <td>1</td>
-                                    <td>1,950</td>
-                                    <td>1,950</td>
-                                </tr>
-                                <tr className={styles.content}>
-                                    <td>3</td>
-                                    <td>
-                                        用電110V電源箱 - 單相 110V 15A (1,500W)
-                                    </td>
-                                    <td>1</td>
-                                    <td>1,950</td>
-                                    <td>1,950</td>
-                                </tr>
-                                <tr className={styles.content}>
-                                    <td>4</td>
-                                    <td>
-                                        用電110V電源箱 - 單相 110V 15A (1,500W)
-                                    </td>
-                                    <td>1</td>
-                                    <td>1,950</td>
-                                    <td>1,950</td>
-                                </tr>
-                                <tr className={styles.sum}>
-                                    <td className={styles.sumTitle} colSpan={4}>
-                                        {t(
-                                            "applyForm.preview.groupThree.total"
-                                        )}
-                                    </td>
-                                    <td>20,439</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        {props.data.hydro_items.base_option === "Y" ? (
+                            <div>
+                                {t("applyForm.preview.groupThree.useDefault")}
+                            </div>
+                        ) : (
+                            <>
+                                {props.data.hydro_items.items.length !== 0 ? (
+                                    <table>
+                                        <thead>
+                                            <tr className={styles.title}>
+                                                <th>
+                                                    {t(
+                                                        "applyForm.preview.groupThree.no"
+                                                    )}
+                                                </th>
+                                                <th>
+                                                    {t(
+                                                        "applyForm.preview.groupThree.item"
+                                                    )}
+                                                </th>
+                                                <th>
+                                                    {t(
+                                                        "applyForm.preview.groupThree.quantity"
+                                                    )}
+                                                </th>
+                                                <th>
+                                                    {t(
+                                                        "applyForm.preview.groupThree.unitPrice"
+                                                    )}
+                                                </th>
+                                                <th>
+                                                    {t(
+                                                        "applyForm.preview.groupThree.itemCost"
+                                                    )}
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {props.data.hydro_items.items.map(
+                                                (item, idx) => (
+                                                    <tr
+                                                        className={
+                                                            styles.content
+                                                        }
+                                                        key={item.idx}
+                                                    >
+                                                        <td>{item.index}</td>
+                                                        <td
+                                                            style={{
+                                                                textAlign:
+                                                                    "left",
+                                                                paddingLeft:
+                                                                    "15px",
+                                                            }}
+                                                        >
+                                                            {item.name}
+                                                        </td>
+                                                        <td>{item.quantity}</td>
+                                                        <td>{item.price}</td>
+                                                        <td>{item.sum}</td>
+                                                    </tr>
+                                                )
+                                            )}
+                                            <tr className={styles.sum}>
+                                                <td className={styles.sumTitle}>
+                                                    {t(
+                                                        "applyForm.preview.groupThree.total"
+                                                    )}
+                                                </td>
+                                                <td>
+                                                    {
+                                                        props.data.hydro_items
+                                                            .total_sum
+                                                    }
+                                                </td>
+                                            </tr>
+                                            {props.data.discount
+                                                .discount_value !== "" ? (
+                                                <>
+                                                    <tr className={styles.sum}>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td
+                                                            className={
+                                                                styles.sumTitle
+                                                            }
+                                                        >
+                                                            {
+                                                                props.data
+                                                                    .discount
+                                                                    .discount_type
+                                                            }
+                                                        </td>
+                                                        <td>
+                                                            {
+                                                                props.data
+                                                                    .discount
+                                                                    .discount_price
+                                                            }
+                                                        </td>
+                                                    </tr>
+                                                    <tr className={styles.sum}>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td
+                                                            className={
+                                                                styles.sumTitle
+                                                            }
+                                                        >
+                                                            總價
+                                                        </td>
+                                                        <td>
+                                                            {
+                                                                props.data
+                                                                    .discount
+                                                                    .finally_sum
+                                                            }
+                                                        </td>
+                                                    </tr>
+                                                </>
+                                            ) : null}
+                                        </tbody>
+                                    </table>
+                                ) : (
+                                    <div>沒有追加項目</div>
+                                )}
+                            </>
+                        )}
                     </div>
                     <h2>{t("applyForm.preview.groupFour.title")}</h2>
                     {props.data.diagram_img_file !== "Y" ? (

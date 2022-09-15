@@ -406,7 +406,7 @@ export default function Revise(props) {
                             />
                         </div>
                         <div className={styles.formRow}>
-                            <label>電子郵件</label>
+                            <label>E-mail</label>
                             <input
                                 name="email"
                                 type="email"

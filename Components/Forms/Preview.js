@@ -179,10 +179,10 @@ export default function Preview({
                                         </label>
                                         <p>{data.proxy.proxy_phone}</p>
                                     </div>
-                                    <div className={styles.formRow}>
+                                    {/* <div className={styles.formRow}>
                                         <label>E-mail</label>
                                         <p>{data.proxy.proxy_email}</p>
-                                    </div>
+                                    </div> */}
                                 </div>
                             </>
                         )}
