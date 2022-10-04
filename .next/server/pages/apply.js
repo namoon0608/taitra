@@ -3599,7 +3599,7 @@ async function getServerSideProps({ locale , query , req , res  }) {
         if (oldCookie === undefined) {
             return {
                 redirect: {
-                    destination: "https://twtc.com.tw/"
+                    destination: "https://www.taiwantradeshows.com.tw/zh_TW/index.html"
                 }
             };
         }
@@ -3614,6 +3614,13 @@ async function getServerSideProps({ locale , query , req , res  }) {
     };
     sidForm.body = form;
     const sidData = await fetch(`${process.env.API_BASE_URL}sso`, sidForm).then((response)=>response.json());
+    if (sidData.status === false) {
+        return {
+            redirect: {
+                destination: "https://www.taiwantradeshows.com.tw/zh_TW/index.html"
+            }
+        };
+    }
     const options = {
         method: "POST",
         headers: {
